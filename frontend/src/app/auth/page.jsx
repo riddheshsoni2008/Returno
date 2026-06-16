@@ -31,7 +31,7 @@ function AuthContent() {
   const [success, setSuccess] = useState('');
 
   // Customer Form
-  const [phone, setPhone] = useState('');
+  const [customerEmail, setCustomerEmail] = useState('');
   const [otpSent, setOtpSent] = useState(false);
   const [otpCode, setOtpCode] = useState('');
   const [cooldown, setCooldown] = useState(0);
@@ -77,7 +77,7 @@ function AuthContent() {
       const res = await fetch('/api/auth/otp/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone }),
+        body: JSON.stringify({ email: customerEmail }),
       });
       const data = await res.json();
 
@@ -87,7 +87,7 @@ function AuthContent() {
 
       setOtpSent(true);
       setCooldown(60); // Start 60-second cooldown timer
-      setSuccess('OTP verification code sent successfully to your phone!');
+      setSuccess('OTP verification code sent successfully to your email!');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -106,7 +106,7 @@ function AuthContent() {
       const res = await fetch('/api/auth/otp/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone, code: otpCode }),
+        body: JSON.stringify({ email: customerEmail, code: otpCode }),
       });
       const data = await res.json();
 
@@ -222,18 +222,15 @@ function AuthContent() {
             {!otpSent ? (
               <form onSubmit={handleSendOtp} className="space-y-5">
                 <div>
-                  <label className="block text-slate-300 text-xs font-semibold uppercase tracking-wider mb-2">Phone Number</label>
-                  <div className="relative">
-                    <span className="absolute left-4 top-3 text-slate-500 text-sm font-medium">+91</span>
-                    <input
-                      type="tel"
-                      required
-                      placeholder="9876543210"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      className="w-full bg-dark-950 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white text-sm focus:outline-none focus:border-brand-500 transition-colors"
-                    />
-                  </div>
+                  <label className="block text-slate-300 text-xs font-semibold uppercase tracking-wider mb-2">Email Address</label>
+                  <input
+                    type="email"
+                    required
+                    placeholder="customer@example.com"
+                    value={customerEmail}
+                    onChange={(e) => setCustomerEmail(e.target.value)}
+                    className="w-full bg-dark-950 border border-white/10 rounded-xl py-3 px-4 text-white text-sm focus:outline-none focus:border-brand-500 transition-colors"
+                  />
                   <p className="text-[10px] text-slate-500 mt-2">New customers will be registered automatically.</p>
                 </div>
                 <button
@@ -258,8 +255,8 @@ function AuthContent() {
                     className="w-full bg-dark-950 border border-white/10 rounded-xl py-3 px-4 text-white text-center tracking-[1em] text-lg font-bold focus:outline-none focus:border-brand-500 transition-colors"
                   />
                   <div className="flex justify-between items-center mt-2 text-xs">
-                    <span className="text-slate-500">Sent to +{phone}</span>
-                    <button type="button" onClick={() => setOtpSent(false)} className="text-brand-400 hover:underline">Change Number</button>
+                    <span className="text-slate-500">Sent to {customerEmail}</span>
+                    <button type="button" onClick={() => setOtpSent(false)} className="text-brand-400 hover:underline">Change Email</button>
                   </div>
                   <div className="flex justify-end items-center mt-3 text-xs">
                     {cooldown > 0 ? (
