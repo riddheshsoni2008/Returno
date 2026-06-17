@@ -1,41 +1,38 @@
-# dependencies
+# Dependencies
 **/node_modules/
-**/.pnp
-**/.pnp.*
-**/.yarn/*
-!**/.yarn/patches
-!**/.yarn/plugins
-!**/.yarn/releases
-!**/.yarn/versions
 
-# testing
-**/coverage/
-
-# next.js
+# Next.js build output
 **/.next/
 **/out/
 
-# production
+# Production builds
 **/build/
+**/dist/
 
-# env files
+# Environment files
 **/.env*
 .env
 .env.local
 
-# misc
-.DS_Store
-*.pem
-
-# debug
+# Logs
+*.log
+**/logs/
+**/*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# vercel
-.vercel
+# Database temp files
+**/mongodb_data/
+**/mongodb.log
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+# IDE & OS files
+.DS_Store
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

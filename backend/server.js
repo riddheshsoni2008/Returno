@@ -2,26 +2,25 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
-import dbConnect from './config/db.js';
+import dbConnect from './src/config/db.js';
 
 // Import Routes
-import authRoutes from './routes/authRoutes.js';
-import businessRoutes from './routes/businessRoutes.js';
-import campaignRoutes from './routes/campaignRoutes.js';
-import rewardRoutes from './routes/rewardRoutes.js';
-import visitRoutes from './routes/visitRoutes.js';
-import walletRoutes from './routes/walletRoutes.js';
-import adminRoutes from './routes/adminRoutes.js';
+import authRoutes from './src/routes/authRoutes.js';
+import businessRoutes from './src/routes/businessRoutes.js';
+import campaignRoutes from './src/routes/campaignRoutes.js';
+import rewardRoutes from './src/routes/rewardRoutes.js';
+import visitRoutes from './src/routes/visitRoutes.js';
+import walletRoutes from './src/routes/walletRoutes.js';
+import adminRoutes from './src/routes/adminRoutes.js';
 
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { validateEmailConfig } from './services/emailService.js';
+import { validateEmailConfig } from './src/services/emailService.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Load backend/.env first, then root .env for fallback variables (like EMAIL_PASSWORD_ENV)
+// Load backend/.env
 dotenv.config({ path: path.resolve(__dirname, '.env') });
-dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 // Run startup SMTP validation and fail fast if invalid
 await validateEmailConfig();
