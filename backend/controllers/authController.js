@@ -231,32 +231,58 @@ export const sendOtp = async (req, res) => {
 export const verifyOtp = async (req, res) => {
   try {
     const { email, code } = req.body;
+    console.log(`[OTP Verify] Received payload - Email: "${email}", Code: "${code}"`);
 
-    if (!email || !code) return res.status(400).json({ error: 'Email address and verification code are required' });
+    if (!email || !code) {
+      console.warn(`[OTP Verify] Validation failure: missing fields. Email exists? ${!!email}, Code exists? ${!!code}`);
+      return res.status(400).json({ error: 'Email address and verification code are required' });
+    }
 
     const cleanedEmail = email.toLowerCase().trim();
+    console.log(`[OTP Verify] Cleaned email: "${cleanedEmail}"`);
     const user = await User.findOne({ email: cleanedEmail });
 
-    if (!user || !user.otp || !user.otp.hashedCode) {
+    if (!user) {
+      console.warn(`[OTP Verify] Lookup failure: No user found with email: "${cleanedEmail}"`);
       return res.status(400).json({ error: 'No active OTP verification session found' });
     }
 
+    console.log(`[OTP Verify] User found. OTP metadata in DB:`, user.otp);
+
+    if (!user.otp || !user.otp.hashedCode) {
+      console.warn(`[OTP Verify] Validation failure: User has no active OTP session (hashedCode is missing)`);
+      return res.status(400).json({ error: 'No active OTP verification session found' });
+    }
+
+    console.log(`[OTP Verify] Checking attempts. Current count: ${user.otp.attempts || 0}`);
     if (user.otp.attempts >= 5) {
+      console.warn(`[OTP Verify] Validation failure: Too many attempts (${user.otp.attempts})`);
       user.otp = undefined;
       await user.save();
       return res.status(400).json({ error: 'Too many failed verification attempts. Please request a new OTP.' });
     }
 
-    if (new Date() > new Date(user.otp.expiresAt)) {
+    const now = new Date();
+    const expiry = new Date(user.otp.expiresAt);
+    console.log(`[OTP Verify] Checking expiry. Now: ${now.toISOString()}, Expiry: ${expiry.toISOString()}`);
+    if (now > expiry) {
+      console.warn(`[OTP Verify] Validation failure: OTP expired by ${Math.floor((now - expiry)/1000)} seconds`);
       user.otp = undefined;
       await user.save();
       return res.status(400).json({ error: 'OTP has expired. Please request a new one.' });
     }
 
     const inputHash = hashOtp(code.trim(), cleanedEmail);
+    console.log(`[OTP Verify] Comparing hashes - Input Code: "${code.trim()}"`);
+    console.log(`[OTP Verify] Input Hash:  "${inputHash}"`);
+    console.log(`[OTP Verify] Stored Hash: "${user.otp.hashedCode}"`);
+
     if (user.otp.hashedCode !== inputHash) {
       const currentAttempts = (user.otp.attempts || 0) + 1;
+      console.warn(`[OTP Verify] Code mismatch. Incrementing attempts to: ${currentAttempts}`);
+      
       if (currentAttempts >= 5) {
+        console.warn(`[OTP Verify] Validation failure: Max attempts reached after mismatch`);
         user.otp = undefined;
         await user.save();
         return res.status(400).json({ error: 'Too many failed verification attempts. This OTP has been invalidated. Please request a new one.' });
@@ -267,18 +293,21 @@ export const verifyOtp = async (req, res) => {
       return res.status(400).json({ error: `Invalid verification code. You have ${5 - currentAttempts} attempts remaining.` });
     }
 
+    console.log(`[OTP Verify] Code successfully verified! Clearing OTP metadata.`);
     user.otp = undefined;
     await user.save();
 
     const token = generateToken(user);
+    console.log(`[OTP Verify] JWT token generated successfully.`);
     setTokenCookie(res, token);
+    console.log(`[OTP Verify] Token cookie attached to response.`);
 
     return res.json({
       success: true,
       user: { id: user._id, name: user.name, email: user.email, role: user.role }
     });
   } catch (error) {
-    console.error('OTP Verify API Error:', error);
+    console.error('[OTP Verify] Fatal Controller Error:', error.stack || error);
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 };
