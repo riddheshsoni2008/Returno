@@ -20,7 +20,7 @@ export const getAdminMetrics = async (req, res) => {
       .limit(5);
 
     const securityLogs = await AuditLog.find()
-      .populate('actorId', 'name ownerName email')
+      .populate('actorId', 'name businessName ownerName email')
       .sort({ createdAt: -1 })
       .limit(10);
 

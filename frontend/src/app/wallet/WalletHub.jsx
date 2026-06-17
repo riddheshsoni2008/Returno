@@ -109,7 +109,7 @@ export default function WalletHub({ user, initialCards, initialRewards }) {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-black tracking-tight">My Loyalty Wallet</h1>
-          <p className="text-slate-400 mt-1">Logged in as customer: <span className="text-slate-200 font-semibold">+{user.phone}</span></p>
+          <p className="text-slate-400 mt-1">Logged in as customer: <span className="text-slate-200 font-semibold">{user.name} ({user.email})</span></p>
         </div>
         <button
           onClick={handleLogout}

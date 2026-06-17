@@ -80,11 +80,11 @@ export const getMetrics = async (req, res) => {
     const uniqueCustomers = await Visit.distinct('customerId', { campaignId: { $in: campaignIds } });
     const openRewardsCount = await Reward.countDocuments({ campaignId: { $in: campaignIds }, status: 'unredeemed' });
     const pendingRedemptions = await Reward.find({ campaignId: { $in: campaignIds }, status: 'pending' })
-      .populate('customerId', 'name')
+      .populate('customerId', 'name email')
       .sort({ updatedAt: -1 });
 
     const recentStamps = await Visit.find({ campaignId: { $in: campaignIds } })
-      .populate('customerId', 'name')
+      .populate('customerId', 'name email')
       .sort({ createdAt: -1 })
       .limit(5);
 

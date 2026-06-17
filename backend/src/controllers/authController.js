@@ -1,7 +1,7 @@
 import fs from 'fs';
 import Customer from '../models/Customer.js';
 import Business from '../models/Business.js';
-import { generateToken, hashOtp } from '../utils/auth.js';
+import { generateToken, hashOtp, verifyToken } from '../utils/auth.js';
 import { sendOtpEmail } from '../services/emailService.js';
 
 const setTokenCookie = (res, token) => {

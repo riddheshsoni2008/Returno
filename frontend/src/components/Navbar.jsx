@@ -30,11 +30,11 @@ export default function Navbar() {
           <Link href="#faq" className="hover:text-brand-600 transition-colors">FAQ</Link>
         </div>
         <div className="flex space-x-4 items-center">
-          <Link href="/auth?tab=login" className="text-sm font-medium text-slate-600 hover:text-brand-600 transition-colors hidden sm:block">
-            Login
+          <Link href="/auth" className="text-sm font-semibold text-slate-600 hover:text-brand-600 transition-colors hidden sm:block">
+            Customer Login
           </Link>
-          <Link href="/auth?tab=register" className="px-5 py-2.5 rounded-full bg-brand-600 text-white text-sm font-semibold hover:bg-brand-700 transition-all shadow-sm">
-            Start Free Trial
+          <Link href="/merchant/auth" className="px-5 py-2.5 rounded-full bg-brand-600 text-white text-sm font-semibold hover:bg-brand-700 transition-all shadow-sm">
+            Merchant Portal
           </Link>
         </div>
       </div>
