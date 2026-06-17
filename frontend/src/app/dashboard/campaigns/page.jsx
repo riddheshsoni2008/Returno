@@ -12,6 +12,9 @@ export default async function CampaignsPage() {
 
   const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
   
+  let data = null;
+  let redirectPath = null;
+
   try {
     const res = await fetch(`${backendUrl}/campaigns`, {
       headers: {
@@ -21,26 +24,30 @@ export default async function CampaignsPage() {
     });
 
     if (!res.ok) {
-      redirect('/auth');
+      redirectPath = '/auth';
+    } else {
+      data = await res.json();
+      if (!data.success || !data.campaigns) {
+        redirectPath = '/auth';
+      }
     }
-
-    const data = await res.json();
-    if (!data.success || !data.campaigns) {
-      redirect('/auth');
-    }
-
-    return (
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-extrabold tracking-tight">Campaign Manager</h1>
-          <p className="text-slate-400 mt-1">Configure and manage active stamp reward cards for your customers.</p>
-        </div>
-
-        <CampaignsHub initialCampaigns={data.campaigns} />
-      </div>
-    );
   } catch (error) {
     console.error('Error fetching campaigns:', error);
-    redirect('/auth');
+    redirectPath = '/auth';
   }
+
+  if (redirectPath) {
+    redirect(redirectPath);
+  }
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-extrabold tracking-tight">Campaign Manager</h1>
+        <p className="text-slate-400 mt-1">Configure and manage active stamp reward cards for your customers.</p>
+      </div>
+
+      <CampaignsHub initialCampaigns={data.campaigns} />
+    </div>
+  );
 }

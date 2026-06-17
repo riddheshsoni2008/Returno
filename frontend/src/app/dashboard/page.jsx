@@ -11,7 +11,9 @@ export default async function DashboardPage() {
   }
 
   const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-  let business, metrics;
+  let business = null;
+  let metrics = null;
+  let redirectPath = null;
 
   try {
     // First fetch business profile
@@ -20,34 +22,43 @@ export default async function DashboardPage() {
       cache: 'no-store'
     });
     
-    if (!busRes.ok) redirect('/auth');
-    const busData = await busRes.json();
-    business = busData.business;
+    if (!busRes.ok) {
+      redirectPath = '/auth';
+    } else {
+      const busData = await busRes.json();
+      business = busData.business;
 
-    if (!business) {
-      return (
-        <div className="text-center py-20 bg-dark-900 border border-white/10 rounded-3xl">
-          <h2 className="text-2xl font-bold mb-4">No Business Profile Found</h2>
-          <p className="text-slate-400">Please contact support or register again.</p>
-        </div>
-      );
-    }
-
-    // Fetch metrics
-    const metRes = await fetch(`${backendUrl}/business/metrics`, {
-      headers: { 'Cookie': `token=${token}` },
-      cache: 'no-store'
-    });
-    
-    if (metRes.ok) {
-      const metData = await metRes.json();
-      if (metData.success) {
-        metrics = metData.metrics;
+      if (business) {
+        // Fetch metrics
+        const metRes = await fetch(`${backendUrl}/business/metrics`, {
+          headers: { 'Cookie': `token=${token}` },
+          cache: 'no-store'
+        });
+        
+        if (metRes.ok) {
+          const metData = await metRes.json();
+          if (metData.success) {
+            metrics = metData.metrics;
+          }
+        }
       }
     }
   } catch (error) {
     console.error('Error fetching dashboard:', error);
-    redirect('/auth');
+    redirectPath = '/auth';
+  }
+
+  if (redirectPath) {
+    redirect(redirectPath);
+  }
+
+  if (!business) {
+    return (
+      <div className="text-center py-20 bg-dark-900 border border-white/10 rounded-3xl">
+        <h2 className="text-2xl font-bold mb-4">No Business Profile Found</h2>
+        <p className="text-slate-400">Please contact support or register again.</p>
+      </div>
+    );
   }
 
   if (!metrics) {

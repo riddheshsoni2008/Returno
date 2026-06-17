@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import { verifyToken } from '../utils/auth.js';
 
 export const protect = (req, res, next) => {
   let token;
@@ -13,11 +13,11 @@ export const protect = (req, res, next) => {
     return res.status(401).json({ error: 'Unauthorized session' });
   }
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // Contains id and role
-    next();
-  } catch (error) {
+  const decoded = verifyToken(token);
+  if (!decoded) {
     return res.status(401).json({ error: 'Invalid token' });
   }
+
+  req.user = decoded;
+  next();
 };

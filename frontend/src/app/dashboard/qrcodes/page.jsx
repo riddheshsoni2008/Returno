@@ -18,6 +18,8 @@ export default async function QrCodesPage(props) {
   const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
   
   let campaigns = [];
+  let redirectPath = null;
+
   try {
     const res = await fetch(`${backendUrl}/campaigns`, {
       headers: {
@@ -27,17 +29,22 @@ export default async function QrCodesPage(props) {
     });
 
     if (!res.ok) {
-      redirect('/auth');
+      redirectPath = '/auth';
+    } else {
+      const data = await res.json();
+      if (!data.success) {
+        redirectPath = '/auth';
+      } else {
+        campaigns = data.campaigns || [];
+      }
     }
-
-    const data = await res.json();
-    if (!data.success) {
-      redirect('/auth');
-    }
-    campaigns = data.campaigns || [];
   } catch (error) {
     console.error('Error fetching campaigns:', error);
-    redirect('/auth');
+    redirectPath = '/auth';
+  }
+
+  if (redirectPath) {
+    redirect(redirectPath);
   }
 
   if (campaigns.length === 0) {

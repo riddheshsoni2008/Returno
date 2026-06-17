@@ -12,6 +12,8 @@ export default async function WalletPage() {
 
   // Fetch from the new Express backend using full URL
   const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+  let data = null;
+  let redirectPath = null;
   
   try {
     const res = await fetch(`${backendUrl}/wallet`, {
@@ -23,32 +25,36 @@ export default async function WalletPage() {
 
     if (!res.ok) {
       if (res.status === 401 || res.status === 404) {
-        redirect('/auth');
+        redirectPath = '/auth';
+      } else {
+        throw new Error('Failed to fetch wallet data');
       }
-      throw new Error('Failed to fetch wallet data');
+    } else {
+      data = await res.json();
+      if (!data.success) {
+        redirectPath = '/auth';
+      }
     }
-
-    const data = await res.json();
-    if (!data.success) {
-      redirect('/auth');
-    }
-
-    const { user, walletCards, rewards } = data;
-
-    return (
-      <main className="min-h-screen bg-dark-950 text-white py-12 px-6">
-        <div className="max-w-4xl mx-auto">
-          <WalletHub 
-            user={user} 
-            initialCards={walletCards} 
-            initialRewards={rewards} 
-          />
-        </div>
-      </main>
-    );
   } catch (error) {
     console.error('Error loading wallet:', error);
-    // On hard failure, might just redirect to auth or show error
-    redirect('/auth');
+    redirectPath = '/auth';
   }
+
+  if (redirectPath) {
+    redirect(redirectPath);
+  }
+
+  const { user, walletCards, rewards } = data;
+
+  return (
+    <main className="min-h-screen bg-dark-950 text-white py-12 px-6">
+      <div className="max-w-4xl mx-auto">
+        <WalletHub 
+          user={user} 
+          initialCards={walletCards} 
+          initialRewards={rewards} 
+        />
+      </div>
+    </main>
+  );
 }

@@ -7,6 +7,7 @@ export const apiFetch = async (endpoint, options = {}) => {
     headers: {
       'Content-Type': 'application/json',
     },
+    credentials: 'include',
   };
 
   // Merge headers, preserve credentials for cookies if needed
