@@ -3,27 +3,27 @@ import Link from "next/link";
 export default function Pricing() {
   const plans = [
     {
-      name: "Starter",
-      price: "₹499",
-      period: "/month",
-      description: "Perfect for single location local cafes or boutique stores starting out.",
-      features: ["1 Shop Location", "Unlimited Customers", "Unlimited QR Stamp Claims", "Basic Analytics", "Anti-Fraud Checks"],
+      name: "Basic",
+      price: "₹999",
+      period: "/year",
+      description: "Perfect for a single-location cafe, salon, retail store, or gym starting out.",
+      features: ["1 Shop Location", "Unlimited Customers", "Unlimited QR Stamp Claims", "Custom Rewards & Stamps", "QR Code Generator", "FREE Physical QR Stand Delivered", "Basic Analytics Dashboard", "3-Day Free Trial Included"],
       popular: false
     },
     {
       name: "Growth",
-      price: "₹1,499",
-      period: "/month",
-      description: "Ideal for expanding brands with multiple branches and dynamic offers.",
-      features: ["Up to 3 Shop Locations", "GPS Geofencing Checks", "Visits Velocity Limiter", "Advanced Customer Analytics", "Custom Shop Category Icon", "Priority Support"],
+      price: "₹2,499",
+      period: "/year",
+      description: "Ideal for growing brands with up to 3 shop branches and automatic GPS branch detection.",
+      features: ["Up to 3 Shop Locations", "GPS Branch Detection", "Unlimited Customers & Stamps", "Custom Rewards & Stamps", "QR Code Generator", "FREE Physical QR Stand Delivered", "Advanced Analytics Dashboard", "3-Day Free Trial Included", "Priority Email Support"],
       popular: true
     },
     {
-      name: "Enterprise",
-      price: "₹2,999",
-      period: "/month",
-      description: "For established businesses dominating the local market with full audit checks.",
-      features: ["Unlimited Locations", "GPS Geofencing & Fraud Logs", "API Access for Point-of-Sale (POS)", "Dedicated Success Manager", "Detailed Security Logs Audit"],
+      name: "Pro",
+      price: "₹4,999",
+      period: "/year",
+      description: "For expanding local business chains with up to 6 locations and advanced fraud logs.",
+      features: ["Up to 6 Shop Locations", "GPS Branch Detection", "Unlimited Customers & Stamps", "Detailed Security Logs Audit", "Custom Category Icon", "FREE Physical QR Stand Delivered", "Priority 24/7 Support", "3-Day Free Trial Included"],
       popular: false
     }
   ];
@@ -65,7 +65,7 @@ export default function Pricing() {
                   className={`block text-center w-full py-3 rounded-full font-bold mb-8 transition-colors text-gray-500 ${plan.popular ? 'bg-brand-600 hover:bg-brand-700 text-white' : 'bg-slate-50 hover:bg-slate-100 text-brand-700 border border-slate-200 hover:border-slate-300'
                     }`}
                 >
-                  Start 14-Day Free Trial
+                  Start 3-Day Free Trial
                 </Link>
 
                 <ul className="space-y-4">

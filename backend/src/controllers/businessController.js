@@ -35,7 +35,7 @@ export const getBusiness = async (req, res) => {
 
 export const updateBusiness = async (req, res) => {
   try {
-    const { name, category, address, city, state, geofenceRadius } = req.body;
+    const { name, category, address, city, state, geofenceRadius, longitude, latitude } = req.body;
 
     let business = await Business.findById(req.user.id);
     if (!business) {
@@ -53,6 +53,13 @@ export const updateBusiness = async (req, res) => {
     if (city !== undefined) business.loyaltyConfiguration.city = city.trim();
     if (state !== undefined) business.loyaltyConfiguration.state = state.trim();
     if (geofenceRadius !== undefined) business.loyaltyConfiguration.geofenceRadius = parseInt(geofenceRadius);
+
+    if (longitude !== undefined && latitude !== undefined) {
+      business.loyaltyConfiguration.location = {
+        type: 'Point',
+        coordinates: [parseFloat(longitude), parseFloat(latitude)]
+      };
+    }
 
     await business.save();
     return res.json({ success: true, business: formatBusinessForFE(business) });

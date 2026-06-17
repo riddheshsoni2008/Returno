@@ -12,6 +12,8 @@ import rewardRoutes from './src/routes/rewardRoutes.js';
 import visitRoutes from './src/routes/visitRoutes.js';
 import walletRoutes from './src/routes/walletRoutes.js';
 import adminRoutes from './src/routes/adminRoutes.js';
+import checkinRoutes from './src/routes/checkinRoutes.js';
+import qrRoutes from './src/routes/qrRoutes.js';
 
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -52,6 +54,8 @@ app.use('/api/rewards', rewardRoutes);
 app.use('/api/visit', visitRoutes);
 app.use('/api/wallet', walletRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/checkin', checkinRoutes);
+app.use('/api/qr', qrRoutes);
 
 // Health Check Route
 app.get('/api/health', (req, res) => {

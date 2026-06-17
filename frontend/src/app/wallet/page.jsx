@@ -44,17 +44,14 @@ export default async function WalletPage() {
     redirect(redirectPath);
   }
 
-  const { user, walletCards, rewards } = data;
+  const { user, walletCards, exploreCampaigns = [], rewards } = data;
 
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-800 py-12 px-6">
-      <div className="max-w-4xl mx-auto">
-        <WalletHub 
-          user={user} 
-          initialCards={walletCards} 
-          initialRewards={rewards} 
-        />
-      </div>
-    </main>
+    <WalletHub 
+      user={user} 
+      initialCards={walletCards} 
+      initialRewards={rewards}
+      initialExploreCampaigns={exploreCampaigns} 
+    />
   );
 }

@@ -1,6 +1,6 @@
 import Campaign from '../models/Campaign.js';
 import Business from '../models/Business.js';
-import QrCode from '../models/QrCode.js';
+import CustomerCampaign from '../models/CustomerCampaign.js';
 import crypto from 'crypto';
 
 // Helper to format business object for the frontend expectations
@@ -10,17 +10,19 @@ const formatBusinessForFE = (business) => {
   if (obj.loyaltyConfiguration) {
     obj.category = obj.loyaltyConfiguration.category;
     obj.address = obj.loyaltyConfiguration.address;
+    obj.city = obj.loyaltyConfiguration.city || '';
+    obj.state = obj.loyaltyConfiguration.state || '';
     obj.location = obj.loyaltyConfiguration.location;
     obj.geofenceRadius = obj.loyaltyConfiguration.geofenceRadius;
     obj.verificationCode = obj.loyaltyConfiguration.verificationCode;
   }
-  obj.name = obj.businessName; // Map businessName to name
+  obj.name = obj.businessName;
   return obj;
 };
 
 export const createCampaign = async (req, res) => {
   try {
-    const { title, description, requiredStamps, rewardTitle } = req.body;
+    const { title, description, requiredStamps, rewardTitle, pointsPerCheckin, streakBonusMultiplier } = req.body;
 
     if (!title || !description || !requiredStamps || !rewardTitle) {
       return res.status(400).json({ error: 'Missing required campaign parameters' });
@@ -31,21 +33,19 @@ export const createCampaign = async (req, res) => {
       return res.status(400).json({ error: 'Business profile not found' });
     }
 
+    // Generate permanent join QR token
+    const joinQrToken = crypto.randomBytes(16).toString('hex');
+
     const campaign = await Campaign.create({
       businessId: business._id,
       title,
       description,
       requiredStamps: parseInt(requiredStamps),
       rewardTitle,
-      isActive: true
-    });
-
-    const qrToken = crypto.randomBytes(16).toString('hex');
-    await QrCode.create({
-      campaignId: campaign._id,
-      businessId: business._id,
-      qrType: 'static',
-      token: qrToken
+      isActive: true,
+      joinQrToken,
+      pointsPerCheckin: parseInt(pointsPerCheckin) || 10,
+      streakBonusMultiplier: parseFloat(streakBonusMultiplier) || 1
     });
 
     return res.status(201).json({ success: true, campaign });
@@ -63,7 +63,16 @@ export const getCampaigns = async (req, res) => {
     }
 
     const campaigns = await Campaign.find({ businessId: business._id }).sort({ createdAt: -1 });
-    return res.json({ success: true, campaigns });
+    
+    // Enrich with enrollment counts
+    const enriched = await Promise.all(campaigns.map(async (camp) => {
+      const enrollmentCount = await CustomerCampaign.countDocuments({ campaignId: camp._id });
+      const campObj = camp.toObject();
+      campObj.enrollmentCount = enrollmentCount;
+      return campObj;
+    }));
+
+    return res.json({ success: true, campaigns: enriched });
   } catch (error) {
     console.error('Campaign Get API Error:', error);
     return res.status(500).json({ error: 'Internal Server Error' });
@@ -85,7 +94,14 @@ export const getCampaignById = async (req, res) => {
       return res.status(404).json({ error: 'Business not found' });
     }
 
-    return res.json({ success: true, campaign, business: formatBusinessForFE(business) });
+    const enrollmentCount = await CustomerCampaign.countDocuments({ campaignId: campaign._id });
+
+    return res.json({ 
+      success: true, 
+      campaign, 
+      business: formatBusinessForFE(business),
+      enrollmentCount
+    });
   } catch (error) {
     console.error('Campaign GetById API Error:', error);
     return res.status(500).json({ error: 'Internal Server Error' });

@@ -8,23 +8,31 @@ export default function FAQ() {
   const faqs = [
     {
       q: "What is Returno?",
-      a: "Returno is an enterprise-grade digital loyalty rewards platform that helps local businesses increase customer retention. It replaces old paper punch cards with digital stamps collected by scanning custom QR codes."
+      a: "Returno is a digital loyalty rewards platform that helps you earn rewards at your favorite local businesses including cafés, restaurants, salons, gyms, car washes, and retail stores."
+    },
+    {
+      q: "How do I earn rewards?",
+      a: "Simply visit a participating business, scan their QR code with your phone, and collect digital stamps. Once you complete your stamp card, you earn a free reward!"
     },
     {
       q: "Is Returno free for customers?",
-      a: "Yes! Returno is 100% free for customers. Just scan a business's loyalty QR code, sign in quickly via OTP or Google, and collect stamps to unlock free rewards."
+      a: "Yes! Returno is 100% free for customers. Just scan the QR code at participating businesses, collect stamps, and start earning rewards immediately."
     },
     {
-      q: "How do I earn stamps and claim rewards?",
-      a: "When making a purchase, scan the store's QR code. Enter your bill number and total amount. The system will award a stamp instantly. Once you reach the milestone count, your reward is unlocked. Show the unlocked reward page to the business owner at checkout, and they will confirm it using their counter verification PIN."
+      q: "What plans are available for businesses?",
+      a: "We offer three main plans: Basic (₹999/year, 1 location), Growth (₹2,499/year, up to 3 locations with automatic GPS branch detection), and Pro (₹4,999/year, up to 6 locations). All plans include a 3-day free trial."
     },
     {
-      q: "How does the Geofencing Anti-Fraud system work?",
-      a: "To prevent customers from claiming fake stamps from home, Returno performs a secure coordinate distance check. When you scan, the web app checks your device's location to verify you are physically inside or near the shop (within 100 meters)."
+      q: "Can I use one QR code for multiple branches?",
+      a: "Yes! With the Growth and Pro plans, you use a single QR code for all your branches. Returno automatically detects which branch a customer is at using GPS location."
     },
     {
-      q: "Is Returno free to try for businesses?",
-      a: "Absolutely. During development, all premium features, campaigns, and QR generation layouts are completely free to try under our Starter / Trial plans without entering credit card details."
+      q: "How do I redeem my reward?",
+      a: "Once you've collected all the required stamps, your reward will appear in your loyalty wallet. Simply show it to the staff at the business to claim your free reward."
+    },
+    {
+      q: "Do I get a free QR code stand?",
+      a: "Yes! All paid plans come with a FREE physical QR code stand delivered to your business so customers can easily scan and collect stamps."
     }
   ];
 
