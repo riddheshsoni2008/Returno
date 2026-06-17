@@ -47,7 +47,7 @@ export default async function WalletPage() {
   const { user, walletCards, rewards } = data;
 
   return (
-    <main className="min-h-screen bg-dark-950 text-white py-12 px-6">
+    <main className="min-h-screen bg-slate-50 text-slate-800 py-12 px-6">
       <div className="max-w-4xl mx-auto">
         <WalletHub 
           user={user} 

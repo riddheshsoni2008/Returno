@@ -92,12 +92,12 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
   const { totalStamps, uniqueCustomers, openRewardsCount, recentStamps } = metrics;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 text-slate-800 animate-fade-in-up">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">Merchant Dashboard</h1>
-          <p className="text-sm text-slate-400 mt-1">Real-time loyalty management and metrics for {business.name}</p>
+          <h1 className="text-2xl md:text-3xl font-black tracking-tight text-slate-900">Merchant Dashboard</h1>
+          <p className="text-sm text-slate-500 mt-1">Real-time loyalty management and metrics for {business.name}</p>
         </div>
         <button
           onClick={() => {
@@ -105,9 +105,9 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
             setError('');
             setSuccess('');
           }}
-          className="group inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-500 hover:to-violet-500 text-white text-sm font-semibold shadow-lg shadow-purple-500/25 border border-purple-400/20 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-purple-500/30"
+          className="group inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white text-xs font-bold uppercase tracking-wider shadow-md shadow-red-500/10 hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5"
         >
-          <span className="flex items-center justify-center w-5 h-5 rounded-full bg-white/15 text-base font-bold transition-transform duration-300 group-hover:rotate-90">
+          <span className="flex items-center justify-center w-5 h-5 rounded-full bg-white/20 text-sm font-black transition-transform duration-300 group-hover:rotate-90">
             +
           </span>
           Add New Campaign
@@ -116,52 +116,52 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
 
       {/* Analytics Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="bg-dark-900 border border-white/10 p-5 md:p-6 rounded-2xl">
-          <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Total Stamps Awarded</div>
-          <div className="text-3xl md:text-4xl font-extrabold text-purple-400">{totalStamps}</div>
-          <p className="text-[10px] text-slate-500 mt-2">Visits logged via QR code scans</p>
+        <div className="bg-white border border-slate-200/80 p-5 md:p-6 rounded-2xl shadow-sm hover:shadow-md hover:scale-[1.015] transition-all duration-300">
+          <div className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2">Total Stamps Awarded</div>
+          <div className="text-3xl md:text-4xl font-extrabold text-red-600">{totalStamps}</div>
+          <p className="text-[10px] text-slate-400 mt-2">Visits logged via QR code scans</p>
         </div>
-        <div className="bg-dark-900 border border-white/10 p-5 md:p-6 rounded-2xl">
-          <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Active Customers</div>
-          <div className="text-3xl md:text-4xl font-extrabold text-blue-400">{uniqueCustomers}</div>
-          <p className="text-[10px] text-slate-500 mt-2">Unique loyalty customers registered</p>
+        <div className="bg-white border border-slate-200/80 p-5 md:p-6 rounded-2xl shadow-sm hover:shadow-md hover:scale-[1.015] transition-all duration-300">
+          <div className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2">Active Customers</div>
+          <div className="text-3xl md:text-4xl font-extrabold text-slate-800">{uniqueCustomers}</div>
+          <p className="text-[10px] text-slate-400 mt-2">Unique loyalty customers registered</p>
         </div>
-        <div className="bg-dark-900 border border-white/10 p-5 md:p-6 rounded-2xl">
-          <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Unlocked Rewards</div>
-          <div className="text-3xl md:text-4xl font-extrabold text-yellow-400">{openRewardsCount}</div>
-          <p className="text-[10px] text-slate-500 mt-2">Milestone cards completed</p>
+        <div className="bg-white border border-slate-200/80 p-5 md:p-6 rounded-2xl shadow-sm hover:shadow-md hover:scale-[1.015] transition-all duration-300">
+          <div className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2">Unlocked Rewards</div>
+          <div className="text-3xl md:text-4xl font-extrabold text-amber-600">{openRewardsCount}</div>
+          <p className="text-[10px] text-slate-400 mt-2">Milestone cards completed</p>
         </div>
       </div>
 
       {/* Campaigns Section */}
       <div className="space-y-4">
-        <h3 className="text-lg md:text-xl font-bold">⚡ Active Loyalty Campaigns</h3>
+        <h3 className="text-lg font-black text-slate-900">Active Loyalty Campaigns</h3>
 
         {campaigns.length === 0 ? (
-          <div className="text-center py-12 bg-dark-900 border border-white/10 rounded-2xl text-slate-500 text-sm">
+          <div className="text-center py-12 bg-white border border-slate-200/80 rounded-2xl text-slate-400 text-sm shadow-sm">
             No active loyalty campaigns. Click &quot;Add New Campaign&quot; above to create your first stamp card!
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {campaigns.map((camp) => (
-              <div key={camp._id} className="bg-dark-900 border border-white/10 rounded-2xl p-5 md:p-6 hover:border-purple-500/30 transition-all flex flex-col justify-between space-y-4">
+              <div key={camp._id} className="bg-white border border-slate-200/80 rounded-2xl p-5 md:p-6 hover:shadow-md hover:scale-[1.015] transition-all duration-300 flex flex-col justify-between space-y-4 shadow-sm">
                 <div className="space-y-3">
                   <div className="flex justify-between items-start">
-                    <span className="text-[10px] uppercase tracking-wider font-extrabold px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                    <span className="text-[9px] uppercase tracking-widest font-extrabold px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-600">
                       {camp.isActive ? 'Active' : 'Draft'}
                     </span>
-                    <span className="text-xs text-slate-400 font-medium">Stamps target: {camp.requiredStamps}</span>
+                    <span className="text-[11px] text-slate-500 font-semibold bg-slate-100 px-2 py-0.5 rounded">Target: {camp.requiredStamps} stamps</span>
                   </div>
-                  <h4 className="text-lg font-bold text-slate-100">{camp.title}</h4>
-                  <p className="text-slate-400 text-xs md:text-sm leading-normal">{camp.description}</p>
-                  <div className="bg-white/5 border border-white/5 p-3 rounded-xl">
-                    <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider block mb-0.5">Reward Unlocked</span>
-                    <span className="text-xs font-bold text-yellow-400">🎁 {camp.rewardTitle}</span>
+                  <h4 className="text-md font-bold text-slate-900">{camp.title}</h4>
+                  <p className="text-slate-600 text-xs md:text-sm leading-normal">{camp.description}</p>
+                  <div className="bg-slate-50 border border-slate-100 p-3 rounded-xl">
+                    <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider block mb-0.5">Reward Unlocked</span>
+                    <span className="text-xs font-bold text-amber-700">🎁 {camp.rewardTitle}</span>
                   </div>
                 </div>
                 <button
                   onClick={() => setSelectedCampaignForQr(camp)}
-                  className="w-full text-center py-2.5 rounded-xl bg-purple-600/10 hover:bg-purple-600/20 text-purple-400 font-bold text-xs transition-colors border border-purple-500/20"
+                  className="w-full text-center py-2.5 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 font-bold text-xs transition-colors border border-red-200/50"
                 >
                   🖨️ Display QR Code
                 </button>
@@ -172,34 +172,34 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
       </div>
 
       {/* Recent Visits Logs */}
-      <div className="bg-dark-900 border border-white/10 p-5 md:p-6 rounded-2xl">
-        <h3 className="text-lg md:text-xl font-bold mb-4">🕒 Recent Stamp Scan History</h3>
+      <div className="bg-white border border-slate-200/80 p-5 md:p-6 rounded-2xl shadow-sm">
+        <h3 className="text-lg font-black text-slate-900 mb-4">Recent Stamp Scan History</h3>
 
         {recentStamps.length === 0 ? (
-          <div className="text-center py-8 text-slate-500 text-sm">
+          <div className="text-center py-8 text-slate-400 text-sm">
             No stamps awarded yet. Share your QR Code to start collecting!
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-white/10 text-xs uppercase tracking-wider text-slate-400">
+                <tr className="border-b border-slate-100 text-[10px] uppercase tracking-wider text-slate-400 font-bold">
                   <th className="py-3 px-4">Customer</th>
                   <th className="py-3 px-4">Bill Number</th>
                   <th className="py-3 px-4">Bill Amount</th>
                   <th className="py-3 px-4">Scanned At</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5 text-sm text-slate-300">
+              <tbody className="divide-y divide-slate-100 text-sm text-slate-700">
                 {recentStamps.map((stamp) => (
-                  <tr key={stamp._id} className="hover:bg-white/5 transition-colors">
+                  <tr key={stamp._id} className="hover:bg-slate-50/50 transition-colors">
                     <td className="py-3 px-4">
-                      <div className="font-semibold text-xs md:text-sm">{stamp.customerId?.name || 'Anonymous Customer'}</div>
-                      <div className="text-[10px] md:text-xs text-slate-500">{stamp.customerId?.email}</div>
+                      <div className="font-semibold text-xs md:text-sm text-slate-900">{stamp.customerId?.name || 'Anonymous Customer'}</div>
+                      <div className="text-[10px] md:text-xs text-slate-400">{stamp.customerId?.email}</div>
                     </td>
                     <td className="py-3 px-4 font-mono text-xs md:text-sm">{stamp.billNumber}</td>
-                    <td className="py-3 px-4 text-xs md:text-sm">₹{stamp.amount}</td>
-                    <td className="py-3 px-4 text-[10px] md:text-xs text-slate-500">
+                    <td className="py-3 px-4 text-xs md:text-sm font-semibold">₹{stamp.amount}</td>
+                    <td className="py-3 px-4 text-[10px] md:text-xs text-slate-400">
                       {new Date(stamp.createdAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
                     </td>
                   </tr>
@@ -212,59 +212,59 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
 
       {/* CREATE CAMPAIGN MODAL */}
       {showForm && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-[fade-in_0.2s_ease-out]">
-          <div className="bg-dark-900 border border-white/10 rounded-3xl max-w-lg w-full p-6 space-y-6 relative max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-[fade-in_0.2s_ease-out]">
+          <div className="bg-white border border-slate-200 rounded-3xl max-w-lg w-full p-6 space-y-6 relative max-h-[90vh] overflow-y-auto shadow-2xl">
             <button
               onClick={() => setShowForm(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-white text-xl font-bold bg-white/5 w-8 h-8 rounded-full flex items-center justify-center transition-colors"
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-900 text-xl font-bold bg-slate-50 hover:bg-slate-100 w-8 h-8 rounded-full flex items-center justify-center transition-colors"
             >
               ×
             </button>
 
             <div>
-              <h3 className="text-xl font-bold text-slate-200">Configure New Campaign</h3>
-              <p className="text-xs text-slate-400 mt-1">Set up a stamp loyalty card for your customers.</p>
+              <h3 className="text-xl font-black text-slate-900">Configure New Campaign</h3>
+              <p className="text-xs text-slate-500 mt-1">Set up a stamp loyalty card for your customers.</p>
             </div>
 
             {error && (
-              <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-xs p-3.5 rounded-xl font-medium">
+              <div className="bg-red-50 border border-red-100 text-red-600 text-xs p-3.5 rounded-xl font-medium">
                 ⚠️ {error}
               </div>
             )}
             {success && (
-              <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs p-3.5 rounded-xl font-medium">
+              <div className="bg-emerald-50 border border-emerald-100 text-emerald-600 text-xs p-3.5 rounded-xl font-medium">
                 ✓ {success}
               </div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <label className="block text-slate-400 text-xs font-semibold uppercase tracking-wider">Campaign Title</label>
+                <label className="block text-slate-500 text-xs font-semibold uppercase tracking-wider">Campaign Title</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Cafe Premium Stamp Card"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full bg-dark-950 border border-white/10 rounded-xl py-3 px-4 text-white text-sm focus:outline-none focus:border-purple-500 transition-colors"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 text-sm focus:outline-none focus:border-red-500 transition-colors"
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="block text-slate-400 text-xs font-semibold uppercase tracking-wider">Reward Title</label>
+                <label className="block text-slate-500 text-xs font-semibold uppercase tracking-wider">Reward Title</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Free Hot Beverage & Donut"
                   value={rewardTitle}
                   onChange={(e) => setRewardTitle(e.target.value)}
-                  className="w-full bg-dark-950 border border-white/10 rounded-xl py-3 px-4 text-white text-sm focus:outline-none focus:border-purple-500 transition-colors"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 text-sm focus:outline-none focus:border-red-500 transition-colors"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="block text-slate-400 text-xs font-semibold uppercase tracking-wider">Required Stamps</label>
+                  <label className="block text-slate-500 text-xs font-semibold uppercase tracking-wider">Required Stamps</label>
                   <input
                     type="number"
                     required
@@ -272,18 +272,18 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
                     max={25}
                     value={requiredStamps}
                     onChange={(e) => setRequiredStamps(e.target.value)}
-                    className="w-full bg-dark-950 border border-white/10 rounded-xl py-3 px-4 text-white text-sm focus:outline-none focus:border-purple-500 transition-colors"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 text-sm focus:outline-none focus:border-red-500 transition-colors"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="block text-slate-400 text-xs font-semibold uppercase tracking-wider">Short Description</label>
+                  <label className="block text-slate-500 text-xs font-semibold uppercase tracking-wider">Short Description</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. Get 1 stamp per ₹150 bill"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    className="w-full bg-dark-950 border border-white/10 rounded-xl py-3 px-4 text-white text-sm focus:outline-none focus:border-purple-500 transition-colors"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 text-sm focus:outline-none focus:border-red-500 transition-colors"
                   />
                 </div>
               </div>
@@ -292,14 +292,14 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
                 <button
                   type="button"
                   onClick={() => setShowForm(false)}
-                  className="flex-1 py-3.5 bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs font-bold rounded-xl transition-all uppercase tracking-wider"
+                  className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all uppercase tracking-wider"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex-1 bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl shadow-lg transition-all text-xs uppercase tracking-wider"
+                  className="flex-1 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-red-500/10 transition-all text-xs uppercase tracking-wider"
                 >
                   {loading ? 'Creating...' : 'Launch Campaign'}
                 </button>
@@ -311,49 +311,49 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
 
       {/* QR MODAL DIALOG */}
       {selectedCampaignForQr && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-[fade-in_0.2s_ease-out]">
-          <div className="bg-dark-900 border border-white/10 rounded-3xl max-w-md w-full p-6 text-center space-y-6 relative">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-[fade-in_0.2s_ease-out]">
+          <div className="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-6 text-center space-y-6 relative shadow-2xl">
             <button
               onClick={() => setSelectedCampaignForQr(null)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-white text-xl font-bold bg-white/5 w-8 h-8 rounded-full flex items-center justify-center transition-colors"
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-900 text-xl font-bold bg-slate-50 hover:bg-slate-100 w-8 h-8 rounded-full flex items-center justify-center transition-colors"
             >
               ×
             </button>
 
             <div className="space-y-2">
-              <span className="inline-block text-[10px] font-extrabold text-brand-400 bg-brand-500/10 px-2 py-0.5 rounded-full border border-brand-500/20 uppercase tracking-wider">
+              <span className="inline-block text-[10px] font-extrabold text-red-600 bg-red-50 px-2.5 py-0.5 rounded-full border border-red-100 uppercase tracking-wider">
                 Store Print Asset
               </span>
-              <h3 className="text-xl font-extrabold text-slate-100">{selectedCampaignForQr.title}</h3>
-              <p className="text-xs text-slate-400">Place this code on checkout counters or menus for scanning.</p>
+              <h3 className="text-xl font-extrabold text-slate-900">{selectedCampaignForQr.title}</h3>
+              <p className="text-xs text-slate-500">Place this code on checkout counters or menus for scanning.</p>
             </div>
 
             {qrDataUrl ? (
-              <div className="bg-white p-4 rounded-2xl w-fit mx-auto shadow-2xl">
+              <div className="bg-slate-50 border border-slate-100 p-4 rounded-2xl w-fit mx-auto shadow-sm">
                 <img src={qrDataUrl} alt="QR Code" className="w-52 h-52 select-none pointer-events-none" />
               </div>
             ) : (
-              <div className="w-52 h-52 bg-white/5 border border-white/5 rounded-2xl mx-auto flex items-center justify-center text-slate-500 text-xs animate-pulse">
+              <div className="w-52 h-52 bg-slate-50 border border-slate-100 rounded-2xl mx-auto flex items-center justify-center text-slate-400 text-xs animate-pulse">
                 Generating Code...
               </div>
             )}
 
-            <div className="bg-white/5 border border-white/5 p-3 rounded-xl">
-              <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider block mb-0.5">Scan Url</span>
-              <span className="text-[10px] font-mono text-slate-300 break-all select-all">{`${appUrl}/scan/${selectedCampaignForQr._id}`}</span>
+            <div className="bg-slate-50 border border-slate-200/60 p-3 rounded-xl">
+              <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider block mb-0.5">Scan Url</span>
+              <span className="text-[10px] font-mono text-slate-600 break-all select-all">{`${appUrl}/scan/${selectedCampaignForQr._id}`}</span>
             </div>
 
             <div className="flex gap-3 pt-2">
               <a
                 href={qrDataUrl}
                 download={`returno-qr-${selectedCampaignForQr._id}.png`}
-                className="flex-1 text-center py-3 bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs rounded-xl shadow-lg transition-all"
+                className="flex-1 text-center py-3 bg-red-600 hover:bg-red-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-red-500/10 transition-all uppercase tracking-wider"
               >
                 💾 Download PNG
               </a>
               <button
                 onClick={() => window.print()}
-                className="flex-1 py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold text-xs rounded-xl transition-all"
+                className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-all uppercase tracking-wider"
               >
                 🖨️ Print Poster
               </button>

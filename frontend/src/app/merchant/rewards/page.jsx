@@ -61,10 +61,10 @@ export default async function MerchantRewardsPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 text-slate-800">
       <div>
-        <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight font-sans">Loyalty & Rewards</h1>
-        <p className="text-sm text-slate-400 mt-1">Configure customer milestone milestones, review claims, and generate check-in codes.</p>
+        <h1 className="text-2xl md:text-3xl font-black tracking-tight text-slate-900">Loyalty & Rewards</h1>
+        <p className="text-sm text-slate-550 mt-1">Configure customer milestone milestones, review claims, and generate check-in codes.</p>
       </div>
 
       <RewardsHub 
