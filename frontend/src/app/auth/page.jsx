@@ -87,7 +87,7 @@ function AuthContent() {
 
       setOtpSent(true);
       setCooldown(60); // Start 60-second cooldown timer
-      setSuccess('OTP verification code sent successfully to your email!');
+      setSuccess(data.message || 'OTP verification code sent successfully to your email!');
     } catch (err) {
       setError(err.message);
     } finally {

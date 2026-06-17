@@ -206,6 +206,17 @@ export const sendOtp = async (req, res) => {
 
     if (!deliveryResult || !deliveryResult.success) {
       console.error(`[OTP Send] Email delivery failed: ${deliveryResult?.error}`);
+      console.log(`\n==================================================`);
+      console.log(`[DEV FALLBACK] Active OTP code for "${cleanedEmail}": ${otpCode}`);
+      console.log(`==================================================\n`);
+
+      if (process.env.NODE_ENV !== 'production') {
+        return res.json({
+          success: true,
+          message: `[Dev Mode] Email failed but OTP generated! Check backend console.`
+        });
+      }
+
       return res.status(502).json({ error: `Failed to deliver OTP: ${deliveryResult?.error || 'Provider communication failure'}` });
     }
 
