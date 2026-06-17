@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { apiFetch } from '@/lib/api';
 
 export default function SettingsHub({ initialBusiness }) {
   const router = useRouter();
@@ -31,9 +32,8 @@ export default function SettingsHub({ initialBusiness }) {
     setSuccess('');
 
     try {
-      const res = await fetch('/api/business', {
+      const res = await apiFetch('/business', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name,
           category,

@@ -1,32 +1,30 @@
 import { cookies } from 'next/headers';
 import Link from 'next/link';
-import dbConnect from '@/lib/dbConnect';
-import User from '@/lib/models/User';
-import Business from '@/lib/models/Business';
-import Campaign from '@/lib/models/Campaign';
-import { verifyToken } from '@/lib/auth';
 import ScanClientResolver from './ScanClientResolver';
 
 export default async function ScanPage(props) {
-  // Await params to access dynamic route parameter in Next.js 15/16 App Router
   const params = await props.params;
   const campaignId = params.campaignId;
 
-  await dbConnect();
-
+  const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
   let campaign = null;
   let business = null;
   
   try {
-    campaign = await Campaign.findById(campaignId);
-    if (campaign) {
-      business = await Business.findById(campaign.businessId);
+    const res = await fetch(`${backendUrl}/campaigns/${campaignId}`, {
+      cache: 'no-store'
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.success) {
+        campaign = data.campaign;
+        business = data.business;
+      }
     }
   } catch (err) {
     console.error('Invalid Campaign Object ID:', err);
   }
 
-  // Handle missing campaign
   if (!campaign || !campaign.isActive || !business) {
     return (
       <main className="min-h-screen bg-dark-950 text-white flex items-center justify-center py-12 px-4 relative overflow-hidden">
@@ -48,17 +46,21 @@ export default async function ScanPage(props) {
     );
   }
 
-  // Fetch session details if already authenticated
   let userDetails = null;
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
     if (token) {
-      const decoded = verifyToken(token);
-      if (decoded) {
-        const user = await User.findById(decoded.id).select('-passwordHash -otp');
-        if (user) {
-          userDetails = user.toObject();
+      const res = await fetch(`${backendUrl}/auth/me`, {
+        headers: {
+          'Cookie': `token=${token}`
+        },
+        cache: 'no-store'
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.user) {
+          userDetails = data.user;
         }
       }
     }
@@ -68,9 +70,9 @@ export default async function ScanPage(props) {
 
   return (
     <ScanClientResolver 
-      campaign={JSON.parse(JSON.stringify(campaign))} 
-      business={JSON.parse(JSON.stringify(business))} 
-      initialUser={JSON.parse(JSON.stringify(userDetails))}
+      campaign={campaign} 
+      business={business} 
+      initialUser={userDetails}
     />
   );
 }

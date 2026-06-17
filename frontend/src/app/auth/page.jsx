@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { apiFetch } from '@/lib/api';
 
 export default function AuthPage() {
   return (
@@ -74,9 +75,8 @@ function AuthContent() {
     setSuccess('');
 
     try {
-      const res = await fetch('/api/auth/otp/send', {
+      const res = await apiFetch('/auth/otp/send', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: customerEmail }),
       });
       const data = await res.json();
@@ -103,9 +103,8 @@ function AuthContent() {
     setSuccess('');
 
     try {
-      const res = await fetch('/api/auth/otp/verify', {
+      const res = await apiFetch('/auth/otp/verify', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: customerEmail, code: otpCode }),
       });
       const data = await res.json();
@@ -136,14 +135,13 @@ function AuthContent() {
     setSuccess('');
 
     try {
-      const endpoint = merchantMode === 'register' ? '/api/auth/register' : '/api/auth/login';
+      const endpoint = merchantMode === 'register' ? '/auth/register' : '/auth/login';
       const body = merchantMode === 'register'
         ? { name, email, password, role: 'business' }
         : { email, password };
 
-      const res = await fetch(endpoint, {
+      const res = await apiFetch(endpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       });
       const data = await res.json();

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import { apiFetch } from '@/lib/api';
 
 export default function RedemptionApprovalHub({ initialClaims, verificationCode }) {
   const [claims, setClaims] = useState(initialClaims);
@@ -12,9 +13,8 @@ export default function RedemptionApprovalHub({ initialClaims, verificationCode 
     setFeedback({ type: '', text: '' });
 
     try {
-      const res = await fetch('/api/rewards/approve', {
+      const res = await apiFetch('/rewards/approve', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ rewardId, verificationCode }),
       });
       const data = await res.json();

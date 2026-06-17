@@ -3,26 +3,22 @@ export default function HowItWorks() {
     {
       number: "01",
       title: "Visit a Partner Business",
-      description: "Discover local cafes, salons, gyms, and retail stores in your area using our app.",
-      icon: "📍"
+      description: "Discover local cafes, salons, gyms, and retail stores in your area using our app."
     },
     {
       number: "02",
       title: "Scan the QR Code",
-      description: "Use your phone's camera to scan the unique Returno QR code at the counter. No download needed!",
-      icon: "📱"
+      description: "Use your phone's camera to scan the unique Returno QR code at the counter. No download needed!"
     },
     {
       number: "03",
       title: "Collect Digital Stamps",
-      description: "Automatically receive a digital stamp in your wallet for your visit or purchase.",
-      icon: "⭐"
+      description: "Automatically receive a digital stamp in your wallet for your visit or purchase."
     },
     {
       number: "04",
       title: "Earn Free Rewards",
-      description: "Complete your stamp card and instantly unlock free coffee, discounts, and exclusive rewards.",
-      icon: "🎁"
+      description: "Complete your stamp card and instantly unlock free coffee, discounts, and exclusive rewards."
     }
   ];
 
@@ -41,9 +37,7 @@ export default function HowItWorks() {
               className="relative p-6 rounded-2xl bg-white border border-slate-200 hover:border-brand-300 hover:shadow-lg transition-all duration-300 group scroll-reveal"
               style={{ animationDelay: `${index * 0.15}s` }}
             >
-              <div className="text-5xl mb-6 bg-slate-50 w-16 h-16 flex items-center justify-center rounded-xl shadow-sm border border-slate-100 group-hover:scale-110 group-hover:bg-brand-50 transition-all duration-300">
-                {step.icon}
-              </div>
+
               <div className="text-5xl font-black text-slate-300 absolute top-4 right-4 pointer-events-none group-hover:text-brand-50 transition-colors">
                 {step.number}
               </div>

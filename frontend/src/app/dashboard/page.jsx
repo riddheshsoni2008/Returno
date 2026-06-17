@@ -1,12 +1,5 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import dbConnect from '@/lib/dbConnect';
-import User from '@/lib/models/User';
-import Business from '@/lib/models/Business';
-import Campaign from '@/lib/models/Campaign';
-import Visit from '@/lib/models/Visit';
-import Reward from '@/lib/models/Reward';
-import { verifyToken } from '@/lib/auth';
 import RedemptionApprovalHub from './RedemptionApprovalHub';
 
 export default async function DashboardPage() {
@@ -17,39 +10,58 @@ export default async function DashboardPage() {
     redirect('/auth');
   }
 
-  const decoded = verifyToken(token);
-  if (!decoded) {
+  const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+  let business, metrics;
+
+  try {
+    // First fetch business profile
+    const busRes = await fetch(`${backendUrl}/business`, {
+      headers: { 'Cookie': `token=${token}` },
+      cache: 'no-store'
+    });
+    
+    if (!busRes.ok) redirect('/auth');
+    const busData = await busRes.json();
+    business = busData.business;
+
+    if (!business) {
+      return (
+        <div className="text-center py-20 bg-dark-900 border border-white/10 rounded-3xl">
+          <h2 className="text-2xl font-bold mb-4">No Business Profile Found</h2>
+          <p className="text-slate-400">Please contact support or register again.</p>
+        </div>
+      );
+    }
+
+    // Fetch metrics
+    const metRes = await fetch(`${backendUrl}/business/metrics`, {
+      headers: { 'Cookie': `token=${token}` },
+      cache: 'no-store'
+    });
+    
+    if (metRes.ok) {
+      const metData = await metRes.json();
+      if (metData.success) {
+        metrics = metData.metrics;
+      }
+    }
+  } catch (error) {
+    console.error('Error fetching dashboard:', error);
     redirect('/auth');
   }
 
-  await dbConnect();
-  const user = await User.findById(decoded.id);
-  const business = await Business.findOne({ ownerId: user._id });
-
-  if (!business) {
-    return (
-      <div className="text-center py-20 bg-dark-900 border border-white/10 rounded-3xl">
-        <h2 className="text-2xl font-bold mb-4">No Business Profile Found</h2>
-        <p className="text-slate-400">Please contact support or register again.</p>
-      </div>
-    );
+  if (!metrics) {
+    // Fallback if metrics fails but business loaded
+    metrics = {
+      totalStamps: 0,
+      uniqueCustomers: 0,
+      openRewardsCount: 0,
+      pendingRedemptions: [],
+      recentStamps: []
+    };
   }
 
-  // Fetch shop metrics
-  const campaigns = await Campaign.find({ businessId: business._id });
-  const campaignIds = campaigns.map(c => c._id);
-
-  const totalStamps = await Visit.countDocuments({ campaignId: { $in: campaignIds } });
-  const uniqueCustomers = await Visit.distinct('customerId', { campaignId: { $in: campaignIds } });
-  const openRewardsCount = await Reward.countDocuments({ campaignId: { $in: campaignIds }, status: 'unredeemed' });
-  const pendingRedemptions = await Reward.find({ campaignId: { $in: campaignIds }, status: 'pending' })
-    .populate('customerId', 'name phone')
-    .sort({ updatedAt: -1 });
-
-  const recentStamps = await Visit.find({ campaignId: { $in: campaignIds } })
-    .populate('customerId', 'name phone')
-    .sort({ createdAt: -1 })
-    .limit(5);
+  const { totalStamps, uniqueCustomers, openRewardsCount, pendingRedemptions, recentStamps } = metrics;
 
   return (
     <div className="space-y-8">
@@ -68,7 +80,7 @@ export default async function DashboardPage() {
         </div>
         <div className="bg-dark-900 border border-white/10 p-6 rounded-2xl">
           <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Active Customers</div>
-          <div className="text-4xl font-extrabold text-purple-400">{uniqueCustomers.length}</div>
+          <div className="text-4xl font-extrabold text-purple-400">{uniqueCustomers}</div>
           <p className="text-[10px] text-slate-500 mt-2">Unique mobile numbers registered</p>
         </div>
         <div className="bg-dark-900 border border-white/10 p-6 rounded-2xl">
@@ -90,7 +102,7 @@ export default async function DashboardPage() {
         <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
           <span>🎁</span> Pending Reward Approvals
         </h3>
-        <RedemptionApprovalHub initialClaims={JSON.parse(JSON.stringify(pendingRedemptions))} verificationCode={business.verificationCode} />
+        <RedemptionApprovalHub initialClaims={pendingRedemptions} verificationCode={business.verificationCode} />
       </div>
 
       {/* Recent Visits Logs */}

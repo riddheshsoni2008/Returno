@@ -26,26 +26,22 @@ export default function ProblemSolution() {
     {
       step: "01",
       title: "Create Digital Campaigns",
-      desc: "Build customizable stamp cards in under 60 seconds. Define your stamp targets and loyalty rewards.",
-      icon: "⚡"
+      desc: "Build customizable stamp cards in under 60 seconds. Define your stamp targets and loyalty rewards."
     },
     {
       step: "02",
       title: "Print & Display QR Codes",
-      desc: "Generate high-resolution custom brand QR codes to display on tables, receipts, or checkout counters.",
-      icon: "🖨️"
+      desc: "Generate high-resolution custom brand QR codes to display on tables, receipts, or checkout counters."
     },
     {
       step: "03",
       title: "Instant Mobile Scans",
-      desc: "Customers scan the QR code to check in and collect stamps on the spot. No application download required.",
-      icon: "📱"
+      desc: "Customers scan the QR code to check in and collect stamps on the spot. No application download required."
     },
     {
       step: "04",
       title: "Reward Loyal Customers",
-      desc: "Watch customer counts grow as rewards unlock automatically and are approved via physical counter PIN checks.",
-      icon: "🎁"
+      desc: "Watch customer counts grow as rewards unlock automatically and are approved via physical counter PIN checks."
     }
   ];
 
@@ -103,9 +99,7 @@ export default function ProblemSolution() {
                 key={idx}
                 className="bg-white border border-slate-200 rounded-2xl p-6 hover:border-brand-300 hover:shadow-lg transition-all duration-300 relative group"
               >
-                <div className="text-4xl mb-4 bg-brand-50 w-12 h-12 flex items-center justify-center rounded-xl border border-brand-100 group-hover:scale-110 group-hover:bg-brand-100 transition-all duration-300">
-                  {sol.icon}
-                </div>
+
                 <div className="absolute top-6 right-6 text-2xl font-black text-slate-500 group-hover:text-brand-100 transition-colors">
                   {sol.step}
                 </div>

@@ -1,13 +1,6 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import dbConnect from '@/lib/dbConnect';
-import User from '@/lib/models/User';
-import Business from '@/lib/models/Business';
-import Visit from '@/lib/models/Visit';
-import Reward from '@/lib/models/Reward';
-import AuditLog from '@/lib/models/AuditLog';
-import { verifyToken } from '@/lib/auth';
 
 export default async function AdminDashboardPage() {
   const cookieStore = await cookies();
@@ -17,31 +10,41 @@ export default async function AdminDashboardPage() {
     redirect('/auth');
   }
 
-  const decoded = verifyToken(token);
-  if (!decoded || decoded.role !== 'admin') {
-    // If not admin, redirect to general dashboard
-    redirect('/dashboard');
+
+
+  const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+  let metrics = null;
+
+  try {
+    const res = await fetch(`${backendUrl}/admin/metrics`, {
+      headers: {
+        'Cookie': `token=${token}`
+      },
+      cache: 'no-store'
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      if (data.success) {
+        metrics = data.metrics;
+      }
+    }
+  } catch (err) {
+    console.error('Error fetching admin metrics:', err);
   }
 
-  await dbConnect();
-  
-  // Platform metrics
-  const totalShops = await Business.countDocuments();
-  const totalCustomers = await User.countDocuments({ role: 'customer' });
-  const totalStamps = await Visit.countDocuments();
-  const totalRedeemed = await Reward.countDocuments({ status: 'redeemed' });
+  if (!metrics) {
+    metrics = {
+      totalShops: 0,
+      totalCustomers: 0,
+      totalStamps: 0,
+      totalRedeemed: 0,
+      recentShops: [],
+      securityLogs: []
+    };
+  }
 
-  // Onboarded shops
-  const recentShops = await Business.find()
-    .populate('ownerId', 'name email')
-    .sort({ createdAt: -1 })
-    .limit(5);
-
-  // Security and Anti-Fraud Logs
-  const securityLogs = await AuditLog.find()
-    .populate('actorId', 'name email')
-    .sort({ createdAt: -1 })
-    .limit(10);
+  const { totalShops, totalCustomers, totalStamps, totalRedeemed, recentShops, securityLogs } = metrics;
 
   return (
     <main className="min-h-screen bg-dark-950 text-white py-12 px-6">
@@ -52,7 +55,7 @@ export default async function AdminDashboardPage() {
             <h1 className="text-3xl font-black tracking-tight">Super Admin Hub</h1>
             <p className="text-slate-400 mt-1">Platform management and security log auditing</p>
           </div>
-          <Link 
+          <Link
             href="/dashboard"
             className="px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs font-bold transition-all hover:bg-white/10"
           >
@@ -84,7 +87,7 @@ export default async function AdminDashboardPage() {
           {/* Recent Shops Column */}
           <div className="lg:col-span-1 bg-dark-900 border border-white/10 rounded-2xl p-6 space-y-4">
             <h3 className="font-bold text-slate-200 text-md">Onboarded Businesses</h3>
-            
+
             {recentShops.length === 0 ? (
               <p className="text-slate-500 text-xs">No shops registered yet.</p>
             ) : (
@@ -125,13 +128,12 @@ export default async function AdminDashboardPage() {
                     {securityLogs.map((log) => (
                       <tr key={log._id} className="hover:bg-white/5 transition-colors">
                         <td className="py-2.5 px-3">
-                          <span className={`px-2 py-0.5 rounded text-[8px] font-extrabold uppercase ${
-                            log.severity === 'critical' 
-                              ? 'bg-red-500/10 text-red-400 border border-red-500/20 animate-pulse' 
-                              : log.severity === 'warning'
-                                ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20'
-                                : 'bg-slate-500/10 text-slate-400'
-                          }`}>
+                          <span className={`px-2 py-0.5 rounded text-[8px] font-extrabold uppercase ${log.severity === 'critical'
+                            ? 'bg-red-500/10 text-red-400 border border-red-500/20 animate-pulse'
+                            : log.severity === 'warning'
+                              ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20'
+                              : 'bg-slate-500/10 text-slate-400'
+                            }`}>
                             {log.severity}
                           </span>
                         </td>

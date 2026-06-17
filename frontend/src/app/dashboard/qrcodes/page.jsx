@@ -2,16 +2,9 @@ import PrintButton from './PrintButton';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import dbConnect from '@/lib/dbConnect';
-import User from '@/lib/models/User';
-import Business from '@/lib/models/Business';
-import Campaign from '@/lib/models/Campaign';
-import QrCode from '@/lib/models/QrCode';
-import { verifyToken } from '@/lib/auth';
 import QRCode from 'qrcode';
 
 export default async function QrCodesPage(props) {
-  // Await params to access query string in Next.js 15/16 App Router
   const searchParams = await props.searchParams;
   const campaignQueryId = searchParams.campaign;
 
@@ -22,21 +15,31 @@ export default async function QrCodesPage(props) {
     redirect('/auth');
   }
 
-  const decoded = verifyToken(token);
-  if (!decoded) {
+  const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+  
+  let campaigns = [];
+  try {
+    const res = await fetch(`${backendUrl}/campaigns`, {
+      headers: {
+        'Cookie': `token=${token}`
+      },
+      cache: 'no-store'
+    });
+
+    if (!res.ok) {
+      redirect('/auth');
+    }
+
+    const data = await res.json();
+    if (!data.success) {
+      redirect('/auth');
+    }
+    campaigns = data.campaigns || [];
+  } catch (error) {
+    console.error('Error fetching campaigns:', error);
     redirect('/auth');
   }
 
-  await dbConnect();
-  const user = await User.findById(decoded.id);
-  const business = await Business.findOne({ ownerId: user._id });
-
-  if (!business) {
-    redirect('/auth');
-  }
-
-  // Find campaigns
-  const campaigns = await Campaign.find({ businessId: business._id });
   if (campaigns.length === 0) {
     return (
       <div className="text-center py-20 bg-dark-900 border border-white/10 rounded-3xl space-y-6">
@@ -53,7 +56,6 @@ export default async function QrCodesPage(props) {
     );
   }
 
-  // Select campaign (default to first/recent one)
   let selectedCampaign = campaigns[0];
   if (campaignQueryId) {
     const found = campaigns.find(c => c._id.toString() === campaignQueryId);
@@ -62,26 +64,14 @@ export default async function QrCodesPage(props) {
     }
   }
 
-  // Fetch QR Code record
-  const qrRecord = await QrCode.findOne({ campaignId: selectedCampaign._id });
-  if (!qrRecord) {
-    return (
-      <div className="text-center py-20 bg-dark-900 border border-white/10 rounded-3xl">
-        <p className="text-slate-400">QR configuration missing. Try toggling campaigns status.</p>
-      </div>
-    );
-  }
-
-  // Generate Scan URL pointing to our app host
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
   const scanUrl = `${appUrl}/scan/${selectedCampaign._id}`;
 
-  // Generate QR code data URL
   const qrDataUrl = await QRCode.toDataURL(scanUrl, {
     width: 320,
     margin: 2,
     color: {
-      dark: '#1e1b4b', // Deep brand indigo/blue
+      dark: '#1e1b4b',
       light: '#ffffff'
     }
   });
@@ -94,7 +84,6 @@ export default async function QrCodesPage(props) {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Campaign Selector Column */}
         <div className="lg:col-span-1 bg-dark-900 border border-white/10 rounded-2xl p-6 h-fit space-y-4">
           <h3 className="font-bold text-slate-200">Select Campaign QR</h3>
           <div className="space-y-2">
@@ -114,7 +103,6 @@ export default async function QrCodesPage(props) {
           </div>
         </div>
 
-        {/* QR Display Column */}
         <div className="lg:col-span-2 bg-dark-900 border border-white/10 rounded-2xl p-8 flex flex-col md:flex-row gap-8 items-center">
           <div className="bg-white p-4 rounded-2xl shadow-2xl flex-shrink-0">
             <img

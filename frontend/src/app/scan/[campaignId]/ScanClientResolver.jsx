@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { apiFetch } from '@/lib/api';
 
 // Reuse our custom 3D Star SVG
 const ThreeDStar = ({ filled, className = "" }) => {
@@ -56,7 +57,7 @@ export default function ScanClientResolver({ campaign, business, initialUser }) 
   
   // Auth state
   const [user, setUser] = useState(initialUser);
-  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
   const [otpSent, setOtpSent] = useState(false);
   const [otpCode, setOtpCode] = useState('');
   
@@ -110,15 +111,14 @@ export default function ScanClientResolver({ campaign, business, initialUser }) 
     e.preventDefault();
     setFeedbackMsg({ type: '', text: '' });
     try {
-      const res = await fetch('/api/auth/otp/send', {
+      const res = await apiFetch('/auth/otp/send', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone }),
+        body: JSON.stringify({ email }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       setOtpSent(true);
-      setFeedbackMsg({ type: 'success', text: 'Verification OTP sent! Check server console.' });
+      setFeedbackMsg({ type: 'success', text: 'Verification OTP sent to your email!' });
     } catch (err) {
       setFeedbackMsg({ type: 'error', text: err.message });
     }
@@ -128,10 +128,9 @@ export default function ScanClientResolver({ campaign, business, initialUser }) 
     e.preventDefault();
     setFeedbackMsg({ type: '', text: '' });
     try {
-      const res = await fetch('/api/auth/otp/verify', {
+      const res = await apiFetch('/auth/otp/verify', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone, code: otpCode }),
+        body: JSON.stringify({ email, code: otpCode }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
@@ -154,9 +153,8 @@ export default function ScanClientResolver({ campaign, business, initialUser }) 
     setFeedbackMsg({ type: '', text: '' });
 
     try {
-      const res = await fetch('/api/visit/stamp', {
+      const res = await apiFetch('/visit/stamp', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           campaignId: campaign._id,
           billNumber,
@@ -217,17 +215,14 @@ export default function ScanClientResolver({ campaign, business, initialUser }) 
 
             {!otpSent ? (
               <form onSubmit={handleSendOtp} className="space-y-4">
-                <div className="relative">
-                  <span className="absolute left-4 top-3 text-slate-500 text-sm font-medium">+91</span>
-                  <input 
-                    type="tel"
-                    required
-                    placeholder="Enter phone number"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="w-full bg-dark-950 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white text-sm focus:outline-none focus:border-brand-500 transition-colors"
-                  />
-                </div>
+                <input 
+                  type="email"
+                  required
+                  placeholder="Enter email address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full bg-dark-950 border border-white/10 rounded-xl py-3 px-4 text-white text-sm focus:outline-none focus:border-brand-500 transition-colors"
+                />
                 <button 
                   type="submit"
                   className="w-full py-3 bg-brand-600 hover:bg-brand-500 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors"

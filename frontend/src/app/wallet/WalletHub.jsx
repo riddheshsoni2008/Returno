@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { apiFetch } from '@/lib/api';
 
 // Reuse our custom 3D Star SVG
 const ThreeDStar = ({ filled, className = "" }) => {
@@ -68,9 +69,8 @@ export default function WalletHub({ user, initialCards, initialRewards }) {
     setFeedback({ type: '', text: '' });
 
     try {
-      const res = await fetch('/api/rewards/redeem', {
+      const res = await apiFetch('/rewards/redeem', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ rewardId }),
       });
       const data = await res.json();
@@ -95,7 +95,7 @@ export default function WalletHub({ user, initialCards, initialRewards }) {
 
   const handleLogout = async () => {
     try {
-      await fetch('/api/auth/me', { method: 'POST' });
+      await apiFetch('/auth/me', { method: 'POST' });
       router.push('/');
       router.refresh();
     } catch (err) {

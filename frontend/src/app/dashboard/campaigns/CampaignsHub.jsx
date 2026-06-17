@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { apiFetch } from '@/lib/api';
 
 export default function CampaignsHub({ initialCampaigns }) {
   const router = useRouter();
@@ -24,9 +25,8 @@ export default function CampaignsHub({ initialCampaigns }) {
     setSuccess('');
 
     try {
-      const res = await fetch('/api/campaigns', {
+      const res = await apiFetch('/campaigns', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title, description, requiredStamps, rewardTitle }),
       });
       const data = await res.json();

@@ -1,0 +1,11 @@
+{
+  "name": "returno-root",
+  "version": "1.0.0",
+  "description": "Root package.json to manage the Returno project",
+  "scripts": {
+    "dev": "npm run dev --prefix frontend",
+    "build": "npm run build --prefix frontend",
+    "start": "npm run start --prefix frontend",
+    "lint": "npm run lint --prefix frontend"
+  }
+}

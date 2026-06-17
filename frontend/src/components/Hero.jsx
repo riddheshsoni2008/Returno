@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CheckCircle2, ChevronRight, Gift, ScanLine, Users } from "lucide-react";
+import { ChevronRight, Gift, ScanLine, Users } from "lucide-react";
 
 export default function Hero() {
   return (
@@ -41,7 +41,7 @@ export default function Hero() {
         {/* Clean 2D Dashboard Mockup */}
         <div className="relative mx-auto w-full max-w-5xl scroll-reveal" style={{ animationDelay: "0.3s" }}>
           <div className="rounded-2xl border border-slate-200 bg-white shadow-[0_20px_50px_-12px_rgba(0,0,0,0.1)] p-2 sm:p-4 relative">
-            <div className="rounded-xl overflow-hidden bg-slate-50 border border-slate-100 aspect-[16/10] flex flex-col relative shadow-inner">
+            <div className="rounded-xl overflow-hidden bg-slate-50 border border-slate-100 aspect-auto sm:aspect-[16/10] flex flex-col relative shadow-inner">
                
                {/* Mockup Header */}
                <div className="h-14 border-b border-slate-200 bg-white flex items-center px-6 justify-between">
@@ -50,7 +50,7 @@ export default function Hero() {
                    <div className="w-3 h-3 rounded-full bg-slate-200"></div>
                    <div className="w-3 h-3 rounded-full bg-slate-200"></div>
                  </div>
-                 <div className="h-6 w-48 bg-slate-100 rounded-md"></div>
+                 <div className="h-6 w-24 sm:w-48 bg-slate-100 rounded-md"></div>
                  <div className="h-8 w-8 bg-brand-100 text-brand-600 rounded-full flex items-center justify-center text-xs font-bold">JD</div>
                </div>
 
@@ -65,18 +65,18 @@ export default function Hero() {
                  
                  {/* Main content mock */}
                  <div className="flex-1 flex flex-col gap-6">
-                   <div className="grid grid-cols-3 gap-4">
-                     <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm flex flex-col">
+                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                     <div className="bg-white p-4 sm:p-6 rounded-xl border border-slate-100 shadow-sm flex flex-col">
                        <span className="text-sm font-medium text-slate-500 mb-2">Total Scans</span>
-                       <span className="text-3xl font-bold text-slate-900">1,248</span>
+                       <span className="text-2xl sm:text-3xl font-bold text-slate-900">1,248</span>
                      </div>
-                     <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm flex flex-col">
+                     <div className="bg-white p-4 sm:p-6 rounded-xl border border-slate-100 shadow-sm flex flex-col">
                        <span className="text-sm font-medium text-slate-500 mb-2">Active Members</span>
-                       <span className="text-3xl font-bold text-slate-900">492</span>
+                       <span className="text-2xl sm:text-3xl font-bold text-slate-900">492</span>
                      </div>
-                     <div className="bg-brand-600 p-6 rounded-xl shadow-sm flex flex-col text-white">
+                     <div className="bg-brand-600 p-4 sm:p-6 rounded-xl shadow-sm flex flex-col text-white">
                        <span className="text-sm font-medium text-brand-100 mb-2">Rewards Claimed</span>
-                       <span className="text-3xl font-bold text-white">186</span>
+                       <span className="text-2xl sm:text-3xl font-bold text-white">186</span>
                      </div>
                    </div>
 

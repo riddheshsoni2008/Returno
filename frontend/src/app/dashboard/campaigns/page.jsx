@@ -1,10 +1,5 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import dbConnect from '@/lib/dbConnect';
-import User from '@/lib/models/User';
-import Business from '@/lib/models/Business';
-import Campaign from '@/lib/models/Campaign';
-import { verifyToken } from '@/lib/auth';
 import CampaignsHub from './CampaignsHub';
 
 export default async function CampaignsPage() {
@@ -15,29 +10,37 @@ export default async function CampaignsPage() {
     redirect('/auth');
   }
 
-  const decoded = verifyToken(token);
-  if (!decoded) {
-    redirect('/auth');
-  }
+  const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+  
+  try {
+    const res = await fetch(`${backendUrl}/campaigns`, {
+      headers: {
+        'Cookie': `token=${token}`
+      },
+      cache: 'no-store'
+    });
 
-  await dbConnect();
-  const user = await User.findById(decoded.id);
-  const business = await Business.findOne({ ownerId: user._id });
+    if (!res.ok) {
+      redirect('/auth');
+    }
 
-  if (!business) {
-    redirect('/auth');
-  }
+    const data = await res.json();
+    if (!data.success || !data.campaigns) {
+      redirect('/auth');
+    }
 
-  const campaigns = await Campaign.find({ businessId: business._id }).sort({ createdAt: -1 });
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-extrabold tracking-tight">Campaign Manager</h1>
+          <p className="text-slate-400 mt-1">Configure and manage active stamp reward cards for your customers.</p>
+        </div>
 
-  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-extrabold tracking-tight">Campaign Manager</h1>
-        <p className="text-slate-400 mt-1">Configure and manage active stamp reward cards for your customers.</p>
+        <CampaignsHub initialCampaigns={data.campaigns} />
       </div>
-
-      <CampaignsHub initialCampaigns={JSON.parse(JSON.stringify(campaigns))} />
-    </div>
-  );
+    );
+  } catch (error) {
+    console.error('Error fetching campaigns:', error);
+    redirect('/auth');
+  }
 }

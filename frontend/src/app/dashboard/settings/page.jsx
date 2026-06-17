@@ -1,9 +1,5 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import dbConnect from '@/lib/dbConnect';
-import User from '@/lib/models/User';
-import Business from '@/lib/models/Business';
-import { verifyToken } from '@/lib/auth';
 import SettingsHub from './SettingsHub';
 
 export default async function SettingsPage() {
@@ -14,27 +10,37 @@ export default async function SettingsPage() {
     redirect('/auth');
   }
 
-  const decoded = verifyToken(token);
-  if (!decoded) {
-    redirect('/auth');
-  }
+  const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+  
+  try {
+    const res = await fetch(`${backendUrl}/business`, {
+      headers: {
+        'Cookie': `token=${token}`
+      },
+      cache: 'no-store'
+    });
 
-  await dbConnect();
-  const user = await User.findById(decoded.id);
-  const business = await Business.findOne({ ownerId: user._id });
+    if (!res.ok) {
+      redirect('/auth');
+    }
 
-  if (!business) {
-    redirect('/auth');
-  }
+    const data = await res.json();
+    if (!data.success || !data.business) {
+      redirect('/auth');
+    }
 
-  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-extrabold tracking-tight">Shop Configurations</h1>
-        <p className="text-slate-400 mt-1">Configure Geofences, redemption validation keys, and billing plans.</p>
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-extrabold tracking-tight">Shop Configurations</h1>
+          <p className="text-slate-400 mt-1">Configure Geofences, redemption validation keys, and billing plans.</p>
+        </div>
+
+        <SettingsHub initialBusiness={data.business} />
       </div>
-
-      <SettingsHub initialBusiness={JSON.parse(JSON.stringify(business))} />
-    </div>
-  );
+    );
+  } catch (error) {
+    console.error('Error fetching settings:', error);
+    redirect('/auth');
+  }
 }
