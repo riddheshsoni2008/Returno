@@ -195,6 +195,7 @@ function CustomerAuthContent() {
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full bg-dark-950/80 border border-white/10 rounded-xl py-3 px-4 text-white text-sm focus:outline-none focus:border-brand-500 transition-colors"
                 />
+                <h3 className='text-gray-400 text-xs mt-2'>OTP may arrive in your Inbox or Spam folder</h3>
               </div>
               <button
                 type="submit"

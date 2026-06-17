@@ -98,7 +98,7 @@ export default function SettingsHub({ initialBusiness }) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Shop Name</label>
-              <input 
+              <input
                 type="text"
                 required
                 value={name}
@@ -108,24 +108,24 @@ export default function SettingsHub({ initialBusiness }) {
             </div>
             <div>
               <label className="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Category</label>
-              <select 
+              <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 className="w-full bg-dark-950 border border-white/10 rounded-xl py-3 px-4 text-white text-sm focus:outline-none focus:border-purple-500 transition-colors"
               >
-                <option value="Cafe">☕ Cafe</option>
-                <option value="Restaurant">🍔 Restaurant</option>
-                <option value="Salon & Spa">💇‍♀️ Salon & Spa</option>
-                <option value="Gym & Fitness">🏋️‍♂️ Gym & Fitness</option>
-                <option value="Clinic">🩺 Clinic</option>
-                <option value="Retail Store">🛍️ Retail Store</option>
+                <option className="text-gray-700" value="Cafe">☕ Cafe</option>
+                <option className="text-gray-700" value="Restaurant">🍔 Restaurant</option>
+                <option className="text-gray-700" value="Salon & Spa">💇‍♀️ Salon & Spa</option>
+                <option className="text-gray-700" value="Gym & Fitness">🏋️‍♂️ Gym & Fitness</option>
+                <option className="text-gray-700" value="Clinic">🩺 Clinic</option>
+                <option className="text-gray-700" value="Retail Store">🛍️ Retail Store</option>
               </select>
             </div>
           </div>
 
           <div>
             <label className="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Physical Address</label>
-            <input 
+            <input
               type="text"
               required
               value={address}
@@ -142,7 +142,7 @@ export default function SettingsHub({ initialBusiness }) {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <label className="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Longitude</label>
-              <input 
+              <input
                 type="number"
                 step="any"
                 required
@@ -153,7 +153,7 @@ export default function SettingsHub({ initialBusiness }) {
             </div>
             <div>
               <label className="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Latitude</label>
-              <input 
+              <input
                 type="number"
                 step="any"
                 required
@@ -164,7 +164,7 @@ export default function SettingsHub({ initialBusiness }) {
             </div>
             <div>
               <label className="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Geofence Radius (meters)</label>
-              <input 
+              <input
                 type="number"
                 required
                 value={geofenceRadius}
@@ -181,7 +181,7 @@ export default function SettingsHub({ initialBusiness }) {
 
           <div>
             <label className="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Staff Verification PIN</label>
-            <input 
+            <input
               type="text"
               required
               maxLength={4}

@@ -81,7 +81,7 @@ export async function validateEmailConfig() {
       secure: true,
       auth: { user, pass: cleanedPass }
     });
-    
+
     await transporter.verify();
     console.log('✓ Gmail SMTP connected successfully');
   } catch (error) {
@@ -91,12 +91,12 @@ export async function validateEmailConfig() {
 
 export async function sendOtpEmail(toEmail, otpCode) {
   try {
-    console.log(`[Email Service] Starting OTP email delivery process for: "${toEmail}"`);
-    
+    console.log(`[Email Service] Starting OTP email delivery process. toEmail parameter: "${toEmail}"`);
+
     const transporter = await getTransporter();
     const fromAddress = process.env.EMAIL_USER || 'no-reply@returno.app';
 
-    console.log(`[Email Service] SMTP Transporter initialized. Sender address: "${fromAddress}"`);
+    console.log(`[Email Service] SMTP Transporter initialized. Sender address: "${fromAddress}", Recipient (toEmail): "${toEmail}"`);
 
     const htmlContent = `
       <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 16px; background-color: #ffffff; color: #1a202c; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
@@ -122,7 +122,7 @@ export async function sendOtpEmail(toEmail, otpCode) {
       </div>
     `;
 
-    console.log(`[Email Service] Sending mail via Nodemailer...`);
+    console.log(`[Email Service] Sending mail via Nodemailer to: "${toEmail}"...`);
     const info = await transporter.sendMail({
       from: `"Returno Security" <${fromAddress}>`,
       to: toEmail,
@@ -131,10 +131,69 @@ export async function sendOtpEmail(toEmail, otpCode) {
       html: htmlContent
     });
 
-    console.log(`[Email Service] Nodemailer Response: SUCCESS. MessageId: ${info.messageId}`);
+    const accepted = info.accepted || [];
+    const rejected = info.rejected || [];
+    const response = info.response || '';
+
+    console.log(`[Email Service] Nodemailer Response: SUCCESS.`);
+    console.log(`[Email Service] MessageId: ${info.messageId}`);
+    console.log(`[Email Service] Recipient Email:`, toEmail);
+    console.log(`[Email Service] Accepted Recipients:`, accepted);
+    console.log(`[Email Service] Rejected Recipients:`, rejected);
+    console.log(`[Email Service] SMTP Response:`, response);
+
+    const normalizedToEmail = toEmail.toLowerCase().trim();
+    const isAccepted = accepted.some(email => email.toLowerCase().trim() === normalizedToEmail);
+    const isRejected = rejected.some(email => email.toLowerCase().trim() === normalizedToEmail);
+    const hasSmtpError = response && /^[45]\d{2}/.test(response.trim());
+
+    if (isRejected || !isAccepted || hasSmtpError) {
+      console.error(`[Email Service] Delivery validation failed. isAccepted: ${isAccepted}, isRejected: ${isRejected}, hasSmtpError: ${hasSmtpError}`);
+      return {
+        success: false,
+        error: 'This email address does not exist or cannot receive emails. Please check and try again.'
+      };
+    }
+
     return { success: true };
   } catch (error) {
     console.error('[Email Service] Error occurred during sendMail execution:', error.stack || error);
+    console.log(`[Email Service] Recipient Email:`, toEmail);
+    if (error.accepted) {
+      console.log(`[Email Service] Accepted Recipients (from error):`, error.accepted);
+    } else {
+      console.log(`[Email Service] Accepted Recipients: None`);
+    }
+    if (error.rejected) {
+      console.log(`[Email Service] Rejected Recipients (from error):`, error.rejected);
+    } else {
+      console.log(`[Email Service] Rejected Recipients: None`);
+    }
+    if (error.response) {
+      console.log(`[Email Service] SMTP Response (from error): "${error.response}"`);
+    } else {
+      console.log(`[Email Service] SMTP Response: None`);
+    }
+
+    const errText = (error.message || '').toLowerCase();
+    const isRecipientError = 
+      error.code === 'EENVELOPE' || 
+      errText.includes('550') ||
+      errText.includes('553') ||
+      errText.includes('501') ||
+      errText.includes('554') ||
+      errText.includes('does not exist') ||
+      errText.includes('invalid address') ||
+      errText.includes('recipient') ||
+      errText.includes('mailbox');
+
+    if (isRecipientError) {
+      return {
+        success: false,
+        error: 'This email address does not exist or cannot receive emails. Please check and try again.'
+      };
+    }
+
     return {
       success: false,
       error: error.message || 'Error occurred while sending verification email.'

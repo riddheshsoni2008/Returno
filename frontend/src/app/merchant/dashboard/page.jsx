@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import MerchantDashboardHub from './MerchantDashboardHub';
 
 export default async function MerchantDashboardPage() {
   const cookieStore = await cookies();
@@ -10,8 +11,10 @@ export default async function MerchantDashboardPage() {
   }
 
   const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
   let business = null;
   let metrics = null;
+  let campaigns = [];
   let redirectPath = null;
 
   try {
@@ -27,6 +30,7 @@ export default async function MerchantDashboardPage() {
       business = busData.business;
 
       if (business) {
+        // Fetch Metrics
         const metRes = await fetch(`${backendUrl}/business/metrics`, {
           headers: { 'Cookie': `token=${token}` },
           cache: 'no-store'
@@ -37,6 +41,16 @@ export default async function MerchantDashboardPage() {
           if (metData.success) {
             metrics = metData.metrics;
           }
+        }
+
+        // Fetch Campaigns
+        const campRes = await fetch(`${backendUrl}/campaigns`, {
+          headers: { 'Cookie': `token=${token}` },
+          cache: 'no-store'
+        });
+        if (campRes.ok) {
+          const campData = await campRes.json();
+          campaigns = campData.campaigns || [];
         }
       }
     }
@@ -67,80 +81,12 @@ export default async function MerchantDashboardPage() {
     };
   }
 
-  const { totalStamps, uniqueCustomers, openRewardsCount, recentStamps } = metrics;
-
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">Merchant Dashboard</h1>
-        <p className="text-sm text-slate-400 mt-1">Real-time loyalty management and metrics for {business.name}</p>
-      </div>
-
-      {/* Analytics Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-dark-900 border border-white/10 p-5 md:p-6 rounded-2xl">
-          <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Total Stamps Awarded</div>
-          <div className="text-3xl md:text-4xl font-extrabold text-purple-400">{totalStamps}</div>
-          <p className="text-[10px] text-slate-500 mt-2">Visits logged via QR code scans</p>
-        </div>
-        <div className="bg-dark-900 border border-white/10 p-5 md:p-6 rounded-2xl">
-          <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Active Customers</div>
-          <div className="text-3xl md:text-4xl font-extrabold text-blue-400">{uniqueCustomers}</div>
-          <p className="text-[10px] text-slate-500 mt-2">Unique loyalty customers registered</p>
-        </div>
-        <div className="bg-dark-900 border border-white/10 p-5 md:p-6 rounded-2xl">
-          <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Unlocked Rewards</div>
-          <div className="text-3xl md:text-4xl font-extrabold text-yellow-400">{openRewardsCount}</div>
-          <p className="text-[10px] text-slate-500 mt-2">Milestone cards completed</p>
-        </div>
-        <div className="bg-dark-900 border border-white/10 p-5 md:p-6 rounded-2xl">
-          <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Verification PIN</div>
-          <div className="text-2xl md:text-3xl font-extrabold tracking-wider text-slate-200 bg-white/5 border border-white/5 px-3 py-1 rounded inline-block">
-            {business.verificationCode}
-          </div>
-          <p className="text-[10px] text-slate-500 mt-2">Share with staff to confirm redemptions</p>
-        </div>
-      </div>
-
-      {/* Recent Visits Logs */}
-      <div className="bg-dark-900 border border-white/10 p-5 md:p-6 rounded-2xl">
-        <h3 className="text-lg md:text-xl font-bold mb-4">🕒 Recent Stamp Scan History</h3>
-        
-        {recentStamps.length === 0 ? (
-          <div className="text-center py-8 text-slate-500 text-sm">
-            No stamps awarded yet. Share your QR Code to start collecting!
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-white/10 text-xs uppercase tracking-wider text-slate-400">
-                  <th className="py-3 px-4">Customer</th>
-                  <th className="py-3 px-4">Bill Number</th>
-                  <th className="py-3 px-4">Bill Amount</th>
-                  <th className="py-3 px-4">Scanned At</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/5 text-sm text-slate-300">
-                {recentStamps.map((stamp) => (
-                  <tr key={stamp._id} className="hover:bg-white/5 transition-colors">
-                    <td className="py-3 px-4">
-                      <div className="font-semibold text-xs md:text-sm">{stamp.customerId?.name || 'Anonymous Customer'}</div>
-                      <div className="text-[10px] md:text-xs text-slate-500">{stamp.customerId?.email}</div>
-                    </td>
-                    <td className="py-3 px-4 font-mono text-xs md:text-sm">{stamp.billNumber}</td>
-                    <td className="py-3 px-4 text-xs md:text-sm">₹{stamp.amount}</td>
-                    <td className="py-3 px-4 text-[10px] md:text-xs text-slate-500">
-                      {new Date(stamp.createdAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
-    </div>
+    <MerchantDashboardHub
+      business={business}
+      metrics={metrics}
+      initialCampaigns={campaigns}
+      appUrl={appUrl}
+    />
   );
 }

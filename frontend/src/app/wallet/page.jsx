@@ -25,19 +25,19 @@ export default async function WalletPage() {
 
     if (!res.ok) {
       if (res.status === 401 || res.status === 404) {
-        redirectPath = '/auth';
+        redirectPath = '/auth?expired=true';
       } else {
         throw new Error('Failed to fetch wallet data');
       }
     } else {
       data = await res.json();
       if (!data.success) {
-        redirectPath = '/auth';
+        redirectPath = '/auth?expired=true';
       }
     }
   } catch (error) {
     console.error('Error loading wallet:', error);
-    redirectPath = '/auth';
+    redirectPath = '/auth?expired=true';
   }
 
   if (redirectPath) {

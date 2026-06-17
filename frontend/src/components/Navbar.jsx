@@ -2,9 +2,12 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { apiFetch } from "@/lib/api";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -13,6 +16,35 @@ export default function Navbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await apiFetch("/auth/me");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.user) {
+            setUser(data.user);
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching session:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUser();
+  }, []);
+
+  const handleSignOut = async () => {
+    try {
+      await apiFetch("/auth/me", { method: "POST" });
+      setUser(null);
+      window.location.reload();
+    } catch (err) {
+      console.error("Error signing out:", err);
+    }
+  };
 
   return (
     <nav
@@ -29,13 +61,51 @@ export default function Navbar() {
           <Link href="#pricing" className="hover:text-brand-600 transition-colors">Pricing</Link>
           <Link href="#faq" className="hover:text-brand-600 transition-colors">FAQ</Link>
         </div>
-        <div className="flex space-x-4 items-center">
-          <Link href="/auth" className="text-sm font-semibold text-slate-600 hover:text-brand-600 transition-colors hidden sm:block">
-            Customer Login
-          </Link>
-          <Link href="/merchant/auth" className="px-5 py-2.5 rounded-full bg-brand-600 text-white text-sm font-semibold hover:bg-brand-700 transition-all shadow-sm">
-            Merchant Portal
-          </Link>
+        <div className="flex space-x-4 items-center min-h-[40px]">
+          {!loading && (
+            <>
+              {user ? (
+                <>
+                  {user.role === "customer" ? (
+                    <Link
+                      href="/wallet"
+                      className="text-sm font-semibold text-brand-600 hover:text-brand-700 transition-colors"
+                    >
+                      My Wallet
+                    </Link>
+                  ) : (
+                    <Link
+                      href="/merchant/dashboard"
+                      className="text-sm font-semibold text-purple-600 hover:text-purple-700 transition-colors"
+                    >
+                      Merchant Dashboard
+                    </Link>
+                  )}
+                  <button
+                    onClick={handleSignOut}
+                    className="px-5 py-2.5 rounded-full border border-red-500/20 bg-red-500/10 text-red-600 text-sm font-semibold hover:bg-red-500/25 hover:text-red-700 transition-all shadow-sm"
+                  >
+                    Sign Out
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/auth"
+                    className="text-sm font-semibold text-slate-600 hover:text-brand-600 transition-colors hidden sm:block"
+                  >
+                    Customer Login
+                  </Link>
+                  <Link
+                    href="/merchant/auth"
+                    className="px-5 py-2.5 rounded-full bg-brand-600 text-white text-sm font-semibold hover:bg-brand-700 transition-all shadow-sm"
+                  >
+                    Merchant Portal
+                  </Link>
+                </>
+              )}
+            </>
+          )}
         </div>
       </div>
     </nav>

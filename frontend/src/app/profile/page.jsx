@@ -30,7 +30,7 @@ export default async function CustomerProfilePage() {
   }
 
   if (!user) {
-    redirect('/auth');
+    redirect('/auth?expired=true');
   }
 
   return (

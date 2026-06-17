@@ -1,9 +1,17 @@
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import SignOutButton from './SignOutButton';
 
 export default async function MerchantLayout({ children }) {
+  // Read pathname forwarded by middleware/proxy to prevent self-redirect loop on auth page
+  const headerList = await headers();
+  const pathname = headerList.get('x-pathname') || '';
+
+  if (pathname === '/merchant/auth') {
+    return <>{children}</>;
+  }
+
   const cookieStore = await cookies();
   const token = cookieStore.get('token')?.value;
 
@@ -25,15 +33,15 @@ export default async function MerchantLayout({ children }) {
     });
 
     if (!res.ok) {
-      redirectPath = '/merchant/auth';
+      redirectPath = '/merchant/auth?expired=true';
     } else {
       data = await res.json();
       if (!data.success || !data.user || data.user.role !== 'business') {
-        redirectPath = '/merchant/auth';
+        redirectPath = '/merchant/auth?expired=true';
       }
     }
   } catch (error) {
-    redirectPath = '/merchant/auth';
+    redirectPath = '/merchant/auth?expired=true';
   }
 
   if (redirectPath) {

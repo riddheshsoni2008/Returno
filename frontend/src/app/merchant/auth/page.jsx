@@ -210,6 +210,7 @@ function MerchantAuthContent() {
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full bg-dark-950/80 border border-white/10 rounded-xl py-3 px-4 text-white text-sm focus:outline-none focus:border-purple-500 transition-colors"
                 />
+                <h4 className='text-gray-400 text-xs mt-2'>OTP may arrive in your Inbox or Spam folder</h4>
               </div>
               <button
                 type="submit"

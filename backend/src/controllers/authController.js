@@ -20,8 +20,9 @@ const setTokenCookie = (res, token) => {
 
 export const sendOtp = async (req, res) => {
   try {
+    console.log(`[Customer OTP Send] Complete Request Body:`, req.body);
     const { email, name } = req.body;
-    console.log(`[Customer OTP Send] Request received for: "${email}" (Name: "${name}")`);
+    console.log(`[Customer OTP Send] Email received by API: "${email}" (Name: "${name}")`);
 
     if (!email) {
       return res.status(400).json({ error: 'Email address is required' });
@@ -33,7 +34,7 @@ export const sendOtp = async (req, res) => {
     if (!customer) {
       console.log(`[Customer OTP Send] New customer signup detected. Creating pending profile.`);
       if (!name) {
-        return res.status(400).json({ error: 'Name is required for new customer signup' });
+        return res.status(400).json({ error: 'Account not found. Please check your email or sign up to create a new account.' });
       }
       customer = await Customer.create({
         name: name.trim(),
@@ -90,6 +91,7 @@ export const sendOtp = async (req, res) => {
     };
     await customer.save();
 
+    console.log(`[Customer OTP Send] Passing email to sendOtpEmail(): "${cleanedEmail}"`);
     const deliveryResult = await sendOtpEmail(cleanedEmail, otpCode);
 
     if (!deliveryResult || !deliveryResult.success) {
@@ -180,8 +182,9 @@ export const verifyOtp = async (req, res) => {
 
 export const sendBusinessOtp = async (req, res) => {
   try {
+    console.log(`[Business OTP Send] Complete Request Body:`, req.body);
     const { email, businessName, ownerName } = req.body;
-    console.log(`[Business OTP Send] Request received for: "${email}" (Business: "${businessName}", Owner: "${ownerName}")`);
+    console.log(`[Business OTP Send] Email received by API: "${email}" (Business: "${businessName}", Owner: "${ownerName}")`);
 
     if (!email) {
       return res.status(400).json({ error: 'Email address is required' });
@@ -252,6 +255,7 @@ export const sendBusinessOtp = async (req, res) => {
     };
     await business.save();
 
+    console.log(`[Business OTP Send] Passing email to sendOtpEmail(): "${cleanedEmail}"`);
     const deliveryResult = await sendOtpEmail(cleanedEmail, otpCode);
 
     if (!deliveryResult || !deliveryResult.success) {
