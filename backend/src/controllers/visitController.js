@@ -20,6 +20,36 @@ const getDistance = (lat1, lon1, lat2, lon2) => {
   return R * c;
 };
 
+const getCityStateFromCoords = async (lat, lng) => {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), 3500);
+
+  try {
+    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`, {
+      headers: {
+        'User-Agent': 'ReturnoLoyaltyApp/1.0'
+      },
+      signal: controller.signal
+    });
+    clearTimeout(id);
+    if (res.ok) {
+      const data = await res.json();
+      const addr = data.address || {};
+      const city = addr.city || addr.town || addr.village || addr.suburb || addr.city_district || addr.county || '';
+      const state = addr.state || addr.state_district || '';
+      return { 
+        city: city.toLowerCase().trim(), 
+        state: state.toLowerCase().trim(),
+        displayName: data.display_name || `${city}, ${state}`
+      };
+    }
+  } catch (error) {
+    clearTimeout(id);
+    console.error('Error reverse geocoding:', error);
+  }
+  return null;
+};
+
 export const stampVisit = async (req, res) => {
   try {
     const { campaignId, billNumber, amount, lat, lng, deviceFingerprint } = req.body;
@@ -64,24 +94,33 @@ export const stampVisit = async (req, res) => {
       return res.status(400).json({ error: 'Location verification is required to award stamps.' });
     }
 
-    const shopLng = business.loyaltyConfiguration?.location?.coordinates[0] || 72.8777;
-    const shopLat = business.loyaltyConfiguration?.location?.coordinates[1] || 19.0760;
-    const geofenceRadius = business.loyaltyConfiguration?.geofenceRadius || 100;
-    const distance = getDistance(parseFloat(lat), parseFloat(lng), shopLat, shopLng);
+    const shopCity = (business.loyaltyConfiguration?.city || '').toLowerCase().trim();
+    const shopState = (business.loyaltyConfiguration?.state || '').toLowerCase().trim();
 
-    if (distance > geofenceRadius) {
-      await AuditLog.create({
-        actorId: user._id,
-        actorType: 'Customer',
-        action: 'STAMP_CLAIM_FAILED_GEOFENCE',
-        details: `Geofence check failed. Customer coordinate: [${lat}, ${lng}]. Shop coordinate: [${shopLat}, ${shopLng}]. Distance: ${distance.toFixed(1)}m. Limit: ${geofenceRadius}m.`,
-        ipAddress: clientIp,
-        deviceFingerprint,
-        severity: 'critical'
-      });
-      return res.status(400).json({
-        error: `Location check failed. You must scan within ${geofenceRadius}m of the counter. Current: ${distance.toFixed(0)}m.`
-      });
+    if (shopCity || shopState) {
+      const geoInfo = await getCityStateFromCoords(parseFloat(lat), parseFloat(lng));
+      if (geoInfo) {
+        const { city, state } = geoInfo;
+        const cityMatches = !shopCity || city.includes(shopCity) || shopCity.includes(city);
+        const stateMatches = !shopState || state.includes(shopState) || shopState.includes(state);
+        
+        if (!cityMatches || !stateMatches) {
+          await AuditLog.create({
+            actorId: user._id,
+            actorType: 'Customer',
+            action: 'STAMP_CLAIM_FAILED_LOCATION_MISMATCH',
+            details: `Location check failed. Customer geocoded: "${geoInfo.displayName}". Shop expected: "${shopCity}, ${shopState}".`,
+            ipAddress: clientIp,
+            deviceFingerprint,
+            severity: 'critical'
+          });
+          return res.status(400).json({
+            error: `Location check failed. You must scan within the shop's region. Your location: ${geoInfo.displayName || 'unknown'}. Shop location: ${business.loyaltyConfiguration?.city || ''}, ${business.loyaltyConfiguration?.state || ''}.`
+          });
+        }
+      } else {
+        console.warn('Reverse geocoding failed or timed out. Bypassing region check as a fallback to avoid blocking user.');
+      }
     }
 
     const fiveMinsAgo = new Date(Date.now() - 5 * 60 * 1000);

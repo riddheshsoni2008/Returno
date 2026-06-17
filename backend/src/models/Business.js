@@ -9,6 +9,8 @@ const BusinessSchema = new mongoose.Schema({
   loyaltyConfiguration: {
     category: { type: String, default: 'Cafe' },
     address: { type: String, default: '' },
+    city: { type: String, default: '' },
+    state: { type: String, default: '' },
     location: {
       type: { type: String, enum: ['Point'], default: 'Point' },
       coordinates: { type: [Number], default: [72.8777, 19.0760] } // [longitude, latitude]

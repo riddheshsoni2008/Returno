@@ -15,10 +15,8 @@ export default function SettingsHub({ initialBusiness }) {
   const [name, setName] = useState(business.name || '');
   const [category, setCategory] = useState(business.category || 'Cafe');
   const [address, setAddress] = useState(business.address || '');
-  const [verificationCode, setVerificationCode] = useState(business.verificationCode || '1234');
-  const [geofenceRadius, setGeofenceRadius] = useState(business.geofenceRadius || 100);
-  const [longitude, setLongitude] = useState(business.location?.coordinates[0] || 72.8777);
-  const [latitude, setLatitude] = useState(business.location?.coordinates[1] || 19.0760);
+  const [city, setCity] = useState(business.city || '');
+  const [state, setState] = useState(business.state || '');
 
   // Billing states
   const [billingPlan, setBillingPlan] = useState('Starter (Trial)');
@@ -38,10 +36,8 @@ export default function SettingsHub({ initialBusiness }) {
           name,
           category,
           address,
-          verificationCode,
-          geofenceRadius: parseInt(geofenceRadius),
-          longitude: parseFloat(longitude),
-          latitude: parseFloat(latitude)
+          city,
+          state
         }),
       });
       const data = await res.json();
@@ -135,67 +131,39 @@ export default function SettingsHub({ initialBusiness }) {
           </div>
 
           <div className="border-t border-white/5 pt-6">
-            <h3 className="font-bold text-slate-200 text-md">Geofencing & Anti-Fraud Coordinates</h3>
-            <p className="text-xs text-slate-500 mt-1">Stamps claims check distance to these coordinates to prevent fraud.</p>
+            <h3 className="font-bold text-slate-200 text-md">Geofencing & Regional Location</h3>
+            <p className="text-xs text-slate-500 mt-1">Stamps claims check regional location to prevent fraud.</p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Longitude</label>
+              <label className="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">City</label>
               <input
-                type="number"
-                step="any"
+                type="text"
                 required
-                value={longitude}
-                onChange={(e) => setLongitude(e.target.value)}
+                placeholder="e.g. Mumbai"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
                 className="w-full bg-dark-950 border border-white/10 rounded-xl py-3 px-4 text-white text-sm focus:outline-none focus:border-purple-500 transition-colors"
               />
             </div>
             <div>
-              <label className="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Latitude</label>
+              <label className="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">State / Region</label>
               <input
-                type="number"
-                step="any"
+                type="text"
                 required
-                value={latitude}
-                onChange={(e) => setLatitude(e.target.value)}
+                placeholder="e.g. Maharashtra"
+                value={state}
+                onChange={(e) => setState(e.target.value)}
                 className="w-full bg-dark-950 border border-white/10 rounded-xl py-3 px-4 text-white text-sm focus:outline-none focus:border-purple-500 transition-colors"
               />
             </div>
-            <div>
-              <label className="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Geofence Radius (meters)</label>
-              <input
-                type="number"
-                required
-                value={geofenceRadius}
-                onChange={(e) => setGeofenceRadius(e.target.value)}
-                className="w-full bg-dark-950 border border-white/10 rounded-xl py-3 px-4 text-white text-sm focus:outline-none focus:border-purple-500 transition-colors"
-              />
-            </div>
-          </div>
-
-          <div className="border-t border-white/5 pt-6">
-            <h3 className="font-bold text-slate-200 text-md">Redemption Verification PIN</h3>
-            <p className="text-xs text-slate-500 mt-1">4-digit PIN verified on claims to unlock rewards.</p>
-          </div>
-
-          <div>
-            <label className="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Staff Verification PIN</label>
-            <input
-              type="text"
-              required
-              maxLength={4}
-              pattern="\d{4}"
-              value={verificationCode}
-              onChange={(e) => setVerificationCode(e.target.value)}
-              className="w-24 bg-dark-950 border border-white/10 rounded-xl py-3 px-4 text-center text-lg font-bold tracking-[0.5em] text-white focus:outline-none focus:border-purple-500 transition-colors"
-            />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl transition-all text-xs uppercase tracking-wider"
+            className="w-full bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl transition-all text-xs uppercase tracking-wider shadow-lg shadow-purple-600/20"
           >
             {loading ? 'Saving Settings...' : 'Save Settings Details'}
           </button>

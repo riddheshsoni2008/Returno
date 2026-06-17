@@ -38,10 +38,10 @@ export const requestRedeem = async (req, res) => {
 
 export const approveRedeem = async (req, res) => {
   try {
-    const { rewardId, verificationCode } = req.body;
+    const { rewardId } = req.body;
 
-    if (!rewardId || !verificationCode) {
-      return res.status(400).json({ error: 'Missing reward reference or verification code' });
+    if (!rewardId) {
+      return res.status(400).json({ error: 'Missing reward reference' });
     }
 
     if (req.user.role !== 'business' && req.user.role !== 'admin') {
@@ -51,11 +51,6 @@ export const approveRedeem = async (req, res) => {
     const business = await Business.findById(req.user.id);
     if (!business) {
       return res.status(400).json({ error: 'Business profile not found' });
-    }
-
-    const pin = business.loyaltyConfiguration?.verificationCode || '1234';
-    if (pin !== verificationCode.trim()) {
-      return res.status(400).json({ error: 'Invalid verification code' });
     }
 
     const reward = await Reward.findById(rewardId);

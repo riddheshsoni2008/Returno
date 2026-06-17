@@ -37,7 +37,7 @@ export default async function MerchantSettingsPage() {
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">Configuration Hub</h1>
-        <p className="text-sm text-slate-400 mt-1">Configure geolocation boundaries, anti-fraud parameters, and verification pins.</p>
+        <p className="text-sm text-slate-400 mt-1">Configure shop metadata, address, and regional location parameters.</p>
       </div>
 
       <SettingsHub initialBusiness={business} />

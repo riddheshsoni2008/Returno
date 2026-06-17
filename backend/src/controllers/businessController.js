@@ -10,6 +10,8 @@ const formatBusinessForFE = (business) => {
   if (obj.loyaltyConfiguration) {
     obj.category = obj.loyaltyConfiguration.category;
     obj.address = obj.loyaltyConfiguration.address;
+    obj.city = obj.loyaltyConfiguration.city || '';
+    obj.state = obj.loyaltyConfiguration.state || '';
     obj.location = obj.loyaltyConfiguration.location;
     obj.geofenceRadius = obj.loyaltyConfiguration.geofenceRadius;
     obj.verificationCode = obj.loyaltyConfiguration.verificationCode;
@@ -33,7 +35,7 @@ export const getBusiness = async (req, res) => {
 
 export const updateBusiness = async (req, res) => {
   try {
-    const { name, category, address, longitude, latitude, geofenceRadius, verificationCode } = req.body;
+    const { name, category, address, city, state, geofenceRadius } = req.body;
 
     let business = await Business.findById(req.user.id);
     if (!business) {
@@ -48,15 +50,9 @@ export const updateBusiness = async (req, res) => {
     
     if (category) business.loyaltyConfiguration.category = category;
     if (address) business.loyaltyConfiguration.address = address;
-    if (verificationCode) business.loyaltyConfiguration.verificationCode = verificationCode.trim().slice(0, 4);
-    if (geofenceRadius) business.loyaltyConfiguration.geofenceRadius = parseInt(geofenceRadius);
-    
-    if (longitude !== undefined && latitude !== undefined) {
-      business.loyaltyConfiguration.location = {
-        type: 'Point',
-        coordinates: [parseFloat(longitude), parseFloat(latitude)]
-      };
-    }
+    if (city !== undefined) business.loyaltyConfiguration.city = city.trim();
+    if (state !== undefined) business.loyaltyConfiguration.state = state.trim();
+    if (geofenceRadius !== undefined) business.loyaltyConfiguration.geofenceRadius = parseInt(geofenceRadius);
 
     await business.save();
     return res.json({ success: true, business: formatBusinessForFE(business) });

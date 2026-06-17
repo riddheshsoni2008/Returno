@@ -115,7 +115,7 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
       </div>
 
       {/* Analytics Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <div className="bg-dark-900 border border-white/10 p-5 md:p-6 rounded-2xl">
           <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Total Stamps Awarded</div>
           <div className="text-3xl md:text-4xl font-extrabold text-purple-400">{totalStamps}</div>
@@ -130,13 +130,6 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
           <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Unlocked Rewards</div>
           <div className="text-3xl md:text-4xl font-extrabold text-yellow-400">{openRewardsCount}</div>
           <p className="text-[10px] text-slate-500 mt-2">Milestone cards completed</p>
-        </div>
-        <div className="bg-dark-900 border border-white/10 p-5 md:p-6 rounded-2xl">
-          <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Verification PIN</div>
-          <div className="text-2xl md:text-3xl font-extrabold tracking-wider text-slate-200 bg-white/5 border border-white/5 px-3 py-1 rounded inline-block">
-            {business.verificationCode}
-          </div>
-          <p className="text-[10px] text-slate-500 mt-2">Share with staff to confirm redemptions</p>
         </div>
       </div>
 
