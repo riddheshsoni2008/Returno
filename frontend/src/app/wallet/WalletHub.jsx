@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { apiFetch } from '@/lib/api';
+import QRScannerModal from './QRScannerModal';
 
 // Reuse our custom 3D Star SVG
 const ThreeDStar = ({ filled, className = "" }) => {
@@ -51,11 +52,12 @@ const ThreeDStar = ({ filled, className = "" }) => {
   );
 };
 
-export default function WalletHub({ user, initialCards, initialRewards, initialExploreCampaigns = [] }) {
+export default function WalletHub({ user, initialCards, initialRewards, initialExploreCampaigns = [], initialCheckins = [] }) {
   const router = useRouter();
   const [cards, setCards] = useState(initialCards);
   const [rewards, setRewards] = useState(initialRewards);
   const [exploreCampaigns, setExploreCampaigns] = useState(initialExploreCampaigns);
+  const [checkins, setCheckins] = useState(initialCheckins);
 
   // Tab State: 'explore' is the default active view
   const [activeTab, setActiveTab] = useState('explore');
@@ -174,7 +176,7 @@ export default function WalletHub({ user, initialCards, initialRewards, initialE
               onClick={() => setShowScanModal(true)}
               className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-tr from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-bold text-xs rounded-xl shadow-md shadow-red-500/10 transition-all uppercase tracking-wider"
             >
-              <span>📷</span> How to Scan
+              <span>📷</span> Scan QR Code
             </button>
             <div className="h-6 w-[1px] bg-slate-200"></div>
             <div className="flex items-center gap-2.5">
@@ -340,33 +342,48 @@ export default function WalletHub({ user, initialCards, initialRewards, initialE
               {filteredExplore.map((item) => (
                 <div
                   key={item._id}
-                  onClick={() => setSelectedCampaign(item)}
-                  className="bg-white border border-slate-200/60 rounded-2xl p-4 flex items-center justify-between shadow-sm hover:shadow-md hover:scale-[1.015] transition-all cursor-pointer"
+                  className="bg-white border border-slate-200/60 rounded-2xl p-4 shadow-sm hover:shadow-md hover:scale-[1.015] transition-all"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-red-600 flex items-center justify-center text-white font-black text-sm shadow-md shadow-red-500/20 border border-slate-100 flex-shrink-0">
-                      {item.businessId?.name ? item.businessId.name[0].toUpperCase() : 'B'}
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-1">
-                        <span className="text-xs font-black text-slate-900 uppercase tracking-wide">{item.businessId?.name}</span>
-                        <span className="text-[10px] text-red-600">✔</span>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-3 cursor-pointer" onClick={() => setSelectedCampaign(item)}>
+                      <div className="w-10 h-10 rounded-full bg-red-600 flex items-center justify-center text-white font-black text-sm shadow-md shadow-red-500/20 border border-slate-100 flex-shrink-0">
+                        {item.businessId?.name ? item.businessId.name[0].toUpperCase() : 'B'}
                       </div>
-                      <div className="text-[10px] font-bold text-red-600 mt-0.5">
-                        Win: {item.rewardTitle}
-                      </div>
-                      {item.businessId?.address && (
-                        <div className="text-[9px] text-slate-400 mt-0.5 max-w-[190px] truncate">
-                          📍 {item.businessId.city ? `${item.businessId.city}, ${item.businessId.state}` : item.businessId.address}
+                      <div>
+                        <div className="flex items-center gap-1">
+                          <span className="text-xs font-black text-slate-900 uppercase tracking-wide">{item.businessId?.name}</span>
+                          <span className="text-[10px] text-red-600">✔</span>
                         </div>
-                      )}
+                        <div className="text-[10px] font-bold text-red-600 mt-0.5">
+                          Win: {item.rewardTitle}
+                        </div>
+                        {item.businessId?.address && (
+                          <div className="text-[9px] text-slate-400 mt-0.5 max-w-[190px] truncate">
+                            📍 {item.businessId.city ? `${item.businessId.city}, ${item.businessId.state}` : item.businessId.address}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-1 bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider flex-shrink-0">
+                      <span className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse"></span>
+                      Open
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-1 bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider flex-shrink-0">
-                    <span className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse"></span>
-                    Open
-                  </div>
+                  {/* JOIN VIA QR BUTTON */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowScanModal(true);
+                    }}
+                    className="w-full flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-bold text-[11px] rounded-xl shadow-md shadow-red-500/10 transition-all uppercase tracking-wider"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-4v-4m-6 10h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    Scan QR to Join
+                  </button>
                 </div>
               ))}
 
@@ -404,7 +421,14 @@ export default function WalletHub({ user, initialCards, initialRewards, initialE
                       </div>
 
                       <h3 className="text-md font-bold text-slate-900 mb-1">{card.campaign.businessId.name}</h3>
-                      <p className="text-xs text-slate-500 mb-4">{card.campaign.title}</p>
+                      <p className="text-xs text-slate-500 mb-2">{card.campaign.title}</p>
+                      
+                      {/* Streak info */}
+                      {card.currentStreak > 0 && (
+                        <div className="inline-flex items-center gap-1.5 mb-3 bg-gradient-to-r from-amber-50 to-orange-50 text-amber-700 px-2.5 py-1 rounded-lg text-[10px] font-extrabold border border-amber-200/60 uppercase tracking-wider shadow-sm">
+                          <span className="text-sm">🔥</span> {card.currentStreak}-Day Streak
+                        </div>
+                      )}
 
                       {/* Stamps stars grid */}
                       <div className="grid grid-cols-5 gap-2 bg-slate-50 border border-slate-100 p-3 rounded-xl mb-4">
@@ -424,11 +448,46 @@ export default function WalletHub({ user, initialCards, initialRewards, initialE
                     </div>
 
                     <div className="flex justify-between items-center text-[10px] text-slate-500 font-bold border-t border-slate-100 pt-3 mt-1">
-                      <span>Progress: {card.currentStamps} / {card.campaign.requiredStamps} Stamps</span>
-                      <span>Total visits: {card.totalEarned}</span>
+                      <span>Progress: {card.currentStamps} / {card.campaign.requiredStamps}</span>
+                      <span>Total Pts: <span className="text-red-600">{card.totalPoints || 0}</span></span>
                     </div>
                   </div>
                 ))}
+              </div>
+            )}
+
+            {/* CHECK-IN HISTORY TIMELINE */}
+            {checkins && checkins.length > 0 && (
+              <div className="space-y-4 pt-6 border-t border-slate-200/80">
+                <h3 className="text-sm font-black text-slate-900 uppercase tracking-wide">Recent Check-Ins</h3>
+                <div className="bg-white border border-slate-200/80 rounded-2xl p-5 md:p-6 shadow-sm max-w-2xl">
+                  <div className="relative border-l-2 border-slate-100 pl-4 md:pl-6 space-y-6">
+                    {checkins.map((checkin) => (
+                      <div key={checkin._id} className="relative">
+                        <div className="absolute -left-[25px] md:-left-[33px] top-1 w-4 h-4 rounded-full bg-red-100 border-2 border-white flex items-center justify-center shadow-sm">
+                          <div className="w-1.5 h-1.5 rounded-full bg-red-600"></div>
+                        </div>
+                        <div className="flex justify-between items-start gap-4">
+                          <div>
+                            <div className="font-bold text-slate-900 text-sm">{checkin.campaignId?.title || 'Loyalty Campaign'}</div>
+                            <div className="text-slate-500 text-xs mt-1 leading-relaxed">
+                              Earned <span className="font-bold text-red-600">+{checkin.pointsAwarded}</span> pts
+                              {checkin.streakAtCheckin > 1 && (
+                                <span className="ml-1 text-amber-600 font-bold bg-amber-50 px-1.5 py-0.5 rounded border border-amber-100">
+                                  🔥 {checkin.streakAtCheckin} streak
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="text-[10px] text-slate-400 font-medium whitespace-nowrap text-right">
+                            {new Date(checkin.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}<br/>
+                            {new Date(checkin.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             )}
           </div>
@@ -660,12 +719,26 @@ export default function WalletHub({ user, initialCards, initialRewards, initialE
             )}
 
             <p className="text-[10px] text-center text-slate-400 leading-normal font-medium">
-              Scan the shop's QR code in-store to claim stamps and redeem rewards!
+              Scan the shop's QR code in-store to join the campaign and start earning rewards!
             </p>
+
+            {/* JOIN VIA QR BUTTON IN MODAL */}
+            <button
+              onClick={() => {
+                setSelectedCampaign(null);
+                setShowScanModal(true);
+              }}
+              className="w-full py-3 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-red-500/10 transition-all uppercase tracking-wider flex items-center justify-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-4v-4m-6 10h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              Scan QR to Join
+            </button>
 
             <button
               onClick={() => setSelectedCampaign(null)}
-              className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-md transition-all uppercase tracking-wider"
+              className="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-all uppercase tracking-wider"
             >
               Close
             </button>
@@ -675,31 +748,7 @@ export default function WalletHub({ user, initialCards, initialRewards, initialE
 
       {/* SCAN INSTRUCTIONS MODAL */}
       {showScanModal && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white w-full max-w-sm rounded-[2rem] p-6 shadow-2xl relative overflow-hidden border border-slate-100 animate-scale-in space-y-4 text-center">
-
-            <div className="w-16 h-16 rounded-full bg-red-50 text-red-600 border border-red-100 flex items-center justify-center text-2xl mx-auto shadow-md">
-              📷
-            </div>
-
-            <h3 className="text-md font-black text-slate-900 uppercase tracking-tight">How to Get Stamped</h3>
-
-            <p className="text-slate-600 text-xs leading-relaxed max-w-[280px] mx-auto">
-              Look for the Returno QR Code at the partner shop's register. Point your phone's camera at the QR code, tap the link, and check-in to get stamped instantly!
-            </p>
-
-            <div className="bg-slate-50 border border-slate-100 p-4 rounded-2xl text-[10px] text-slate-500 font-bold uppercase tracking-wider leading-relaxed">
-              ⚡ No apps to install. Just scan and claim.
-            </div>
-
-            <button
-              onClick={() => setShowScanModal(false)}
-              className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-md transition-all uppercase tracking-wider"
-            >
-              Got it!
-            </button>
-          </div>
-        </div>
+        <QRScannerModal onClose={() => setShowScanModal(false)} />
       )}
 
     </div>

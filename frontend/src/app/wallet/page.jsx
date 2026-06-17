@@ -44,7 +44,7 @@ export default async function WalletPage() {
     redirect(redirectPath);
   }
 
-  const { user, walletCards, exploreCampaigns = [], rewards } = data;
+  const { user, walletCards, exploreCampaigns = [], rewards, recentCheckins = [] } = data;
 
   return (
     <WalletHub 
@@ -52,6 +52,7 @@ export default async function WalletPage() {
       initialCards={walletCards} 
       initialRewards={rewards}
       initialExploreCampaigns={exploreCampaigns} 
+      initialCheckins={recentCheckins}
     />
   );
 }
