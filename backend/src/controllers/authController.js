@@ -1,7 +1,7 @@
 import fs from 'fs';
-import User from '../models/User.js';
+import Customer from '../models/Customer.js';
 import Business from '../models/Business.js';
-import { hashPassword, generateToken, hashOtp, verifyPassword, verifyToken } from '../utils/auth.js';
+import { generateToken, hashOtp } from '../utils/auth.js';
 import { sendOtpEmail } from '../services/emailService.js';
 
 const setTokenCookie = (res, token) => {
@@ -14,164 +14,48 @@ const setTokenCookie = (res, token) => {
   });
 };
 
-export const register = async (req, res) => {
-  try {
-    const { name, email, password, role } = req.body;
-
-    if (!name || !email || !password) {
-      return res.status(400).json({ error: 'Missing required fields' });
-    }
-
-    const existingUser = await User.findOne({ email: email.toLowerCase() });
-    if (existingUser) {
-      return res.status(400).json({ error: 'User already exists' });
-    }
-
-    const userRole = role === 'business' ? 'business' : 'customer';
-    const passwordHash = await hashPassword(password);
-
-    const user = await User.create({
-      name,
-      email: email.toLowerCase(),
-      role: userRole,
-      passwordHash
-    });
-
-    if (userRole === 'business') {
-      await Business.create({
-        ownerId: user._id,
-        name: `${name}'s Business`,
-        category: 'Cafe',
-        address: 'Set Shop Address',
-        location: {
-          type: 'Point',
-          coordinates: [72.8777, 19.0760] // Mumbai default
-        },
-        verificationCode: Math.floor(1000 + Math.random() * 9000).toString()
-      });
-    }
-
-    const token = generateToken(user);
-    setTokenCookie(res, token);
-
-    return res.status(201).json({
-      success: true,
-      user: { id: user._id, name: user.name, email: user.email, role: user.role }
-    });
-  } catch (error) {
-    console.error('Register API Error:', error);
-    return res.status(500).json({ error: 'Internal Server Error' });
-  }
-};
-
-export const login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json({ error: 'Email and password are required' });
-    }
-
-    const user = await User.findOne({ email: email.toLowerCase().trim() });
-    if (!user) {
-      return res.status(401).json({ error: 'Invalid email or password' });
-    }
-
-    if (!user.passwordHash) {
-      return res.status(400).json({ error: 'Account uses OAuth. Please login via Google or OTP.' });
-    }
-
-    const isMatch = await verifyPassword(password, user.passwordHash);
-    if (!isMatch) {
-      return res.status(401).json({ error: 'Invalid email or password' });
-    }
-
-    if (user.role !== 'business' && user.role !== 'admin') {
-      return res.status(403).json({ error: 'Access denied. Please use OTP login.' });
-    }
-
-    const token = generateToken(user);
-    setTokenCookie(res, token);
-
-    return res.json({
-      success: true,
-      user: { id: user._id, name: user.name, email: user.email, role: user.role }
-    });
-  } catch (error) {
-    console.error('Login API Error:', error);
-    return res.status(500).json({ error: 'Internal Server Error' });
-  }
-};
-
-export const googleAuth = async (req, res) => {
-  try {
-    const { email, name, googleId } = req.body;
-
-    if (!email || !name || !googleId) {
-      return res.status(400).json({ error: 'Missing Google profile details' });
-    }
-
-    const cleanedEmail = email.toLowerCase().trim();
-    let user = await User.findOne({
-      $or: [{ googleId }, { email: cleanedEmail }]
-    });
-
-    if (!user) {
-      user = await User.create({ name, email: cleanedEmail, googleId, role: 'customer' });
-    } else if (!user.googleId) {
-      user.googleId = googleId;
-      await user.save();
-    }
-
-    const token = generateToken(user);
-    setTokenCookie(res, token);
-
-    return res.json({
-      success: true,
-      user: { id: user._id, name: user.name, email: user.email, role: user.role }
-    });
-  } catch (error) {
-    console.error('Google OAuth API Error:', error);
-    return res.status(500).json({ error: 'Internal Server Error' });
-  }
-};
+// ==========================================
+// CUSTOMER AUTH FLOW
+// ==========================================
 
 export const sendOtp = async (req, res) => {
   try {
-    const { email } = req.body;
-    console.log(`[OTP Send] Request received for email: "${email}"`);
+    const { email, name } = req.body;
+    console.log(`[Customer OTP Send] Request received for: "${email}" (Name: "${name}")`);
 
     if (!email) {
-      console.warn('[OTP Send] Warning: Email address is required but not provided');
       return res.status(400).json({ error: 'Email address is required' });
     }
 
     const cleanedEmail = email.toLowerCase().trim();
-    console.log(`[OTP Send] Cleaned email: "${cleanedEmail}"`);
+    let customer = await Customer.findOne({ email: cleanedEmail });
 
-    let user = await User.findOne({ email: cleanedEmail });
-    if (!user) {
-      console.log(`[OTP Send] User not found. Creating a new customer user for: "${cleanedEmail}"`);
-      user = await User.create({
-        name: `Customer ${cleanedEmail.split('@')[0]}`,
+    if (!customer) {
+      console.log(`[Customer OTP Send] New customer signup detected. Creating pending profile.`);
+      if (!name) {
+        return res.status(400).json({ error: 'Name is required for new customer signup' });
+      }
+      customer = await Customer.create({
+        name: name.trim(),
         email: cleanedEmail,
         role: 'customer'
       });
     }
 
     const now = new Date();
-    if (user.otp && user.otp.lastSentAt) {
-      const elapsedSeconds = Math.floor((now - new Date(user.otp.lastSentAt)) / 1000);
+    // Cooldown check: 30 seconds
+    if (customer.otp && customer.otp.lastSentAt) {
+      const elapsedSeconds = Math.floor((now - new Date(customer.otp.lastSentAt)) / 1000);
       if (elapsedSeconds < 30) {
-        console.warn(`[OTP Send] Rate limited (cooldown): Wait ${30 - elapsedSeconds}s for: "${cleanedEmail}"`);
         return res.status(429).json({ error: `Please wait ${30 - elapsedSeconds} seconds before requesting another OTP.` });
       }
     }
 
-    const limitWindowMs = 15 * 60 * 1000; // 15 minutes
+    // Rate limit check: max 15 requests per 15 minutes
+    const limitWindowMs = 15 * 60 * 1000;
     const maxRequests = 15;
-    let requestCount = user.otp?.requestCount || 0;
-    let windowStart = user.otp?.windowStart ? new Date(user.otp.windowStart) : now;
+    let requestCount = customer.otp?.requestCount || 0;
+    let windowStart = customer.otp?.windowStart ? new Date(customer.otp.windowStart) : now;
 
     if (now - windowStart > limitWindowMs) {
       windowStart = now;
@@ -181,22 +65,22 @@ export const sendOtp = async (req, res) => {
     if (requestCount >= maxRequests) {
       const nextResetTime = new Date(windowStart.getTime() + limitWindowMs);
       const waitMinutes = Math.ceil((nextResetTime - now) / (60 * 1000));
-      console.warn(`[OTP Send] Rate limited (max requests): Wait ${waitMinutes}m for: "${cleanedEmail}"`);
       return res.status(429).json({ error: `Too many OTP requests. Please try again in ${waitMinutes} minutes.` });
     }
 
     const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-    console.log(`[OTP Send] Generated OTP Code: "${otpCode}" for "${cleanedEmail}"`);
+    console.log(`[Customer OTP Send] Generated OTP: "${otpCode}" for "${cleanedEmail}"`);
+
     try {
       fs.writeFileSync('./otp_debug.txt', JSON.stringify({ email: cleanedEmail, code: otpCode }));
     } catch (fsErr) {
       console.error('Failed to write debug OTP file:', fsErr.message);
     }
 
-    const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 mins
     const hashedCode = hashOtp(otpCode, cleanedEmail);
 
-    user.otp = {
+    customer.otp = {
       hashedCode,
       expiresAt,
       attempts: 0,
@@ -204,16 +88,13 @@ export const sendOtp = async (req, res) => {
       requestCount: requestCount + 1,
       windowStart
     };
-    await user.save();
-    console.log(`[OTP Send] OTP metadata saved in MongoDB for user: "${cleanedEmail}"`);
+    await customer.save();
 
-    console.log(`[OTP Send] Attempting to deliver email...`);
     const deliveryResult = await sendOtpEmail(cleanedEmail, otpCode);
 
     if (!deliveryResult || !deliveryResult.success) {
-      console.error(`[OTP Send] Email delivery failed: ${deliveryResult?.error}`);
       console.log(`\n==================================================`);
-      console.log(`[DEV FALLBACK] Active OTP code for "${cleanedEmail}": ${otpCode}`);
+      console.log(`[DEV FALLBACK] Customer OTP for "${cleanedEmail}": ${otpCode}`);
       console.log(`==================================================\n`);
 
       if (process.env.NODE_ENV !== 'production') {
@@ -222,124 +103,266 @@ export const sendOtp = async (req, res) => {
           message: `[Dev Mode] Email failed but OTP generated! Check backend console.`
         });
       }
-
       return res.status(502).json({ error: `Failed to deliver OTP: ${deliveryResult?.error || 'Provider communication failure'}` });
     }
 
-    console.log(`[OTP Send] OTP successfully delivered to "${cleanedEmail}"`);
     return res.json({ success: true, message: 'OTP verification code sent successfully to your email!' });
   } catch (error) {
-    console.error('[OTP Send] Fatal Controller Error:', error.stack || error);
-    return res.status(500).json({ error: error.message || 'Internal Server Error' });
+    console.error('[Customer OTP Send] Fatal Error:', error);
+    return res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
 export const verifyOtp = async (req, res) => {
   try {
     const { email, code } = req.body;
-    console.log(`[OTP Verify] Received payload - Email: "${email}", Code: "${code}"`);
+    console.log(`[Customer OTP Verify] Email: "${email}", Code: "${code}"`);
 
     if (!email || !code) {
-      console.warn(`[OTP Verify] Validation failure: missing fields. Email exists? ${!!email}, Code exists? ${!!code}`);
       return res.status(400).json({ error: 'Email address and verification code are required' });
     }
 
     const cleanedEmail = email.toLowerCase().trim();
-    console.log(`[OTP Verify] Cleaned email: "${cleanedEmail}"`);
-    const user = await User.findOne({ email: cleanedEmail });
+    const customer = await Customer.findOne({ email: cleanedEmail });
 
-    if (!user) {
-      console.warn(`[OTP Verify] Lookup failure: No user found with email: "${cleanedEmail}"`);
+    if (!customer || !customer.otp || !customer.otp.hashedCode) {
       return res.status(400).json({ error: 'No active OTP verification session found' });
     }
 
-    console.log(`[OTP Verify] User found. OTP metadata in DB:`, user.otp);
-
-    if (!user.otp || !user.otp.hashedCode) {
-      console.warn(`[OTP Verify] Validation failure: User has no active OTP session (hashedCode is missing)`);
-      return res.status(400).json({ error: 'No active OTP verification session found' });
-    }
-
-    console.log(`[OTP Verify] Checking attempts. Current count: ${user.otp.attempts || 0}`);
-    if (user.otp.attempts >= 5) {
-      console.warn(`[OTP Verify] Validation failure: Too many attempts (${user.otp.attempts})`);
-      user.otp = undefined;
-      await user.save();
+    if (customer.otp.attempts >= 5) {
+      customer.otp = undefined;
+      await customer.save();
       return res.status(400).json({ error: 'Too many failed verification attempts. Please request a new OTP.' });
     }
 
     const now = new Date();
-    const expiry = new Date(user.otp.expiresAt);
-    console.log(`[OTP Verify] Checking expiry. Now: ${now.toISOString()}, Expiry: ${expiry.toISOString()}`);
-    if (now > expiry) {
-      console.warn(`[OTP Verify] Validation failure: OTP expired by ${Math.floor((now - expiry) / 1000)} seconds`);
-      user.otp = undefined;
-      await user.save();
+    if (now > new Date(customer.otp.expiresAt)) {
+      customer.otp = undefined;
+      await customer.save();
       return res.status(400).json({ error: 'OTP has expired. Please request a new one.' });
     }
 
     const inputHash = hashOtp(code.trim(), cleanedEmail);
-    console.log(`[OTP Verify] Comparing hashes - Input Code: "${code.trim()}"`);
-    console.log(`[OTP Verify] Input Hash:  "${inputHash}"`);
-    console.log(`[OTP Verify] Stored Hash: "${user.otp.hashedCode}"`);
-
     const isDevMock = process.env.NODE_ENV !== 'production' && cleanedEmail === 'riddheshsoni2008@gmail.com' && code.trim() === '123456';
 
-    if (user.otp.hashedCode !== inputHash && !isDevMock) {
-      const currentAttempts = (user.otp.attempts || 0) + 1;
-      console.warn(`[OTP Verify] Code mismatch. Incrementing attempts to: ${currentAttempts}`);
-
+    if (customer.otp.hashedCode !== inputHash && !isDevMock) {
+      const currentAttempts = (customer.otp.attempts || 0) + 1;
       if (currentAttempts >= 5) {
-        console.warn(`[OTP Verify] Validation failure: Max attempts reached after mismatch`);
-        user.otp = undefined;
-        await user.save();
-        return res.status(400).json({ error: 'Too many failed verification attempts. This OTP has been invalidated. Please request a new one.' });
+        customer.otp = undefined;
+        await customer.save();
+        return res.status(400).json({ error: 'Too many failed verification attempts. OTP invalidated.' });
       }
-
-      user.otp.attempts = currentAttempts;
-      await user.save();
+      customer.otp.attempts = currentAttempts;
+      await customer.save();
       return res.status(400).json({ error: `Invalid verification code. You have ${5 - currentAttempts} attempts remaining.` });
     }
 
-    console.log(`[OTP Verify] Code successfully verified! Clearing OTP metadata.`);
-    user.otp = undefined;
-    await user.save();
+    // Success - Clear OTP metadata
+    customer.otp = undefined;
+    await customer.save();
 
-    const token = generateToken(user);
-    console.log(`[OTP Verify] JWT token generated successfully.`);
+    const token = generateToken(customer);
     setTokenCookie(res, token);
-    console.log(`[OTP Verify] Token cookie attached to response.`);
 
     return res.json({
       success: true,
-      user: { id: user._id, name: user.name, email: user.email, role: user.role }
+      user: { id: customer._id, name: customer.name, email: customer.email, role: customer.role }
     });
   } catch (error) {
-    console.error('[OTP Verify] Fatal Controller Error:', error.stack || error);
+    console.error('[Customer OTP Verify] Fatal Error:', error);
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
+// ==========================================
+// BUSINESS AUTH FLOW
+// ==========================================
+
+export const sendBusinessOtp = async (req, res) => {
+  try {
+    const { email, businessName, ownerName } = req.body;
+    console.log(`[Business OTP Send] Request received for: "${email}" (Business: "${businessName}", Owner: "${ownerName}")`);
+
+    if (!email) {
+      return res.status(400).json({ error: 'Email address is required' });
+    }
+
+    const cleanedEmail = email.toLowerCase().trim();
+    let business = await Business.findOne({ email: cleanedEmail });
+
+    if (!business) {
+      console.log(`[Business OTP Send] New business signup detected. Creating pending profile.`);
+      if (!businessName || !ownerName) {
+        return res.status(400).json({ error: 'Business name and Owner name are required for new signup' });
+      }
+      business = await Business.create({
+        businessName: businessName.trim(),
+        ownerName: ownerName.trim(),
+        email: cleanedEmail,
+        role: 'business',
+        qrCode: `static_qr_${Math.floor(100000 + Math.random() * 900000)}`
+      });
+    }
+
+    const now = new Date();
+    // Cooldown check: 30 seconds
+    if (business.otp && business.otp.lastSentAt) {
+      const elapsedSeconds = Math.floor((now - new Date(business.otp.lastSentAt)) / 1000);
+      if (elapsedSeconds < 30) {
+        return res.status(429).json({ error: `Please wait ${30 - elapsedSeconds} seconds before requesting another OTP.` });
+      }
+    }
+
+    // Rate limit check: max 15 requests per 15 minutes
+    const limitWindowMs = 15 * 60 * 1000;
+    const maxRequests = 15;
+    let requestCount = business.otp?.requestCount || 0;
+    let windowStart = business.otp?.windowStart ? new Date(business.otp.windowStart) : now;
+
+    if (now - windowStart > limitWindowMs) {
+      windowStart = now;
+      requestCount = 0;
+    }
+
+    if (requestCount >= maxRequests) {
+      const nextResetTime = new Date(windowStart.getTime() + limitWindowMs);
+      const waitMinutes = Math.ceil((nextResetTime - now) / (60 * 1000));
+      return res.status(429).json({ error: `Too many OTP requests. Please try again in ${waitMinutes} minutes.` });
+    }
+
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    console.log(`[Business OTP Send] Generated OTP: "${otpCode}" for "${cleanedEmail}"`);
+
+    try {
+      fs.writeFileSync('./otp_debug.txt', JSON.stringify({ email: cleanedEmail, code: otpCode }));
+    } catch (fsErr) {
+      console.error('Failed to write debug OTP file:', fsErr.message);
+    }
+
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 mins
+    const hashedCode = hashOtp(otpCode, cleanedEmail);
+
+    business.otp = {
+      hashedCode,
+      expiresAt,
+      attempts: 0,
+      lastSentAt: now,
+      requestCount: requestCount + 1,
+      windowStart
+    };
+    await business.save();
+
+    const deliveryResult = await sendOtpEmail(cleanedEmail, otpCode);
+
+    if (!deliveryResult || !deliveryResult.success) {
+      console.log(`\n==================================================`);
+      console.log(`[DEV FALLBACK] Business OTP for "${cleanedEmail}": ${otpCode}`);
+      console.log(`==================================================\n`);
+
+      if (process.env.NODE_ENV !== 'production') {
+        return res.json({
+          success: true,
+          message: `[Dev Mode] Email failed but OTP generated! Check backend console.`
+        });
+      }
+      return res.status(502).json({ error: `Failed to deliver OTP: ${deliveryResult?.error || 'Provider communication failure'}` });
+    }
+
+    return res.json({ success: true, message: 'OTP verification code sent successfully to your email!' });
+  } catch (error) {
+    console.error('[Business OTP Send] Fatal Error:', error);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+export const verifyBusinessOtp = async (req, res) => {
+  try {
+    const { email, code } = req.body;
+    console.log(`[Business OTP Verify] Email: "${email}", Code: "${code}"`);
+
+    if (!email || !code) {
+      return res.status(400).json({ error: 'Email address and verification code are required' });
+    }
+
+    const cleanedEmail = email.toLowerCase().trim();
+    const business = await Business.findOne({ email: cleanedEmail });
+
+    if (!business || !business.otp || !business.otp.hashedCode) {
+      return res.status(400).json({ error: 'No active OTP verification session found' });
+    }
+
+    if (business.otp.attempts >= 5) {
+      business.otp = undefined;
+      await business.save();
+      return res.status(400).json({ error: 'Too many failed verification attempts. Please request a new OTP.' });
+    }
+
+    const now = new Date();
+    if (now > new Date(business.otp.expiresAt)) {
+      business.otp = undefined;
+      await business.save();
+      return res.status(400).json({ error: 'OTP has expired. Please request a new one.' });
+    }
+
+    const inputHash = hashOtp(code.trim(), cleanedEmail);
+    const isDevMock = process.env.NODE_ENV !== 'production' && cleanedEmail === 'riddheshsoni2008@gmail.com' && code.trim() === '123456';
+
+    if (business.otp.hashedCode !== inputHash && !isDevMock) {
+      const currentAttempts = (business.otp.attempts || 0) + 1;
+      if (currentAttempts >= 5) {
+        business.otp = undefined;
+        await business.save();
+        return res.status(400).json({ error: 'Too many failed verification attempts. OTP invalidated.' });
+      }
+      business.otp.attempts = currentAttempts;
+      await business.save();
+      return res.status(400).json({ error: `Invalid verification code. You have ${5 - currentAttempts} attempts remaining.` });
+    }
+
+    // Success - Clear OTP metadata
+    business.otp = undefined;
+    await business.save();
+
+    const token = generateToken({
+      _id: business._id,
+      email: business.email,
+      role: business.role,
+      name: business.ownerName // Map ownerName to name payload for JWT token
+    });
+    setTokenCookie(res, token);
+
+    return res.json({
+      success: true,
+      user: { id: business._id, name: business.ownerName, businessName: business.businessName, email: business.email, role: business.role }
+    });
+  } catch (error) {
+    console.error('[Business OTP Verify] Fatal Error:', error);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+// ==========================================
+// SESSION & UTILS
+// ==========================================
+
 export const me = async (req, res) => {
   try {
     const token = req.cookies?.token || req.headers.authorization?.split(' ')[1];
-
     if (!token) return res.json({ user: null });
 
     const decoded = verifyToken(token);
     if (!decoded) return res.json({ user: null });
 
-    const user = await User.findById(decoded.id).select('-passwordHash -otp');
-    if (!user) return res.json({ user: null });
-
-    const userObj = user.toObject();
-
-    if (user.role === 'business') {
-      const business = await Business.findOne({ ownerId: user._id });
-      userObj.business = business || null;
+    let user;
+    if (decoded.role === 'business') {
+      user = await Business.findById(decoded.id).select('-otp');
+    } else {
+      user = await Customer.findById(decoded.id).select('-otp');
     }
 
-    return res.json({ success: true, user: userObj });
+    if (!user) return res.json({ user: null });
+
+    return res.json({ success: true, user });
   } catch (error) {
     console.error('Session Validation API Error:', error);
     return res.status(500).json({ error: 'Internal Server Error' });

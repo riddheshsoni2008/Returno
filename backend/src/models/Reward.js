@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const RewardSchema = new mongoose.Schema({
-  customerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true },
+  customerId: { type: mongoose.Schema.Types.ObjectId, ref: 'Customer', required: true, index: true },
   campaignId: { type: mongoose.Schema.Types.ObjectId, ref: 'Campaign', required: true },
   rewardTitle: { type: String, required: true },
   status: { type: String, enum: ['unredeemed', 'pending', 'redeemed'], default: 'unredeemed', index: true },

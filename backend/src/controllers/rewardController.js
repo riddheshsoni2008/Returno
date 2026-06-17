@@ -1,4 +1,4 @@
-import User from '../models/User.js';
+import Customer from '../models/Customer.js';
 import Business from '../models/Business.js';
 import Campaign from '../models/Campaign.js';
 import Reward from '../models/Reward.js';
@@ -48,13 +48,13 @@ export const approveRedeem = async (req, res) => {
       return res.status(403).json({ error: 'Forbidden' });
     }
 
-    const user = await User.findById(req.user.id);
-    const business = await Business.findOne({ ownerId: user._id });
+    const business = await Business.findById(req.user.id);
     if (!business) {
       return res.status(400).json({ error: 'Business profile not found' });
     }
 
-    if (business.verificationCode !== verificationCode.trim()) {
+    const pin = business.loyaltyConfiguration?.verificationCode || '1234';
+    if (pin !== verificationCode.trim()) {
       return res.status(400).json({ error: 'Invalid verification code' });
     }
 
@@ -80,12 +80,13 @@ export const approveRedeem = async (req, res) => {
       rewardId: reward._id,
       customerId: reward.customerId,
       businessId: business._id,
-      confirmedByOwnerId: user._id,
+      confirmedByOwnerId: business._id,
       redeemedAt: new Date()
     });
 
     await AuditLog.create({
-      actorId: user._id,
+      actorId: business._id,
+      actorType: 'Business',
       action: 'REWARD_REDEMPTION_APPROVE',
       details: `Approved reward "${reward.rewardTitle}" (ID: ${reward._id}) for customer ID: ${reward.customerId}`,
       ipAddress: req.ip || '127.0.0.1',

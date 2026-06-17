@@ -1,11 +1,12 @@
 import mongoose from 'mongoose';
 
-const UserSchema = new mongoose.Schema({
+const CustomerSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true, index: true },
-  phone: { type: String, index: true },
-  role: { type: String, enum: ['admin', 'business', 'customer'], default: 'customer' },
-    passwordHash: { type: String },
+  role: { type: String, default: 'customer' },
+  loyaltyData: {
+    points: { type: Number, default: 0 }
+  },
   otp: {
     hashedCode: { type: String },
     expiresAt: { type: Date },
@@ -16,4 +17,4 @@ const UserSchema = new mongoose.Schema({
   }
 }, { timestamps: true, versionKey: false });
 
-export default mongoose.models.User || mongoose.model('User', UserSchema);
+export default mongoose.models.Customer || mongoose.model('Customer', CustomerSchema);

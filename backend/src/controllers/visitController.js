@@ -1,4 +1,4 @@
-import User from '../models/User.js';
+import Customer from '../models/Customer.js';
 import Business from '../models/Business.js';
 import Campaign from '../models/Campaign.js';
 import Visit from '../models/Visit.js';
@@ -28,7 +28,7 @@ export const stampVisit = async (req, res) => {
       return res.status(400).json({ error: 'Missing stamp request parameters' });
     }
 
-    const user = await User.findById(req.user.id);
+    const user = await Customer.findById(req.user.id);
     if (!user) {
       return res.status(401).json({ error: 'User not found' });
     }
@@ -50,6 +50,7 @@ export const stampVisit = async (req, res) => {
     if (existingBillClaim) {
       await AuditLog.create({
         actorId: user._id,
+        actorType: 'Customer',
         action: 'STAMP_CLAIM_FAILED_DUPLICATE_BILL',
         details: `Duplicate bill claim attempted: ${cleanedBillNumber} for Campaign ID: ${campaignId}`,
         ipAddress: clientIp,
@@ -63,21 +64,23 @@ export const stampVisit = async (req, res) => {
       return res.status(400).json({ error: 'Location verification is required to award stamps.' });
     }
 
-    const shopLng = business.location.coordinates[0];
-    const shopLat = business.location.coordinates[1];
+    const shopLng = business.loyaltyConfiguration?.location?.coordinates[0] || 72.8777;
+    const shopLat = business.loyaltyConfiguration?.location?.coordinates[1] || 19.0760;
+    const geofenceRadius = business.loyaltyConfiguration?.geofenceRadius || 100;
     const distance = getDistance(parseFloat(lat), parseFloat(lng), shopLat, shopLng);
 
-    if (distance > business.geofenceRadius) {
+    if (distance > geofenceRadius) {
       await AuditLog.create({
         actorId: user._id,
+        actorType: 'Customer',
         action: 'STAMP_CLAIM_FAILED_GEOFENCE',
-        details: `Geofence check failed. Customer coordinate: [${lat}, ${lng}]. Shop coordinate: [${shopLat}, ${shopLng}]. Distance: ${distance.toFixed(1)}m. Limit: ${business.geofenceRadius}m.`,
+        details: `Geofence check failed. Customer coordinate: [${lat}, ${lng}]. Shop coordinate: [${shopLat}, ${shopLng}]. Distance: ${distance.toFixed(1)}m. Limit: ${geofenceRadius}m.`,
         ipAddress: clientIp,
         deviceFingerprint,
         severity: 'critical'
       });
       return res.status(400).json({
-        error: `Location check failed. You must scan within ${business.geofenceRadius}m of the counter. Current: ${distance.toFixed(0)}m.`
+        error: `Location check failed. You must scan within ${geofenceRadius}m of the counter. Current: ${distance.toFixed(0)}m.`
       });
     }
 

@@ -1,11 +1,11 @@
-import User from '../models/User.js';
+import Customer from '../models/Customer.js';
 import Campaign from '../models/Campaign.js';
 import Visit from '../models/Visit.js';
 import Reward from '../models/Reward.js';
 
 export const getWalletData = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select('-passwordHash -otp');
+    const user = await Customer.findById(req.user.id).select('-otp');
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -19,9 +19,22 @@ export const getWalletData = async (req, res) => {
       const stampCount = await Visit.countDocuments({ customerId: user._id, campaignId: camp._id });
       if (stampCount > 0) {
         const target = camp.requiredStamps;
+        const formattedCampaign = camp.toObject();
+        if (formattedCampaign.businessId) {
+          const biz = formattedCampaign.businessId;
+          biz.name = biz.businessName; // Map businessName to name for frontend display
+          if (biz.loyaltyConfiguration) {
+            biz.category = biz.loyaltyConfiguration.category;
+            biz.address = biz.loyaltyConfiguration.address;
+            biz.location = biz.loyaltyConfiguration.location;
+            biz.geofenceRadius = biz.loyaltyConfiguration.geofenceRadius;
+            biz.verificationCode = biz.loyaltyConfiguration.verificationCode;
+          }
+        }
+
         walletCards.push({
-          campaign: camp,
-          currentStamps: stampCount % target === 0 ? (stampCount > 0 ? 0 : 0) : stampCount % target,
+          campaign: formattedCampaign,
+          currentStamps: stampCount % target === 0 ? 0 : stampCount % target,
           totalEarned: stampCount
         });
       }

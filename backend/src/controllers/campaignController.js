@@ -3,6 +3,21 @@ import Business from '../models/Business.js';
 import QrCode from '../models/QrCode.js';
 import crypto from 'crypto';
 
+// Helper to format business object for the frontend expectations
+const formatBusinessForFE = (business) => {
+  if (!business) return null;
+  const obj = business.toObject ? business.toObject() : { ...business };
+  if (obj.loyaltyConfiguration) {
+    obj.category = obj.loyaltyConfiguration.category;
+    obj.address = obj.loyaltyConfiguration.address;
+    obj.location = obj.loyaltyConfiguration.location;
+    obj.geofenceRadius = obj.loyaltyConfiguration.geofenceRadius;
+    obj.verificationCode = obj.loyaltyConfiguration.verificationCode;
+  }
+  obj.name = obj.businessName; // Map businessName to name
+  return obj;
+};
+
 export const createCampaign = async (req, res) => {
   try {
     const { title, description, requiredStamps, rewardTitle } = req.body;
@@ -11,7 +26,7 @@ export const createCampaign = async (req, res) => {
       return res.status(400).json({ error: 'Missing required campaign parameters' });
     }
 
-    const business = await Business.findOne({ ownerId: req.user.id });
+    const business = await Business.findById(req.user.id);
     if (!business) {
       return res.status(400).json({ error: 'Business profile not found' });
     }
@@ -42,7 +57,7 @@ export const createCampaign = async (req, res) => {
 
 export const getCampaigns = async (req, res) => {
   try {
-    const business = await Business.findOne({ ownerId: req.user.id });
+    const business = await Business.findById(req.user.id);
     if (!business) {
       return res.status(400).json({ error: 'Business profile not found' });
     }
@@ -70,7 +85,7 @@ export const getCampaignById = async (req, res) => {
       return res.status(404).json({ error: 'Business not found' });
     }
 
-    return res.json({ success: true, campaign, business });
+    return res.json({ success: true, campaign, business: formatBusinessForFE(business) });
   } catch (error) {
     console.error('Campaign GetById API Error:', error);
     return res.status(500).json({ error: 'Internal Server Error' });

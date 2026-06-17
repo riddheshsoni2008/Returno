@@ -1,22 +1,25 @@
 import express from 'express';
 import {
-  register,
-  login,
-  googleAuth,
   sendOtp,
   verifyOtp,
+  sendBusinessOtp,
+  verifyBusinessOtp,
   me,
   logout
 } from '../controllers/authController.js';
 
 const router = express.Router();
 
-router.post('/register', register);
-router.post('/login', login);
-router.post('/google', googleAuth);
+// Customer Auth Routes
 router.post('/otp/send', sendOtp);
 router.post('/otp/verify', verifyOtp);
+
+// Business Auth Routes
+router.post('/business/otp/send', sendBusinessOtp);
+router.post('/business/otp/verify', verifyBusinessOtp);
+
+// Session Management
 router.get('/me', me);
-router.post('/me', logout); // The frontend calls POST /api/auth/me to logout
+router.post('/me', logout);
 
 export default router;

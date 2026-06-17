@@ -3,13 +3,28 @@ import Campaign from '../models/Campaign.js';
 import Visit from '../models/Visit.js';
 import Reward from '../models/Reward.js';
 
+// Helper to format business object for the frontend expectations
+const formatBusinessForFE = (business) => {
+  if (!business) return null;
+  const obj = business.toObject ? business.toObject() : { ...business };
+  if (obj.loyaltyConfiguration) {
+    obj.category = obj.loyaltyConfiguration.category;
+    obj.address = obj.loyaltyConfiguration.address;
+    obj.location = obj.loyaltyConfiguration.location;
+    obj.geofenceRadius = obj.loyaltyConfiguration.geofenceRadius;
+    obj.verificationCode = obj.loyaltyConfiguration.verificationCode;
+  }
+  obj.name = obj.businessName; // Map businessName to name
+  return obj;
+};
+
 export const getBusiness = async (req, res) => {
   try {
-    const business = await Business.findOne({ ownerId: req.user.id });
+    const business = await Business.findById(req.user.id);
     if (!business) {
       return res.status(404).json({ error: 'Business profile not found' });
     }
-    return res.json({ success: true, business });
+    return res.json({ success: true, business: formatBusinessForFE(business) });
   } catch (error) {
     console.error('Business Get API Error:', error);
     return res.status(500).json({ error: 'Internal Server Error' });
@@ -20,26 +35,31 @@ export const updateBusiness = async (req, res) => {
   try {
     const { name, category, address, longitude, latitude, geofenceRadius, verificationCode } = req.body;
 
-    let business = await Business.findOne({ ownerId: req.user.id });
+    let business = await Business.findById(req.user.id);
     if (!business) {
       return res.status(404).json({ error: 'Business profile not found' });
     }
 
-    if (name) business.name = name;
-    if (category) business.category = category;
-    if (address) business.address = address;
-    if (verificationCode) business.verificationCode = verificationCode.trim().slice(0, 4);
-    if (geofenceRadius) business.geofenceRadius = parseInt(geofenceRadius);
+    if (name) business.businessName = name;
+    
+    if (!business.loyaltyConfiguration) {
+      business.loyaltyConfiguration = {};
+    }
+    
+    if (category) business.loyaltyConfiguration.category = category;
+    if (address) business.loyaltyConfiguration.address = address;
+    if (verificationCode) business.loyaltyConfiguration.verificationCode = verificationCode.trim().slice(0, 4);
+    if (geofenceRadius) business.loyaltyConfiguration.geofenceRadius = parseInt(geofenceRadius);
     
     if (longitude !== undefined && latitude !== undefined) {
-      business.location = {
+      business.loyaltyConfiguration.location = {
         type: 'Point',
         coordinates: [parseFloat(longitude), parseFloat(latitude)]
       };
     }
 
     await business.save();
-    return res.json({ success: true, business });
+    return res.json({ success: true, business: formatBusinessForFE(business) });
   } catch (error) {
     console.error('Business Save API Error:', error);
     return res.status(500).json({ error: 'Internal Server Error' });
@@ -48,7 +68,7 @@ export const updateBusiness = async (req, res) => {
 
 export const getMetrics = async (req, res) => {
   try {
-    const business = await Business.findOne({ ownerId: req.user.id });
+    const business = await Business.findById(req.user.id);
     if (!business) {
       return res.status(404).json({ error: 'Business profile not found' });
     }
@@ -60,11 +80,11 @@ export const getMetrics = async (req, res) => {
     const uniqueCustomers = await Visit.distinct('customerId', { campaignId: { $in: campaignIds } });
     const openRewardsCount = await Reward.countDocuments({ campaignId: { $in: campaignIds }, status: 'unredeemed' });
     const pendingRedemptions = await Reward.find({ campaignId: { $in: campaignIds }, status: 'pending' })
-      .populate('customerId', 'name phone')
+      .populate('customerId', 'name')
       .sort({ updatedAt: -1 });
 
     const recentStamps = await Visit.find({ campaignId: { $in: campaignIds } })
-      .populate('customerId', 'name phone')
+      .populate('customerId', 'name')
       .sort({ createdAt: -1 })
       .limit(5);
 

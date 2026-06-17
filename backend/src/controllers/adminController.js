@@ -1,4 +1,4 @@
-import User from '../models/User.js';
+import Customer from '../models/Customer.js';
 import Business from '../models/Business.js';
 import Visit from '../models/Visit.js';
 import Reward from '../models/Reward.js';
@@ -11,17 +11,16 @@ export const getAdminMetrics = async (req, res) => {
     }
 
     const totalShops = await Business.countDocuments();
-    const totalCustomers = await User.countDocuments({ role: 'customer' });
+    const totalCustomers = await Customer.countDocuments({ role: 'customer' });
     const totalStamps = await Visit.countDocuments();
     const totalRedeemed = await Reward.countDocuments({ status: 'redeemed' });
 
     const recentShops = await Business.find()
-      .populate('ownerId', 'name email')
       .sort({ createdAt: -1 })
       .limit(5);
 
     const securityLogs = await AuditLog.find()
-      .populate('actorId', 'name email')
+      .populate('actorId', 'name ownerName email')
       .sort({ createdAt: -1 })
       .limit(10);
 
