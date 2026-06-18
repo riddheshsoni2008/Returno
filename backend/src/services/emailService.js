@@ -1,5 +1,8 @@
 import nodemailer from "nodemailer";
+import dns from "dns";
 
+// Force IPv4 to prevent hanging on Render's IPv6 network
+dns.setDefaultResultOrder("ipv4first");
 export async function getTransporter() {
   const user = process.env.EMAIL_USER?.trim();
   let pass = process.env.EMAIL_PASSWORD?.trim();
@@ -37,7 +40,9 @@ export async function getTransporter() {
   }
 
   return nodemailer.createTransport({
-    service: "gmail",
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
     auth: {
       user: user,
       pass: cleanedPass,
