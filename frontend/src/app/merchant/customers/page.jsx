@@ -38,7 +38,7 @@ export default async function MerchantCustomersPage() {
   const { recentStamps, uniqueCustomers } = metrics;
 
   return (
-    <div className="space-y-8 text-slate-800">
+    <div className="space-y-8 text-slate-800 animate-fade-in-up">
       {/* Header */}
       <div>
         <h1 className="text-2xl md:text-3xl font-black tracking-tight text-slate-900">Customer Database</h1>
