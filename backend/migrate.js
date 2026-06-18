@@ -99,11 +99,14 @@ async function runMigration() {
         );
 
         if (!exists) {
-          // Resolve businessId (if not stored in old enrollment, fetch from campaign)
+          // Resolve businessId and campaignName
           let businessId = cc.businessId;
-          if (!businessId) {
-            const biz = await Business.findOne({ "campaigns._id": cc.campaignId });
-            businessId = biz ? biz._id : null;
+          let campaignName = '';
+          const biz = await Business.findOne({ "campaigns._id": cc.campaignId });
+          if (biz) {
+            businessId = biz._id;
+            const camp = biz.campaigns.id(cc.campaignId);
+            if (camp) campaignName = camp.title;
           }
 
           if (!businessId) {
@@ -131,6 +134,7 @@ async function runMigration() {
           customer.joinedCampaigns.push({
             campaignId: cc.campaignId,
             businessId: businessId,
+            campaignName: campaignName,
             currentStreak: cc.currentStreak !== undefined ? cc.currentStreak : 0,
             longestStreak: cc.longestStreak !== undefined ? cc.longestStreak : 0,
             totalPoints: cc.totalPoints !== undefined ? cc.totalPoints : 0,
@@ -145,6 +149,31 @@ async function runMigration() {
         }
       }
       console.log(`Successfully embedded ${migratedEnrollmentsCount} enrollments and rewards inside Customer documents.`);
+
+      // Populate campaignName for any existing embedded joined campaigns that lack it
+      console.log('\n--- Backfilling campaignName for existing joinedCampaigns... ---');
+      const allCustomers = await Customer.find({ "joinedCampaigns": { $exists: true } });
+      let updatedCount = 0;
+      for (const cust of allCustomers) {
+        let changed = false;
+        for (const jc of cust.joinedCampaigns) {
+          if (!jc.campaignName) {
+            const biz = await Business.findOne({ "campaigns._id": jc.campaignId });
+            if (biz) {
+              const camp = biz.campaigns.id(jc.campaignId);
+              if (camp) {
+                jc.campaignName = camp.title;
+                changed = true;
+              }
+            }
+          }
+        }
+        if (changed) {
+          await cust.save();
+          updatedCount++;
+        }
+      }
+      console.log(`Successfully backfilled campaignName for ${updatedCount} customers.`);
     } else {
       console.log('\nSkipping Enrollment migration: "customercampaigns" collection does not exist.');
     }

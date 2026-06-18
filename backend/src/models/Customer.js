@@ -10,6 +10,7 @@ const CustomerRewardSchema = new mongoose.Schema({
 const JoinedCampaignSchema = new mongoose.Schema({
   campaignId: { type: mongoose.Schema.Types.ObjectId, required: true, index: true },
   businessId: { type: mongoose.Schema.Types.ObjectId, ref: 'Business', required: true, index: true },
+  campaignName: { type: String },
   currentStreak: { type: Number, default: 0 },
   longestStreak: { type: Number, default: 0 },
   totalPoints: { type: Number, default: 0 },
@@ -22,6 +23,7 @@ const JoinedCampaignSchema = new mongoose.Schema({
 const CustomerSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true, index: true },
+  phone: { type: String },
   role: { type: String, default: 'customer' },
   loyaltyData: {
     points: { type: Number, default: 0 }

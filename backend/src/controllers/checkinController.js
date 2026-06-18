@@ -91,6 +91,7 @@ export const joinCampaign = async (req, res) => {
     const enrollment = {
       campaignId: campaign._id,
       businessId: business._id,
+      campaignName: campaign.title,
       rewards: []
     };
 

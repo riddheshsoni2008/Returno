@@ -140,6 +140,7 @@ export const stampVisit = async (req, res) => {
       enrollment = {
         campaignId: campaign._id,
         businessId: business._id,
+        campaignName: campaign.title,
         rewards: []
       };
       user.joinedCampaigns.push(enrollment);
