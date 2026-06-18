@@ -36,13 +36,15 @@ export async function getTransporter() {
     );
   }
 
-  const transporter = nodemailer.createTransport({
+  // 1. ADD 'return' right here!
+  // 2. Make sure you use your variables (user, cleanedPass) instead of hardcoded strings!
+  return nodemailer.createTransport({
     host: "smtp-relay.brevo.com",
     port: 2525,
     secure: false,
     auth: {
-      user: "your_brevo_username",
-      pass: "your_brevo_password",
+      user: user,
+      pass: cleanedPass,
     },
   });
 }
