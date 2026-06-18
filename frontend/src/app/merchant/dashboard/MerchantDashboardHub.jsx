@@ -418,8 +418,8 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
 
       {/* QR MODAL DIALOG */}
       {selectedCampaign && (
-        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-[fade-in_0.2s_ease-out]">
-          <div className="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-6 text-center space-y-5 relative shadow-2xl max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-white z-[100] flex items-center justify-center p-4 animate-[fade-in_0.2s_ease-out]">
+          <div className="bg-white max-w-md w-full p-6 text-center space-y-5 relative max-h-[90vh] overflow-y-auto">
             <button
               onClick={closeQrModal}
               className="absolute top-4 right-4 text-slate-400 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 w-8 h-8 rounded-full flex items-center justify-center transition-colors"

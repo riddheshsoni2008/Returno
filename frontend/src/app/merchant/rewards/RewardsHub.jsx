@@ -321,8 +321,8 @@ export default function RewardsHub({ initialCampaigns, initialClaims, verificati
 
       {/* QR MODAL DIALOG */}
       {selectedCampaignForQr && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-[fade-in_0.2s_ease-out]">
-          <div className="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-6 text-center space-y-6 relative shadow-2xl">
+        <div className="fixed inset-0 bg-white z-[100] flex items-center justify-center p-4 animate-[fade-in_0.2s_ease-out]">
+          <div className="bg-white max-w-md w-full p-6 text-center space-y-6 relative">
             <button 
               onClick={() => setSelectedCampaignForQr(null)}
               className="absolute top-4 right-4 text-slate-400 hover:text-slate-900 text-xl font-bold bg-slate-50 hover:bg-slate-100 w-8 h-8 rounded-full flex items-center justify-center transition-colors"
