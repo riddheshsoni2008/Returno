@@ -105,6 +105,11 @@ export const sendOtp = async (req, res) => {
           message: `[Dev Mode] Email failed but OTP generated! Check backend console.`
         });
       }
+
+      // Revert saved OTP so the user is not locked out due to a delivery failure
+      customer.otp = undefined;
+      await customer.save();
+
       return res.status(502).json({ error: `Failed to deliver OTP: ${deliveryResult?.error || 'Provider communication failure'}` });
     }
 
@@ -270,6 +275,11 @@ export const sendBusinessOtp = async (req, res) => {
           message: `[Dev Mode] Email failed but OTP generated! Check backend console.`
         });
       }
+
+      // Revert saved OTP so the user is not locked out due to a delivery failure
+      business.otp = undefined;
+      await business.save();
+
       return res.status(502).json({ error: `Failed to deliver OTP: ${deliveryResult?.error || 'Provider communication failure'}` });
     }
 

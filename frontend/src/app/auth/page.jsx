@@ -48,6 +48,7 @@ function CustomerAuthContent() {
 
   const handleSendOtp = async (e) => {
     if (e) e.preventDefault();
+    if (loading) return;
     setLoading(true);
     setError('');
     setSuccess('');
@@ -80,6 +81,7 @@ function CustomerAuthContent() {
 
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
+    if (loading) return;
     setLoading(true);
     setError('');
     setSuccess('');

@@ -48,6 +48,7 @@ function MerchantAuthContent() {
 
   const handleSendOtp = async (e) => {
     if (e) e.preventDefault();
+    if (loading) return;
     setLoading(true);
     setError('');
     setSuccess('');
@@ -81,6 +82,7 @@ function MerchantAuthContent() {
 
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
+    if (loading) return;
     setLoading(true);
     setError('');
     setSuccess('');
