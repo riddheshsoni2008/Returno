@@ -20,6 +20,10 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
   const [rewardTitle, setRewardTitle] = useState('');
   const [pointsPerCheckin, setPointsPerCheckin] = useState(10);
 
+  // Custom Confirm/Alert Modal State
+  const [confirmModal, setConfirmModal] = useState({ isOpen: false, title: '', message: '', onConfirm: null });
+  const [alertModal, setAlertModal] = useState({ isOpen: false, title: '', message: '', type: 'info' });
+
   // QR Modal State
   const [selectedCampaign, setSelectedCampaign] = useState(null);
   const [qrMode, setQrMode] = useState('join'); // 'join' or 'checkin'
@@ -140,22 +144,39 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
     }
   };
 
-  const handleDeleteCampaign = async (campaignId) => {
-    if (!window.confirm('Are you sure you want to delete this loyalty campaign? All active customer progress for this campaign will be archived.')) {
-      return;
-    }
-    try {
-      const res = await apiFetch(`/campaigns/${campaignId}`, {
-        method: 'DELETE',
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to delete campaign');
+  const handleDeleteCampaign = (campaignId) => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Delete Loyalty Campaign',
+      message: 'Are you sure you want to delete this loyalty campaign? All active customer progress for this campaign will be archived. This action cannot be undone.',
+      onConfirm: async () => {
+        try {
+          const res = await apiFetch(`/campaigns/${campaignId}`, {
+            method: 'DELETE',
+          });
+          const data = await res.json();
+          if (!res.ok) {
+            throw new Error(data.error || 'Failed to delete campaign');
+          }
+          setCampaigns(campaigns.filter(c => c._id !== campaignId));
+          setConfirmModal({ isOpen: false, title: '', message: '', onConfirm: null });
+          setAlertModal({
+            isOpen: true,
+            title: 'Campaign Deleted',
+            message: 'The campaign has been successfully deleted.',
+            type: 'success'
+          });
+        } catch (err) {
+          setConfirmModal({ isOpen: false, title: '', message: '', onConfirm: null });
+          setAlertModal({
+            isOpen: true,
+            title: 'Delete Failed',
+            message: err.message,
+            type: 'error'
+          });
+        }
       }
-      setCampaigns(campaigns.filter(c => c._id !== campaignId));
-    } catch (err) {
-      alert(err.message);
-    }
+    });
   };
 
   const openQrModal = (camp, mode) => {
@@ -521,6 +542,63 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
                 </button>
               </>
             )}
+          </div>
+        </div>
+      )}
+      {/* CUSTOM CONFIRMATION MODAL */}
+      {confirmModal.isOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-[fade-in_0.2s_ease-out]">
+          <div className="bg-white border border-slate-200 rounded-3xl max-w-sm w-full p-6 text-center space-y-5 relative shadow-2xl animate-[scale-up_0.2s_ease-out]">
+            <div className="w-12 h-12 rounded-full bg-red-50 border border-red-100 flex items-center justify-center mx-auto text-red-600 text-xl font-bold">
+              ⚠️
+            </div>
+            <div className="space-y-1">
+              <h3 className="text-lg font-black text-slate-900">{confirmModal.title}</h3>
+              <p className="text-xs text-slate-500 leading-relaxed">{confirmModal.message}</p>
+            </div>
+            <div className="flex gap-3 pt-1">
+              <button
+                onClick={() => setConfirmModal({ isOpen: false, title: '', message: '', onConfirm: null })}
+                className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-all uppercase tracking-wider"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmModal.onConfirm}
+                className="flex-1 py-3 bg-red-600 hover:bg-red-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-red-500/10 transition-all uppercase tracking-wider"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* CUSTOM ALERT MODAL */}
+      {alertModal.isOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-[fade-in_0.2s_ease-out]">
+          <div className="bg-white border border-slate-200 rounded-3xl max-w-sm w-full p-6 text-center space-y-5 relative shadow-2xl animate-[scale-up_0.2s_ease-out]">
+            <div className={`w-12 h-12 rounded-full flex items-center justify-center mx-auto text-xl font-bold border ${
+              alertModal.type === 'success' 
+                ? 'bg-emerald-50 border-emerald-100 text-emerald-600' 
+                : 'bg-red-50 border-red-100 text-red-600'
+            }`}>
+              {alertModal.type === 'success' ? '✓' : '⚠️'}
+            </div>
+            <div className="space-y-1">
+              <h3 className="text-lg font-black text-slate-900">{alertModal.title}</h3>
+              <p className="text-xs text-slate-500 leading-relaxed">{alertModal.message}</p>
+            </div>
+            <button
+              onClick={() => setAlertModal({ isOpen: false, title: '', message: '', type: 'info' })}
+              className={`w-full py-3 font-bold text-xs rounded-xl transition-all uppercase tracking-wider ${
+                alertModal.type === 'success'
+                  ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-500/10'
+                  : 'bg-red-600 hover:bg-red-500 text-white shadow-lg shadow-red-500/10'
+              }`}
+            >
+              Okay
+            </button>
           </div>
         </div>
       )}
