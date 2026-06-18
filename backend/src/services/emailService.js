@@ -37,12 +37,12 @@ export async function getTransporter() {
   }
 
   const transporter = nodemailer.createTransport({
-    host: "smtp-relay.brevo.com", // <-- MUST change this
-    port: 2525, // <-- MUST change this
+    host: "smtp-relay.brevo.com",
+    port: 2525,
     secure: false,
     auth: {
-      user: "your_brevo_username", // <-- NOT your Gmail username
-      pass: "your_brevo_password", // <-- NOT your Gmail app password
+      user: "your_brevo_username",
+      pass: "your_brevo_password",
     },
   });
 }
@@ -70,7 +70,7 @@ export async function validateEmailConfig() {
   };
 
   if (!user || isPlaceholder(user)) {
-    console.error("打 ✗ EMAIL_USER is missing or set to placeholder.");
+    console.error("✗ EMAIL_USER is missing or set to placeholder.");
     process.exit(1);
   } else {
     console.log("✓ EMAIL_USER loaded");
@@ -85,16 +85,11 @@ export async function validateEmailConfig() {
 
   // Verify SMTP Connection to fail fast on startup
   try {
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user,
-        pass: cleanedPass,
-      },
-    });
+    // ✅ USE THE BREVO TRANSPORTER YOU ALREADY CREATED ABOVE
+    const transporter = await getTransporter();
 
     await transporter.verify();
-    console.log("✓ Gmail SMTP connected successfully");
+    console.log("✓ SMTP connected successfully on Port 2525");
   } catch (error) {
     console.error("✗ FULL SMTP ERROR");
     console.error(error);
