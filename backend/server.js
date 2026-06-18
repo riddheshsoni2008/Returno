@@ -32,7 +32,7 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: process.env.FRONTEND_URL || 'https://returno-eight.vercel.app/',
   credentials: true,
 }));
 app.use(express.json());
@@ -59,6 +59,9 @@ app.use('/api/qr', qrRoutes);
 
 // Health Check Route
 app.get('/api/health', (req, res) => {
+  res.status(200).json({ status: 'ok', message: 'Backend is running smoothly.' });
+});
+app.get('/', (req, res) => {
   res.status(200).json({ status: 'ok', message: 'Backend is running smoothly.' });
 });
 
