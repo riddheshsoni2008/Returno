@@ -36,12 +36,8 @@ export async function getTransporter() {
     );
   }
 
-  // 1. ADD 'return' right here!
-  // 2. Make sure you use your variables (user, cleanedPass) instead of hardcoded strings!
   return nodemailer.createTransport({
-    host: "smtp-relay.brevo.com",
-    port: 2525,
-    secure: false,
+    service: "gmail",
     auth: {
       user: user,
       pass: cleanedPass,
@@ -87,11 +83,10 @@ export async function validateEmailConfig() {
 
   // Verify SMTP Connection to fail fast on startup
   try {
-    // ✅ USE THE BREVO TRANSPORTER YOU ALREADY CREATED ABOVE
     const transporter = await getTransporter();
 
     await transporter.verify();
-    console.log("✓ SMTP connected successfully on Port 2525");
+    console.log("✓ SMTP connected successfully");
   } catch (error) {
     console.error("✗ FULL SMTP ERROR");
     console.error(error);
