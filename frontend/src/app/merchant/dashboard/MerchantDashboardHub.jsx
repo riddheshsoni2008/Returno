@@ -140,6 +140,24 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
     }
   };
 
+  const handleDeleteCampaign = async (campaignId) => {
+    if (!window.confirm('Are you sure you want to delete this loyalty campaign? All active customer progress for this campaign will be archived.')) {
+      return;
+    }
+    try {
+      const res = await apiFetch(`/campaigns/${campaignId}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to delete campaign');
+      }
+      setCampaigns(campaigns.filter(c => c._id !== campaignId));
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
   const openQrModal = (camp, mode) => {
     setSelectedCampaign(camp);
     setQrMode(mode);
@@ -211,9 +229,20 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
                     <span className="text-[9px] uppercase tracking-widest font-extrabold px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-600">
                       {camp.isActive ? 'Active' : 'Draft'}
                     </span>
-                    <span className="text-[10px] text-slate-500 font-semibold bg-slate-100 px-2 py-0.5 rounded">
-                      {camp.enrollmentCount || 0} enrolled
-                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[10px] text-slate-500 font-semibold bg-slate-100 px-2 py-0.5 rounded">
+                        {camp.enrollmentCount || 0} enrolled
+                      </span>
+                      <button
+                        onClick={() => handleDeleteCampaign(camp._id)}
+                        className="p-1 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all duration-200"
+                        title="Delete Campaign"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
                   <h4 className="text-md font-bold text-slate-900">{camp.title}</h4>
                   <p className="text-slate-600 text-xs leading-normal">{camp.description}</p>
@@ -372,23 +401,36 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
           <div className="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-6 text-center space-y-5 relative shadow-2xl max-h-[90vh] overflow-y-auto">
             <button
               onClick={closeQrModal}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-900 text-xl font-bold bg-slate-50 hover:bg-slate-100 w-8 h-8 rounded-full flex items-center justify-center transition-colors"
-            >×</button>
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 w-8 h-8 rounded-full flex items-center justify-center transition-colors"
+              aria-label="Close modal"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
 
             {/* QR Mode Tabs */}
-            <div className="flex bg-slate-100 rounded-xl p-1">
+            <div className="flex bg-slate-100 rounded-xl p-1 shadow-inner border border-slate-200/40">
               <button
                 onClick={() => setQrMode('join')}
-                className={`flex-1 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
-                  qrMode === 'join' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+                className={`flex-1 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1.5 ${
+                  qrMode === 'join' 
+                    ? 'bg-white text-slate-900 shadow-sm ring-1 ring-black/5' 
+                    : 'text-slate-500 hover:text-slate-800'
                 }`}
-              >📎 Join QR</button>
+              >
+                <span>🔗</span> Join QR
+              </button>
               <button
                 onClick={() => { setQrMode('checkin'); if (!dynamicToken) generateDynamicQr(selectedCampaign._id); }}
-                className={`flex-1 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
-                  qrMode === 'checkin' ? 'bg-white text-red-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+                className={`flex-1 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1.5 ${
+                  qrMode === 'checkin' 
+                    ? 'bg-white text-red-600 shadow-sm ring-1 ring-black/5' 
+                    : 'text-slate-500 hover:text-slate-800'
                 }`}
-              >⚡ Check-In QR</button>
+              >
+                <span>⚡</span> Check-In QR
+              </button>
             </div>
 
             <div className="space-y-1">
@@ -402,7 +444,7 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
             {qrMode === 'join' && (
               <>
                 {joinQrDataUrl ? (
-                  <div className="bg-slate-50 border border-slate-100 p-4 rounded-2xl w-fit mx-auto shadow-sm">
+                  <div className="bg-white border border-slate-100 p-5 rounded-3xl w-fit mx-auto shadow-md ring-8 ring-slate-50 transition-all hover:scale-[1.02] duration-300">
                     <img src={joinQrDataUrl} alt="Join QR Code" className="w-52 h-52 select-none pointer-events-none" />
                   </div>
                 ) : (
@@ -431,8 +473,8 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
             {qrMode === 'checkin' && (
               <>
                 {dynamicQrDataUrl ? (
-                  <div className="relative">
-                    <div className="bg-gradient-to-br from-red-50 to-rose-50 border-2 border-red-200/60 p-4 rounded-2xl w-fit mx-auto shadow-sm">
+                  <div className="relative space-y-4">
+                    <div className="bg-white border-2 border-red-50/80 p-5 rounded-3xl w-fit mx-auto shadow-md ring-8 ring-red-50/50 transition-all hover:scale-[1.02] duration-300">
                       <img src={dynamicQrDataUrl} alt="Check-in QR Code" className="w-52 h-52 select-none pointer-events-none" />
                     </div>
                     {/* Countdown ring */}
