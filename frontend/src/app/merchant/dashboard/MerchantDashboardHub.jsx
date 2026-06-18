@@ -351,7 +351,7 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
 
       {/* CREATE CAMPAIGN MODAL */}
       {showForm && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-[fade-in_0.2s_ease-out]">
+        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-[fade-in_0.2s_ease-out]">
           <div className="bg-white border border-slate-200 rounded-3xl max-w-lg w-full p-6 space-y-6 relative max-h-[90vh] overflow-y-auto shadow-2xl">
             <button
               onClick={() => setShowForm(false)}
@@ -418,7 +418,7 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
 
       {/* QR MODAL DIALOG */}
       {selectedCampaign && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-[fade-in_0.2s_ease-out]">
+        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-[fade-in_0.2s_ease-out]">
           <div className="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-6 text-center space-y-5 relative shadow-2xl max-h-[90vh] overflow-y-auto">
             <button
               onClick={closeQrModal}
@@ -547,7 +547,7 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
       )}
       {/* CUSTOM CONFIRMATION MODAL */}
       {confirmModal.isOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-[fade-in_0.2s_ease-out]">
+        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate-[fade-in_0.2s_ease-out]">
           <div className="bg-white border border-slate-200 rounded-3xl max-w-sm w-full p-6 text-center space-y-5 relative shadow-2xl animate-[scale-up_0.2s_ease-out]">
             <div className="w-12 h-12 rounded-full bg-red-50 border border-red-100 flex items-center justify-center mx-auto text-red-600 text-xl font-bold">
               ⚠️
@@ -576,7 +576,7 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
 
       {/* CUSTOM ALERT MODAL */}
       {alertModal.isOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-[fade-in_0.2s_ease-out]">
+        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate-[fade-in_0.2s_ease-out]">
           <div className="bg-white border border-slate-200 rounded-3xl max-w-sm w-full p-6 text-center space-y-5 relative shadow-2xl animate-[scale-up_0.2s_ease-out]">
             <div className={`w-12 h-12 rounded-full flex items-center justify-center mx-auto text-xl font-bold border ${
               alertModal.type === 'success' 
