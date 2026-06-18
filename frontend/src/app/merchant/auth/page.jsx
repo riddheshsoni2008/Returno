@@ -96,6 +96,10 @@ function MerchantAuthContent() {
         throw new Error(data.error || 'Verification failed');
       }
 
+      if (data.token) {
+        document.cookie = `token=${data.token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
+      }
+
       setSuccess('Merchant portal authorized! Redirecting...');
       setTimeout(() => {
         router.push('/merchant/dashboard');

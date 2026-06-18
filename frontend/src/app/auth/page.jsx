@@ -95,6 +95,10 @@ function CustomerAuthContent() {
         throw new Error(data.error || 'Verification failed');
       }
 
+      if (data.token) {
+        document.cookie = `token=${data.token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
+      }
+
       setSuccess('Logged in successfully! Redirecting...');
       setTimeout(() => {
         router.push('/wallet');

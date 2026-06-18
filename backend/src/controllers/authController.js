@@ -168,6 +168,7 @@ export const verifyOtp = async (req, res) => {
 
     return res.json({
       success: true,
+      token,
       user: { id: customer._id, name: customer.name, email: customer.email, role: customer.role }
     });
   } catch (error) {
@@ -337,6 +338,7 @@ export const verifyBusinessOtp = async (req, res) => {
 
     return res.json({
       success: true,
+      token,
       user: { id: business._id, name: business.ownerName, businessName: business.businessName, email: business.email, role: business.role }
     });
   } catch (error) {
