@@ -47,6 +47,7 @@ export async function getTransporter() {
 export async function validateEmailConfig() {
   const user = process.env.EMAIL_USER?.trim();
   let pass = process.env.EMAIL_PASSWORD?.trim();
+  const cleanedPass = pass?.replace(/\s+/g, "");
 
   if (pass === "EMAIL_PASSWORD_ENV") {
     pass = process.env.EMAIL_PASSWORD_ENV?.trim();
