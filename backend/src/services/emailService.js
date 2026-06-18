@@ -37,10 +37,11 @@ export async function getTransporter() {
   }
 
   return nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 465,
-    secure: true,
-    auth: { user, pass: cleanedPass },
+    service: "gmail",
+    auth: {
+      user,
+      pass: cleanedPass,
+    },
   });
 }
 
