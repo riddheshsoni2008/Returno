@@ -48,18 +48,41 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${scrolled ? "bg-white/90 backdrop-blur-md border-b border-slate-200 py-4 shadow-sm" : "bg-transparent py-6"
-        }`}
+      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
+        scrolled
+          ? "bg-white/90 backdrop-blur-md border-b border-slate-200 py-4 shadow-sm"
+          : "bg-transparent py-6"
+      }`}
     >
       <div className="container mx-auto px-6 md:px-12 flex justify-between items-center">
-        <Link href="/" className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-1.5">
+        <Link
+          href="/"
+          className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-1.5"
+        >
           <span className="text-brand-600">Returno</span>
         </Link>
         <div className="hidden md:flex space-x-8 text-sm font-medium text-slate-600">
-          <Link href="#features" className="hover:text-brand-600 transition-colors">Features</Link>
-          <Link href="#how-it-works" className="hover:text-brand-600 transition-colors">How it Works</Link>
-          <Link href="#pricing" className="hover:text-brand-600 transition-colors">Pricing</Link>
-          <Link href="#faq" className="hover:text-brand-600 transition-colors">FAQ</Link>
+          <Link
+            href="#features"
+            className="hover:text-brand-600 transition-colors"
+          >
+            Features
+          </Link>
+          <Link
+            href="#how-it-works"
+            className="hover:text-brand-600 transition-colors"
+          >
+            How it Works
+          </Link>
+          <Link
+            href="#pricing"
+            className="hover:text-brand-600 transition-colors"
+          >
+            Pricing
+          </Link>
+          <Link href="#faq" className="hover:text-brand-600 transition-colors">
+            FAQ
+          </Link>
         </div>
         <div className="flex space-x-4 items-center min-h-[40px]">
           {!loading && (
@@ -69,38 +92,47 @@ export default function Navbar() {
                   {user.role === "customer" ? (
                     <Link
                       href="/wallet"
-                      className="text-sm font-semibold text-brand-600 hover:text-brand-700 transition-colors"
+                      className="text-sm font-semibold text-brand-600 hover:text-brand-700 transition-colors flex items-center gap-2"
                     >
-                      My Wallet
+                      <i className="fas fa-wallet text-lg"></i>
+                      <span className="hidden sm:inline">My Wallet</span>
                     </Link>
                   ) : (
                     <Link
                       href="/merchant/dashboard"
-                      className="text-sm font-semibold text-purple-600 hover:text-purple-700 transition-colors"
+                      className="text-sm font-semibold text-purple-600 hover:text-purple-700 transition-colors flex items-center gap-2"
                     >
-                      Merchant Dashboard
+                      <i className="fas fa-store text-lg"></i>
+                      <span className="hidden sm:inline">
+                        Merchant Dashboard
+                      </span>
                     </Link>
                   )}
                   <button
                     onClick={handleSignOut}
-                    className="px-5 py-2.5 rounded-full border border-red-500/20 bg-red-500/10 text-red-600 text-sm font-semibold hover:bg-red-500/25 hover:text-red-700 transition-all shadow-sm"
+                    className="px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-full border border-red-500/20 bg-red-500/10 text-red-600 text-sm font-semibold hover:bg-red-500/25 hover:text-red-700 transition-all shadow-sm flex items-center gap-2"
+                    title="Sign Out"
                   >
-                    Sign Out
+                    <i className="fas fa-sign-out-alt"></i>
+                    <span className="hidden sm:inline">Sign Out</span>
                   </button>
                 </>
               ) : (
                 <>
                   <Link
                     href="/auth"
-                    className="text-sm font-semibold text-slate-600 hover:text-brand-600 transition-colors hidden sm:block"
+                    className="text-sm font-semibold text-slate-600 hover:text-brand-600 transition-colors hidden sm:flex items-center gap-2"
                   >
-                    Customer Login
+                    <i className="fas fa-user text-sm"></i>
+                    <span>Customer Login</span>
                   </Link>
                   <Link
                     href="/merchant/auth"
-                    className="px-5 py-2.5 rounded-full bg-brand-600 text-white text-sm font-semibold hover:bg-brand-700 transition-all shadow-sm"
+                    className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-full bg-brand-600 text-white text-sm font-semibold hover:bg-brand-700 transition-all shadow-sm flex items-center gap-2"
+                    title="Merchant Portal"
                   >
-                    Merchant Portal
+                    <i className="fas fa-building text-sm"></i>
+                    <span className="hidden sm:inline">Merchant Portal</span>
                   </Link>
                 </>
               )}
