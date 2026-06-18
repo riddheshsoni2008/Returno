@@ -99,9 +99,11 @@ function CustomerAuthContent() {
         document.cookie = `token=${data.token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
       }
 
+      const redirectUrl = searchParams.get('redirect') || '/wallet';
+
       setSuccess('Logged in successfully! Redirecting...');
       setTimeout(() => {
-        router.push('/wallet');
+        router.push(redirectUrl);
         router.refresh();
       }, 1000);
     } catch (err) {

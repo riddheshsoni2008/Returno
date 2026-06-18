@@ -54,7 +54,7 @@ export default function MerchantDashboardHub({
   // Generate Join QR when selectedCampaign changes
   useEffect(() => {
     if (selectedCampaign && qrMode === "join") {
-      const joinUrl = `${appUrl}/join/${selectedCampaign._id}`;
+      const joinUrl = `${appUrl}/join/campaign/${selectedCampaign._id}`;
       QRCode.toDataURL(joinUrl, {
         width: 320,
         margin: 2,

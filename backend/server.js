@@ -14,6 +14,7 @@ import visitRoutes from './src/routes/visitRoutes.js';
 import adminRoutes from './src/routes/adminRoutes.js';
 import checkinRoutes from './src/routes/checkinRoutes.js';
 import qrRoutes from './src/routes/qrRoutes.js';
+import customerRoutes from './src/routes/customerRoutes.js';
 
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -56,6 +57,7 @@ app.use('/api/visit', visitRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/checkin', checkinRoutes);
 app.use('/api/qr', qrRoutes);
+app.use('/api/customers', customerRoutes);
 
 // Health Check Route
 app.get('/api/health', (req, res) => {

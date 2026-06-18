@@ -209,7 +209,7 @@ export default function CheckinClient() {
                 <h3 className="text-lg font-black text-slate-900">Not Enrolled</h3>
                 <p className="text-xs text-slate-500">You need to join this campaign first before checking in.</p>
                 <Link
-                  href={`/join/${error.split(':')[1]}`}
+                  href={`/join/campaign/${error.split(':')[1]}`}
                   className="inline-block w-full py-3 bg-red-600 hover:bg-red-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-red-500/10 transition-colors uppercase tracking-wider"
                 >
                   Join Campaign Now
