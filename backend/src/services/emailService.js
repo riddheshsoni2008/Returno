@@ -105,7 +105,7 @@ export async function sendOtpEmail(toEmail, otpCode) {
     );
 
     const transporter = await getTransporter();
-    const fromAddress = process.env.EMAIL_USER || "no-reply@returno.app";
+    const fromAddress = process.env.EMAIL_FROM || process.env.EMAIL_USER || "no-reply@returno.app";
 
     console.log(
       `[Email Service] SMTP Transporter initialized. Sender address: "${fromAddress}", Recipient (toEmail): "${toEmail}"`,
