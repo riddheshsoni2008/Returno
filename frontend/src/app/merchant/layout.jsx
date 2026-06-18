@@ -2,6 +2,7 @@ import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import SignOutButton from './SignOutButton';
+import MerchantNav from './MerchantNav';
 
 export default async function MerchantLayout({ children }) {
   // Read pathname forwarded by middleware/proxy to prevent self-redirect loop on auth page
@@ -50,12 +51,6 @@ export default async function MerchantLayout({ children }) {
 
   const business = data.user; // Under new architecture, data.user IS the Business document
 
-  const linkClass = (path) => `flex items-center gap-2 md:gap-3 px-3.5 py-2.5 rounded-xl transition-all whitespace-nowrap text-xs md:text-sm font-bold ${
-    pathname === path 
-      ? 'bg-red-50 text-red-600 shadow-sm border border-red-100/50' 
-      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-  }`;
-
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col md:flex-row font-sans">
       {/* Sidebar - Desktop / Top Navigation - Mobile */}
@@ -82,20 +77,7 @@ export default async function MerchantLayout({ children }) {
           )}
 
           {/* Navigation Links */}
-          <nav className="flex flex-row md:flex-col overflow-x-auto md:overflow-x-visible gap-1 pb-2 md:pb-0 md:space-y-1.5 scrollbar-none">
-            <Link href="/merchant/dashboard" className={linkClass('/merchant/dashboard')}>
-              📊 Dashboard
-            </Link>
-            <Link href="/merchant/customers" className={linkClass('/merchant/customers')}>
-              👥 Customers
-            </Link>
-            <Link href="/merchant/rewards" className={linkClass('/merchant/rewards')}>
-              🎁 Rewards
-            </Link>
-            <Link href="/merchant/settings" className={linkClass('/merchant/settings')}>
-              ⚙️ Settings
-            </Link>
-          </nav>
+          <MerchantNav />
         </div>
 
         <div className="hidden md:block mt-8 border-t border-slate-100 pt-6">
