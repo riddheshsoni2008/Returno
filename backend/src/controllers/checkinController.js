@@ -1,10 +1,7 @@
 import Customer from '../models/Customer.js';
-import Campaign from '../models/Campaign.js';
 import Business from '../models/Business.js';
-import CustomerCampaign from '../models/CustomerCampaign.js';
 import Checkin from '../models/Checkin.js';
 import QrSession from '../models/QrSession.js';
-import Reward from '../models/Reward.js';
 import AuditLog from '../models/AuditLog.js';
 
 // Helper: check if two dates are the same calendar day (IST)
@@ -64,44 +61,50 @@ export const joinCampaign = async (req, res) => {
       return res.status(401).json({ error: 'Customer not found' });
     }
 
-    const campaign = await Campaign.findById(campaignId);
+    const business = await Business.findOne({ "campaigns._id": campaignId });
+    if (!business) {
+      return res.status(404).json({ error: 'Campaign not found' });
+    }
+
+    const campaign = business.campaigns.id(campaignId);
     if (!campaign || !campaign.isActive) {
       return res.status(404).json({ error: 'Campaign not found or inactive' });
     }
 
-    const business = await Business.findById(campaign.businessId);
-    if (!business) {
-      return res.status(404).json({ error: 'Business not found' });
-    }
-
     // Check if already enrolled
-    const existing = await CustomerCampaign.findOne({
-      customerId: customer._id,
-      campaignId: campaign._id
-    });
+    const existingIndex = customer.joinedCampaigns.findIndex(
+      jc => jc.campaignId.toString() === campaignId
+    );
 
-    if (existing) {
+    if (existingIndex !== -1) {
       return res.json({
         success: true,
         alreadyJoined: true,
         message: 'You are already enrolled in this campaign',
-        enrollment: existing,
+        enrollment: customer.joinedCampaigns[existingIndex],
         campaign,
         business: formatBusinessForFE(business)
       });
     }
 
     // Create enrollment
-    const enrollment = await CustomerCampaign.create({
-      customerId: customer._id,
-      campaignId: campaign._id
-    });
+    const enrollment = {
+      campaignId: campaign._id,
+      businessId: business._id,
+      rewards: []
+    };
+
+    customer.joinedCampaigns.push(enrollment);
+    await customer.save();
+
+    // Get the newly pushed enrollment
+    const newEnrollment = customer.joinedCampaigns[customer.joinedCampaigns.length - 1];
 
     return res.status(201).json({
       success: true,
       alreadyJoined: false,
       message: 'Successfully joined the campaign!',
-      enrollment,
+      enrollment: newEnrollment,
       campaign,
       business: formatBusinessForFE(business)
     });
@@ -145,17 +148,21 @@ export const validateCheckin = async (req, res) => {
       return res.status(400).json({ error: 'You have already used this QR code.' });
     }
 
-    // 4. Get campaign
-    const campaign = await Campaign.findById(qrSession.campaignId);
+    // 4. Find the business and campaign
+    const business = await Business.findOne({ "campaigns._id": qrSession.campaignId });
+    if (!business) {
+      return res.status(404).json({ error: 'Campaign business not found' });
+    }
+
+    const campaign = business.campaigns.id(qrSession.campaignId);
     if (!campaign || !campaign.isActive) {
       return res.status(404).json({ error: 'Campaign is inactive or does not exist' });
     }
 
     // 5. Check customer is enrolled
-    const enrollment = await CustomerCampaign.findOne({
-      customerId: customer._id,
-      campaignId: campaign._id
-    });
+    const enrollment = customer.joinedCampaigns.find(
+      jc => jc.campaignId.toString() === campaign._id.toString()
+    );
 
     if (!enrollment) {
       return res.status(400).json({
@@ -191,17 +198,34 @@ export const validateCheckin = async (req, res) => {
     // 8. Calculate points
     const pointsAwarded = campaign.pointsPerCheckin * newStreak * campaign.streakBonusMultiplier;
 
-    // 9. Update enrollment
+    // 9. Update enrollment progress
     enrollment.currentStreak = newStreak;
     enrollment.longestStreak = Math.max(enrollment.longestStreak, newStreak);
     enrollment.totalPoints += pointsAwarded;
     enrollment.totalCheckins += 1;
     enrollment.lastCheckinDate = now;
-    await enrollment.save();
 
-    // 10. Create check-in record
+    // 10. Check reward milestone
+    let rewardUnlocked = false;
+    const target = campaign.requiredStamps;
+    const targetRewardVolume = Math.floor(enrollment.totalCheckins / target);
+    const existingRewardsCount = enrollment.rewards.length;
+
+    if (targetRewardVolume > existingRewardsCount) {
+      enrollment.rewards.push({
+        rewardTitle: campaign.rewardTitle,
+        status: 'unredeemed',
+        unlockedAt: new Date()
+      });
+      rewardUnlocked = true;
+    }
+
+    await customer.save();
+
+    // 11. Create check-in record
     const checkin = await Checkin.create({
       customerId: customer._id,
+      businessId: business._id,
       campaignId: campaign._id,
       qrSessionId: qrSession._id,
       pointsAwarded,
@@ -212,26 +236,9 @@ export const validateCheckin = async (req, res) => {
       } : undefined
     });
 
-    // 11. Mark token as used by this customer
+    // 12. Mark token as used by this customer
     qrSession.usedBy.push(customer._id);
     await qrSession.save();
-
-    // 12. Check reward milestone
-    let rewardUnlocked = false;
-    const target = campaign.requiredStamps;
-    const targetRewardVolume = Math.floor(enrollment.totalCheckins / target);
-    const existingRewardsCount = await Reward.countDocuments({ customerId: customer._id, campaignId: campaign._id });
-
-    if (targetRewardVolume > existingRewardsCount) {
-      await Reward.create({
-        customerId: customer._id,
-        campaignId: campaign._id,
-        rewardTitle: campaign.rewardTitle,
-        status: 'unredeemed',
-        unlockedAt: new Date()
-      });
-      rewardUnlocked = true;
-    }
 
     // 13. Audit log
     await AuditLog.create({
@@ -298,10 +305,9 @@ export const getStreakInfo = async (req, res) => {
       return res.status(401).json({ error: 'Customer not found' });
     }
 
-    const enrollment = await CustomerCampaign.findOne({
-      customerId: customer._id,
-      campaignId
-    });
+    const enrollment = customer.joinedCampaigns.find(
+      jc => jc.campaignId.toString() === campaignId
+    );
 
     if (!enrollment) {
       return res.status(404).json({ error: 'Not enrolled in this campaign' });

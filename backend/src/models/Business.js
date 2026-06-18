@@ -1,5 +1,20 @@
 import mongoose from 'mongoose';
 
+const CampaignSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  description: { type: String, required: true },
+  requiredStamps: { type: Number, default: 10, required: true },
+  rewardTitle: { type: String, required: true },
+  isActive: { type: Boolean, default: true },
+  expiryDate: { type: Date },
+  // Streak & points configuration
+  pointsPerCheckin: { type: Number, default: 10 },
+  streakBonusMultiplier: { type: Number, default: 1 },
+  maxStreak: { type: Number, default: 30 },
+  // Permanent join QR token
+  joinQrToken: { type: String, sparse: true, index: true }
+}, { timestamps: true });
+
 const BusinessSchema = new mongoose.Schema({
   businessName: { type: String, required: true },
   ownerName: { type: String, required: true },
@@ -13,11 +28,12 @@ const BusinessSchema = new mongoose.Schema({
     state: { type: String, default: '' },
     location: {
       type: { type: String, enum: ['Point'], default: 'Point' },
-      coordinates: { type: [Number], default: [72.8777, 19.0760] } // [longitude, latitude]
+      coordinates: { type: [Number], default: [72.8777, 19.0760] }
     },
-    geofenceRadius: { type: Number, default: 100 }, // in meters
-    verificationCode: { type: String, default: '1234' } // 4-digit code for quick pin verification
+    geofenceRadius: { type: Number, default: 100 },
+    verificationCode: { type: String, default: '1234' }
   },
+  campaigns: [CampaignSchema],
   otp: {
     hashedCode: { type: String },
     expiresAt: { type: Date },
@@ -28,7 +44,7 @@ const BusinessSchema = new mongoose.Schema({
   }
 }, { timestamps: true, versionKey: false });
 
-// Add 2dsphere index on the location inside loyaltyConfiguration
+// Indexes for performance
 BusinessSchema.index({ 'loyaltyConfiguration.location': '2dsphere' });
 
 export default mongoose.models.Business || mongoose.model('Business', BusinessSchema);

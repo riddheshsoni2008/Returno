@@ -1,7 +1,6 @@
 import Customer from '../models/Customer.js';
 import Business from '../models/Business.js';
-import Visit from '../models/Visit.js';
-import Reward from '../models/Reward.js';
+import Checkin from '../models/Checkin.js';
 import AuditLog from '../models/AuditLog.js';
 
 export const getAdminMetrics = async (req, res) => {
@@ -12,8 +11,18 @@ export const getAdminMetrics = async (req, res) => {
 
     const totalShops = await Business.countDocuments();
     const totalCustomers = await Customer.countDocuments({ role: 'customer' });
-    const totalStamps = await Visit.countDocuments();
-    const totalRedeemed = await Reward.countDocuments({ status: 'redeemed' });
+    
+    // Checkins represents both visit stamps and dynamic checkins now
+    const totalStamps = await Checkin.countDocuments();
+
+    // Aggregate redeemed rewards across all customers
+    const totalRedeemedAgg = await Customer.aggregate([
+      { $unwind: "$joinedCampaigns" },
+      { $unwind: "$joinedCampaigns.rewards" },
+      { $match: { "joinedCampaigns.rewards.status": "redeemed" } },
+      { $count: "count" }
+    ]);
+    const totalRedeemed = totalRedeemedAgg[0]?.count || 0;
 
     const recentShops = await Business.find()
       .sort({ createdAt: -1 })

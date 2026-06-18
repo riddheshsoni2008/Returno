@@ -1,8 +1,7 @@
 import crypto from 'crypto';
-import Campaign from '../models/Campaign.js';
 import Business from '../models/Business.js';
 import QrSession from '../models/QrSession.js';
-import CustomerCampaign from '../models/CustomerCampaign.js';
+import Customer from '../models/Customer.js';
 
 // =============================================
 // POST /api/qr/generate
@@ -16,19 +15,14 @@ export const generateQrSession = async (req, res) => {
       return res.status(400).json({ error: 'Campaign ID is required' });
     }
 
-    // Verify business owns this campaign
     const business = await Business.findById(req.user.id);
     if (!business) {
       return res.status(404).json({ error: 'Business profile not found' });
     }
 
-    const campaign = await Campaign.findById(campaignId);
+    const campaign = business.campaigns.id(campaignId);
     if (!campaign) {
       return res.status(404).json({ error: 'Campaign not found' });
-    }
-
-    if (campaign.businessId.toString() !== business._id.toString()) {
-      return res.status(403).json({ error: 'You do not own this campaign' });
     }
 
     if (!campaign.isActive) {
@@ -77,9 +71,9 @@ export const getActiveQrSession = async (req, res) => {
       return res.status(404).json({ error: 'Business profile not found' });
     }
 
-    const campaign = await Campaign.findById(campaignId);
-    if (!campaign || campaign.businessId.toString() !== business._id.toString()) {
-      return res.status(403).json({ error: 'Unauthorized' });
+    const campaign = business.campaigns.id(campaignId);
+    if (!campaign) {
+      return res.status(403).json({ error: 'Unauthorized or campaign not found' });
     }
 
     const now = new Date();
@@ -124,28 +118,33 @@ export const getCampaignQrStats = async (req, res) => {
       return res.status(404).json({ error: 'Business profile not found' });
     }
 
-    const campaign = await Campaign.findById(campaignId);
-    if (!campaign || campaign.businessId.toString() !== business._id.toString()) {
-      return res.status(403).json({ error: 'Unauthorized' });
+    const campaign = business.campaigns.id(campaignId);
+    if (!campaign) {
+      return res.status(403).json({ error: 'Unauthorized or campaign not found' });
     }
 
-    const totalEnrollments = await CustomerCampaign.countDocuments({ campaignId: campaign._id });
+    const totalEnrollments = await Customer.countDocuments({ "joinedCampaigns.campaignId": campaign._id });
     
     // Get active streakers (checked in today or yesterday)
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     yesterday.setHours(0, 0, 0, 0);
     
-    const activeStreakers = await CustomerCampaign.countDocuments({
-      campaignId: campaign._id,
-      lastCheckinDate: { $gte: yesterday },
-      currentStreak: { $gte: 2 }
+    const activeStreakers = await Customer.countDocuments({
+      joinedCampaigns: {
+        $elemMatch: {
+          campaignId: campaign._id,
+          lastCheckinDate: { $gte: yesterday },
+          currentStreak: { $gte: 2 }
+        }
+      }
     });
 
     // Average streak among active users
-    const streakAgg = await CustomerCampaign.aggregate([
-      { $match: { campaignId: campaign._id, currentStreak: { $gte: 1 } } },
-      { $group: { _id: null, avgStreak: { $avg: '$currentStreak' }, maxStreak: { $max: '$longestStreak' } } }
+    const streakAgg = await Customer.aggregate([
+      { $unwind: "$joinedCampaigns" },
+      { $match: { "joinedCampaigns.campaignId": campaign._id, "joinedCampaigns.currentStreak": { $gte: 1 } } },
+      { $group: { _id: null, avgStreak: { $avg: '$joinedCampaigns.currentStreak' }, maxStreak: { $max: '$joinedCampaigns.longestStreak' } } }
     ]);
 
     return res.json({

@@ -1,7 +1,6 @@
 import Business from '../models/Business.js';
-import Campaign from '../models/Campaign.js';
-import Visit from '../models/Visit.js';
-import Reward from '../models/Reward.js';
+import Customer from '../models/Customer.js';
+import Checkin from '../models/Checkin.js';
 
 // Helper to format business object for the frontend expectations
 const formatBusinessForFE = (business) => {
@@ -76,17 +75,62 @@ export const getMetrics = async (req, res) => {
       return res.status(404).json({ error: 'Business profile not found' });
     }
 
-    const campaigns = await Campaign.find({ businessId: business._id });
-    const campaignIds = campaigns.map(c => c._id);
+    const campaignIds = (business.campaigns || []).map(c => c._id);
 
-    const totalStamps = await Visit.countDocuments({ campaignId: { $in: campaignIds } });
-    const uniqueCustomers = await Visit.distinct('customerId', { campaignId: { $in: campaignIds } });
-    const openRewardsCount = await Reward.countDocuments({ campaignId: { $in: campaignIds }, status: 'unredeemed' });
-    const pendingRedemptions = await Reward.find({ campaignId: { $in: campaignIds }, status: 'pending' })
-      .populate('customerId', 'name email')
-      .sort({ updatedAt: -1 });
+    // 1. Total stamps (check-ins + visit stamps)
+    const totalStamps = await Checkin.countDocuments({ campaignId: { $in: campaignIds } });
 
-    const recentStamps = await Visit.find({ campaignId: { $in: campaignIds } })
+    // 2. Unique customers
+    const uniqueCustomers = await Checkin.distinct('customerId', { campaignId: { $in: campaignIds } });
+
+    // 3. Open rewards (unredeemed)
+    const openRewardsAgg = await Customer.aggregate([
+      { $unwind: "$joinedCampaigns" },
+      { $match: { "joinedCampaigns.campaignId": { $in: campaignIds } } },
+      { $unwind: "$joinedCampaigns.rewards" },
+      { $match: { "joinedCampaigns.rewards.status": "unredeemed" } },
+      { $count: "count" }
+    ]);
+    const openRewardsCount = openRewardsAgg[0]?.count || 0;
+
+    // 4. Pending redemptions
+    const pendingCustomers = await Customer.find({
+      "joinedCampaigns": {
+        $elemMatch: {
+          campaignId: { $in: campaignIds },
+          "rewards.status": "pending"
+        }
+      }
+    }).select('name email joinedCampaigns');
+
+    const pendingRedemptions = [];
+    for (const cust of pendingCustomers) {
+      for (const jc of cust.joinedCampaigns) {
+        if (campaignIds.some(id => id.toString() === jc.campaignId.toString())) {
+          for (const r of jc.rewards) {
+            if (r.status === 'pending') {
+              pendingRedemptions.push({
+                _id: r._id,
+                rewardTitle: r.rewardTitle,
+                status: r.status,
+                unlockedAt: r.unlockedAt,
+                updatedAt: r.updatedAt,
+                customerId: {
+                  _id: cust._id,
+                  name: cust.name,
+                  email: cust.email
+                },
+                campaignId: jc.campaignId
+              });
+            }
+          }
+        }
+      }
+    }
+    pendingRedemptions.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+
+    // 5. Recent stamps
+    const recentStamps = await Checkin.find({ campaignId: { $in: campaignIds } })
       .populate('customerId', 'name email')
       .sort({ createdAt: -1 })
       .limit(5);

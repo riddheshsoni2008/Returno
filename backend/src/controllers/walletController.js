@@ -1,8 +1,6 @@
 import Customer from '../models/Customer.js';
-import Campaign from '../models/Campaign.js';
-import CustomerCampaign from '../models/CustomerCampaign.js';
+import Business from '../models/Business.js';
 import Checkin from '../models/Checkin.js';
-import Reward from '../models/Reward.js';
 
 // Helper: check if streak is still active
 const isStreakActive = (lastCheckinDate) => {
@@ -29,33 +27,40 @@ export const getWalletData = async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Get all customer's enrollments
-    const enrollments = await CustomerCampaign.find({ customerId: user._id });
-    const enrolledCampaignIds = enrollments.map(e => e.campaignId.toString());
+    const enrollments = user.joinedCampaigns || [];
 
-    // Get all active campaigns with business info
-    const activeCampaigns = await Campaign.find({ isActive: true }).populate('businessId');
+    // Get all businesses with active campaigns
+    const businesses = await Business.find({ "campaigns.isActive": true });
+    
+    // Flatten and format active campaigns with populated business info
+    const activeCampaigns = [];
+    for (const biz of businesses) {
+      for (const camp of biz.campaigns) {
+        if (camp.isActive) {
+          const campObj = camp.toObject();
+          
+          // Enrich businessId object for the frontend expectations
+          const bizObj = biz.toObject();
+          bizObj.name = bizObj.businessName;
+          if (bizObj.loyaltyConfiguration) {
+            bizObj.category = bizObj.loyaltyConfiguration.category;
+            bizObj.address = bizObj.loyaltyConfiguration.address;
+            bizObj.city = bizObj.loyaltyConfiguration.city || '';
+            bizObj.state = bizObj.loyaltyConfiguration.state || '';
+            bizObj.location = bizObj.loyaltyConfiguration.location;
+            bizObj.geofenceRadius = bizObj.loyaltyConfiguration.geofenceRadius;
+          }
+          
+          campObj.businessId = bizObj;
+          activeCampaigns.push(campObj);
+        }
+      }
+    }
     
     const walletCards = [];
     const exploreCampaigns = [];
 
     for (const camp of activeCampaigns) {
-      if (!camp.businessId) continue;
-      
-      const formattedCampaign = camp.toObject();
-      if (formattedCampaign.businessId) {
-        const biz = formattedCampaign.businessId;
-        biz.name = biz.businessName;
-        if (biz.loyaltyConfiguration) {
-          biz.category = biz.loyaltyConfiguration.category;
-          biz.address = biz.loyaltyConfiguration.address;
-          biz.city = biz.loyaltyConfiguration.city || '';
-          biz.state = biz.loyaltyConfiguration.state || '';
-          biz.location = biz.loyaltyConfiguration.location;
-          biz.geofenceRadius = biz.loyaltyConfiguration.geofenceRadius;
-        }
-      }
-
       const enrollment = enrollments.find(e => e.campaignId.toString() === camp._id.toString());
       
       if (enrollment) {
@@ -63,10 +68,9 @@ export const getWalletData = async (req, res) => {
         const streakActive = isStreakActive(enrollment.lastCheckinDate);
         
         walletCards.push({
-          campaign: formattedCampaign,
+          campaign: camp,
           currentStamps: enrollment.totalCheckins % target === 0 && enrollment.totalCheckins > 0 ? target : enrollment.totalCheckins % target,
           totalEarned: enrollment.totalCheckins,
-          // Streak data
           currentStreak: streakActive ? enrollment.currentStreak : 0,
           longestStreak: enrollment.longestStreak,
           totalPoints: enrollment.totalPoints,
@@ -76,22 +80,49 @@ export const getWalletData = async (req, res) => {
         });
       } else {
         exploreCampaigns.push({
-          campaign: formattedCampaign,
+          campaign: camp,
           currentStamps: 0,
           totalEarned: 0
         });
       }
     }
 
-    const rewards = await Reward.find({ customerId: user._id }).sort({ createdAt: -1 });
+    // Extract rewards from joined campaigns
+    const rewards = [];
+    for (const enrollment of enrollments) {
+      for (const r of enrollment.rewards) {
+        const rewardObj = r.toObject();
+        rewardObj.campaignId = enrollment.campaignId;
+        rewards.push(rewardObj);
+      }
+    }
+    // Sort rewards by unlockedAt descending
+    rewards.sort((a, b) => new Date(b.unlockedAt) - new Date(a.unlockedAt));
 
     // Recent check-in history (last 10 across all campaigns)
     const recentCheckins = await Checkin.find({ customerId: user._id })
-      .populate('campaignId', 'title rewardTitle')
       .sort({ createdAt: -1 })
       .limit(10);
 
-    return res.json({ success: true, user, walletCards, exploreCampaigns, rewards, recentCheckins });
+    // Populate campaign info manually for checkins
+    const enrichedCheckins = [];
+    for (const checkin of recentCheckins) {
+      const checkinObj = checkin.toObject();
+      const biz = await Business.findOne({ "campaigns._id": checkin.campaignId });
+      if (biz) {
+        const camp = biz.campaigns.id(checkin.campaignId);
+        if (camp) {
+          checkinObj.campaignId = {
+            _id: camp._id,
+            title: camp.title,
+            rewardTitle: camp.rewardTitle
+          };
+        }
+      }
+      enrichedCheckins.push(checkinObj);
+    }
+
+    return res.json({ success: true, user, walletCards, exploreCampaigns, rewards, recentCheckins: enrichedCheckins });
   } catch (error) {
     console.error('Wallet Get API Error:', error);
     return res.status(500).json({ error: 'Internal Server Error' });

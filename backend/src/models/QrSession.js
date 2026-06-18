@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const QrSessionSchema = new mongoose.Schema({
-  campaignId: { type: mongoose.Schema.Types.ObjectId, ref: 'Campaign', required: true, index: true },
+  campaignId: { type: mongoose.Schema.Types.ObjectId, required: true, index: true },
   businessId: { type: mongoose.Schema.Types.ObjectId, ref: 'Business', required: true },
   token: { type: String, required: true, unique: true, index: true },
   expiresAt: { type: Date, required: true },

@@ -1,8 +1,6 @@
 import Customer from '../models/Customer.js';
 import Business from '../models/Business.js';
-import Campaign from '../models/Campaign.js';
-import Visit from '../models/Visit.js';
-import Reward from '../models/Reward.js';
+import Checkin from '../models/Checkin.js';
 import AuditLog from '../models/AuditLog.js';
 
 const getDistance = (lat1, lon1, lat2, lon2) => {
@@ -63,20 +61,20 @@ export const stampVisit = async (req, res) => {
       return res.status(401).json({ error: 'User not found' });
     }
 
-    const campaign = await Campaign.findById(campaignId);
-    if (!campaign || !campaign.isActive) {
-      return res.status(404).json({ error: 'Campaign is inactive or does not exist' });
+    const business = await Business.findOne({ "campaigns._id": campaignId });
+    if (!business) {
+      return res.status(404).json({ error: 'Campaign business not found' });
     }
 
-    const business = await Business.findById(campaign.businessId);
-    if (!business) {
-      return res.status(404).json({ error: 'Business profile not found' });
+    const campaign = business.campaigns.id(campaignId);
+    if (!campaign || !campaign.isActive) {
+      return res.status(404).json({ error: 'Campaign is inactive or does not exist' });
     }
 
     const clientIp = req.ip || '127.0.0.1';
     const cleanedBillNumber = billNumber.trim().toUpperCase();
     
-    const existingBillClaim = await Visit.findOne({ campaignId, billNumber: cleanedBillNumber });
+    const existingBillClaim = await Checkin.findOne({ campaignId, billNumber: cleanedBillNumber });
     if (existingBillClaim) {
       await AuditLog.create({
         actorId: user._id,
@@ -124,7 +122,7 @@ export const stampVisit = async (req, res) => {
     }
 
     const fiveMinsAgo = new Date(Date.now() - 5 * 60 * 1000);
-    const recentVisit = await Visit.findOne({
+    const recentVisit = await Checkin.findOne({
       customerId: user._id,
       campaignId,
       createdAt: { $gte: fiveMinsAgo }
@@ -136,29 +134,30 @@ export const stampVisit = async (req, res) => {
       });
     }
 
-    const visit = await Visit.create({
-      customerId: user._id,
-      campaignId,
-      billNumber: cleanedBillNumber,
-      amount: parseFloat(amount),
-      location: {
-        type: 'Point',
-        coordinates: [parseFloat(lng), parseFloat(lat)]
-      },
-      deviceFingerprint,
-      ipAddress: clientIp
-    });
+    // Auto-enroll if not already joined
+    let enrollment = user.joinedCampaigns.find(jc => jc.campaignId.toString() === campaignId);
+    if (!enrollment) {
+      enrollment = {
+        campaignId: campaign._id,
+        businessId: business._id,
+        rewards: []
+      };
+      user.joinedCampaigns.push(enrollment);
+      // Re-find reference inside mongoose array
+      enrollment = user.joinedCampaigns[user.joinedCampaigns.length - 1];
+    }
 
-    const totalStamps = await Visit.countDocuments({ customerId: user._id, campaignId });
+    // Update campaign progress
+    enrollment.totalCheckins += 1;
+    enrollment.lastCheckinDate = new Date();
+
     const target = campaign.requiredStamps;
-    const targetRewardVolume = Math.floor(totalStamps / target);
-    const existingRewardsCount = await Reward.countDocuments({ customerId: user._id, campaignId });
+    const targetRewardVolume = Math.floor(enrollment.totalCheckins / target);
+    const existingRewardsCount = enrollment.rewards.length;
 
     let rewardUnlocked = false;
     if (targetRewardVolume > existingRewardsCount) {
-      await Reward.create({
-        customerId: user._id,
-        campaignId,
+      enrollment.rewards.push({
         rewardTitle: campaign.rewardTitle,
         status: 'unredeemed',
         unlockedAt: new Date()
@@ -166,11 +165,28 @@ export const stampVisit = async (req, res) => {
       rewardUnlocked = true;
     }
 
+    await user.save();
+
+    // Create Checkin record representing this stamp
+    await Checkin.create({
+      customerId: user._id,
+      businessId: business._id,
+      campaignId,
+      billNumber: cleanedBillNumber,
+      amount: parseFloat(amount),
+      pointsAwarded: 0,
+      streakAtCheckin: 0,
+      location: {
+        type: 'Point',
+        coordinates: [parseFloat(lng), parseFloat(lat)]
+      }
+    });
+
     return res.json({
       success: true,
       rewardUnlocked,
-      currentStamps: totalStamps % target === 0 && totalStamps > 0 ? target : totalStamps % target,
-      totalStamps,
+      currentStamps: enrollment.totalCheckins % target === 0 && enrollment.totalCheckins > 0 ? target : enrollment.totalCheckins % target,
+      totalStamps: enrollment.totalCheckins,
       requiredStamps: target
     });
   } catch (error) {

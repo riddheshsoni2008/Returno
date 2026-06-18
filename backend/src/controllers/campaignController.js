@@ -1,6 +1,5 @@
-import Campaign from '../models/Campaign.js';
 import Business from '../models/Business.js';
-import CustomerCampaign from '../models/CustomerCampaign.js';
+import Customer from '../models/Customer.js';
 import crypto from 'crypto';
 
 // Helper to format business object for the frontend expectations
@@ -36,8 +35,7 @@ export const createCampaign = async (req, res) => {
     // Generate permanent join QR token
     const joinQrToken = crypto.randomBytes(16).toString('hex');
 
-    const campaign = await Campaign.create({
-      businessId: business._id,
+    const newCampaign = {
       title,
       description,
       requiredStamps: parseInt(requiredStamps),
@@ -46,7 +44,13 @@ export const createCampaign = async (req, res) => {
       joinQrToken,
       pointsPerCheckin: parseInt(pointsPerCheckin) || 10,
       streakBonusMultiplier: parseFloat(streakBonusMultiplier) || 1
-    });
+    };
+
+    business.campaigns.push(newCampaign);
+    await business.save();
+
+    // Get the created campaign with its generated _id
+    const campaign = business.campaigns[business.campaigns.length - 1];
 
     return res.status(201).json({ success: true, campaign });
   } catch (error) {
@@ -62,15 +66,18 @@ export const getCampaigns = async (req, res) => {
       return res.status(400).json({ error: 'Business profile not found' });
     }
 
-    const campaigns = await Campaign.find({ businessId: business._id }).sort({ createdAt: -1 });
+    const campaigns = business.campaigns || [];
     
     // Enrich with enrollment counts
     const enriched = await Promise.all(campaigns.map(async (camp) => {
-      const enrollmentCount = await CustomerCampaign.countDocuments({ campaignId: camp._id });
+      const enrollmentCount = await Customer.countDocuments({ "joinedCampaigns.campaignId": camp._id });
       const campObj = camp.toObject();
       campObj.enrollmentCount = enrollmentCount;
       return campObj;
     }));
+
+    // Sort by createdAt descending
+    enriched.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
     return res.json({ success: true, campaigns: enriched });
   } catch (error) {
@@ -82,19 +89,19 @@ export const getCampaigns = async (req, res) => {
 export const getCampaignById = async (req, res) => {
   try {
     const campaignId = req.params.id;
-    const campaign = await Campaign.findById(campaignId);
     
+    // Find the business that contains the campaign
+    const business = await Business.findOne({ "campaigns._id": campaignId });
+    if (!business) {
+      return res.status(404).json({ error: 'Campaign not found' });
+    }
+
+    const campaign = business.campaigns.id(campaignId);
     if (!campaign) {
       return res.status(404).json({ error: 'Campaign not found' });
     }
 
-    const business = await Business.findById(campaign.businessId);
-    
-    if (!business) {
-      return res.status(404).json({ error: 'Business not found' });
-    }
-
-    const enrollmentCount = await CustomerCampaign.countDocuments({ campaignId: campaign._id });
+    const enrollmentCount = await Customer.countDocuments({ "joinedCampaigns.campaignId": campaign._id });
 
     return res.json({ 
       success: true, 
