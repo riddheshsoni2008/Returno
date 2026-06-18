@@ -81,12 +81,12 @@ export async function validateEmailConfig() {
 
   // Verify SMTP Connection to fail fast on startup
   try {
-    const cleanedPass = pass.replace(/\s+/g, "");
     const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 465,
-      secure: true,
-      auth: { user, pass: cleanedPass },
+      service: "gmail",
+      auth: {
+        user,
+        pass: cleanedPass,
+      },
     });
 
     await transporter.verify();
