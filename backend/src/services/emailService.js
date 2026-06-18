@@ -36,11 +36,13 @@ export async function getTransporter() {
     );
   }
 
-  return nodemailer.createTransport({
-    service: "gmail",
+  const transporter = nodemailer.createTransport({
+    host: "smtp-relay.brevo.com", // <-- MUST change this
+    port: 2525, // <-- MUST change this
+    secure: false,
     auth: {
-      user,
-      pass: cleanedPass,
+      user: "your_brevo_username", // <-- NOT your Gmail username
+      pass: "your_brevo_password", // <-- NOT your Gmail app password
     },
   });
 }
