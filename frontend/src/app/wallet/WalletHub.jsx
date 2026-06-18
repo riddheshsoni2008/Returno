@@ -107,10 +107,14 @@ export default function WalletHub({ user, initialCards, initialRewards, initialE
   const handleLogout = async () => {
     try {
       await apiFetch('/auth/me', { method: 'POST' });
+    } catch (err) {
+      console.error('Logout API failed, logging out locally:', err);
+    } finally {
+      if (typeof document !== 'undefined') {
+        document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; SameSite=Lax";
+      }
       router.push('/');
       router.refresh();
-    } catch (err) {
-      console.error(err);
     }
   };
 

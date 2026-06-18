@@ -39,10 +39,14 @@ export default function Navbar() {
   const handleSignOut = async () => {
     try {
       await apiFetch("/auth/me", { method: "POST" });
-      setUser(null);
-      window.location.reload();
     } catch (err) {
       console.error("Error signing out:", err);
+    } finally {
+      if (typeof document !== 'undefined') {
+        document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; SameSite=Lax";
+      }
+      setUser(null);
+      window.location.reload();
     }
   };
 

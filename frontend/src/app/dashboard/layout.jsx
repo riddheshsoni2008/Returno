@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import SignOutButton from '../merchant/SignOutButton';
 
 export default async function DashboardLayout({ children }) {
   const cookieStore = await cookies();
@@ -101,15 +102,7 @@ export default async function DashboardLayout({ children }) {
         </div>
 
         <div className="mt-8 border-t border-white/5 pt-6">
-          <form action="/auth" method="GET" className="w-full">
-            {/* Note: since Next API routes are deleted, logout action needs frontend handling or fetch. Just linking back to auth for now */}
-            <button 
-              type="submit" 
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 text-sm font-semibold transition-all border border-red-500/10"
-            >
-              🚪 Sign Out
-            </button>
-          </form>
+          <SignOutButton />
         </div>
       </aside>
 

@@ -15,13 +15,15 @@ export default function SignOutButton() {
       await apiFetch('/auth/me', {
         method: 'POST',
       });
+    } catch (err) {
+      console.error('Logout API call failed, signing out locally:', err.message);
+    } finally {
+      // Always delete the cookie locally even if the backend request fails or is cross-origin
+      if (typeof document !== 'undefined') {
+        document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; SameSite=Lax";
+      }
       router.push('/merchant/auth');
       router.refresh();
-    } catch (err) {
-      console.error('Logout error:', err.message);
-      // Fallback
-      router.push('/merchant/auth');
-    } finally {
       setLoading(false);
     }
   };
