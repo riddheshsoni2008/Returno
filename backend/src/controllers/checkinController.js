@@ -237,8 +237,9 @@ export const validateCheckin = async (req, res) => {
       } : undefined
     });
 
-    // 12. Mark token as used by this customer
+    // 12. Mark token as used by this customer and expire it immediately (single-use)
     qrSession.usedBy.push(customer._id);
+    qrSession.isExpired = true;
     await qrSession.save();
 
     // 13. Audit log

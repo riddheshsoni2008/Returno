@@ -1,53 +1,67 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import { apiFetch } from '@/lib/api';
-import QRCode from 'qrcode';
+import { useState, useEffect, useRef, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import { apiFetch } from "@/lib/api";
+import QRCode from "qrcode";
 
-export default function MerchantDashboardHub({ business, metrics, initialCampaigns, appUrl }) {
+export default function MerchantDashboardHub({
+  business,
+  metrics,
+  initialCampaigns,
+  appUrl,
+}) {
   const router = useRouter();
   const [campaigns, setCampaigns] = useState(initialCampaigns);
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   // Form inputs
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [requiredStamps, setRequiredStamps] = useState(10);
-  const [rewardTitle, setRewardTitle] = useState('');
+  const [rewardTitle, setRewardTitle] = useState("");
   const [pointsPerCheckin, setPointsPerCheckin] = useState(10);
 
   // Custom Confirm/Alert Modal State
-  const [confirmModal, setConfirmModal] = useState({ isOpen: false, title: '', message: '', onConfirm: null });
-  const [alertModal, setAlertModal] = useState({ isOpen: false, title: '', message: '', type: 'info' });
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    onConfirm: null,
+  });
+  const [alertModal, setAlertModal] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    type: "info",
+  });
 
   // QR Modal State
   const [selectedCampaign, setSelectedCampaign] = useState(null);
-  const [qrMode, setQrMode] = useState('join'); // 'join' or 'checkin'
+  const [qrMode, setQrMode] = useState("join"); // 'join' or 'checkin'
 
   // Join QR state
-  const [joinQrDataUrl, setJoinQrDataUrl] = useState('');
+  const [joinQrDataUrl, setJoinQrDataUrl] = useState("");
 
   // Dynamic QR state
   const [dynamicToken, setDynamicToken] = useState(null);
   const [dynamicExpiresAt, setDynamicExpiresAt] = useState(null);
-  const [dynamicQrDataUrl, setDynamicQrDataUrl] = useState('');
-  const [countdown, setCountdown] = useState(0);
-  const [autoRotate, setAutoRotate] = useState(true);
-  const timerRef = useRef(null);
-  const rotateRef = useRef(null);
+  const [dynamicQrDataUrl, setDynamicQrDataUrl] = useState("");
 
   // Generate Join QR when selectedCampaign changes
   useEffect(() => {
-    if (selectedCampaign && qrMode === 'join') {
+    if (selectedCampaign && qrMode === "join") {
       const joinUrl = `${appUrl}/join/${selectedCampaign._id}`;
       QRCode.toDataURL(joinUrl, {
-        width: 320, margin: 2,
-        color: { dark: '#1e1b4b', light: '#ffffff' }
-      }).then(url => setJoinQrDataUrl(url)).catch(console.error);
+        width: 320,
+        margin: 2,
+        color: { dark: "#1e1b4b", light: "#ffffff" },
+      })
+        .then((url) => setJoinQrDataUrl(url))
+        .catch(console.error);
     }
   }, [selectedCampaign, qrMode, appUrl]);
 
@@ -56,38 +70,19 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
     if (dynamicToken) {
       const checkinUrl = `${appUrl}/checkin?token=${dynamicToken}`;
       QRCode.toDataURL(checkinUrl, {
-        width: 320, margin: 2,
-        color: { dark: '#991b1b', light: '#ffffff' }
-      }).then(url => setDynamicQrDataUrl(url)).catch(console.error);
+        width: 320,
+        margin: 2,
+        color: { dark: "#991b1b", light: "#ffffff" },
+      })
+        .then((url) => setDynamicQrDataUrl(url))
+        .catch(console.error);
     }
   }, [dynamicToken, appUrl]);
 
-  // Countdown timer
-  useEffect(() => {
-    if (dynamicExpiresAt) {
-      if (timerRef.current) clearInterval(timerRef.current);
-      timerRef.current = setInterval(() => {
-        const remaining = Math.max(0, Math.ceil((new Date(dynamicExpiresAt) - new Date()) / 1000));
-        setCountdown(remaining);
-        if (remaining <= 0) {
-          clearInterval(timerRef.current);
-          setDynamicToken(null);
-          setDynamicQrDataUrl('');
-          // Auto-rotate if enabled
-          if (autoRotate && selectedCampaign) {
-            generateDynamicQr(selectedCampaign._id);
-          }
-        }
-      }, 500);
-      return () => clearInterval(timerRef.current);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dynamicExpiresAt, autoRotate]);
-
   const generateDynamicQr = useCallback(async (campaignId) => {
     try {
-      const res = await apiFetch('/qr/generate', {
-        method: 'POST',
+      const res = await apiFetch("/qr/generate", {
+        method: "POST",
         body: JSON.stringify({ campaignId }),
       });
       const data = await res.json();
@@ -96,45 +91,75 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
         setDynamicExpiresAt(data.expiresAt);
       }
     } catch (err) {
-      console.error('QR generate error:', err);
+      console.error("QR generate error:", err);
     }
   }, []);
+
+  // Poll to automatically refresh QR code once scanned or expired
+  useEffect(() => {
+    let intervalId = null;
+    if (selectedCampaign && qrMode === "checkin" && dynamicToken) {
+      intervalId = setInterval(async () => {
+        try {
+          const res = await apiFetch(`/qr/active/${selectedCampaign._id}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data.success) {
+              // If current token is expired (session === null), or different, or already checked in
+              if (
+                !data.session ||
+                data.session.token !== dynamicToken ||
+                data.session.checkinCount > 0
+              ) {
+                generateDynamicQr(selectedCampaign._id);
+              }
+            }
+          }
+        } catch (err) {
+          console.error("Polling active session error:", err);
+        }
+      }, 2000);
+    }
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [selectedCampaign, qrMode, dynamicToken, generateDynamicQr]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
-    setSuccess('');
+    setError("");
+    setSuccess("");
 
     try {
-      const res = await apiFetch('/campaigns', {
-        method: 'POST',
+      const res = await apiFetch("/campaigns", {
+        method: "POST",
         body: JSON.stringify({
           title,
           description,
           requiredStamps: parseInt(requiredStamps),
           rewardTitle,
-          pointsPerCheckin: parseInt(pointsPerCheckin)
+          pointsPerCheckin: parseInt(pointsPerCheckin),
         }),
       });
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || 'Failed to create campaign');
+        throw new Error(data.error || "Failed to create campaign");
       }
 
-      setSuccess('Loyalty campaign launched successfully!');
+      setSuccess("Loyalty campaign launched successfully!");
       setCampaigns([data.campaign, ...campaigns]);
 
-      setTitle('');
-      setDescription('');
+      setTitle("");
+      setDescription("");
       setRequiredStamps(10);
-      setRewardTitle('');
+      setRewardTitle("");
       setPointsPerCheckin(10);
 
       setTimeout(() => {
         setShowForm(false);
-        setSuccess('');
+        setSuccess("");
         router.refresh();
       }, 1200);
     } catch (err) {
@@ -147,35 +172,46 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
   const handleDeleteCampaign = (campaignId) => {
     setConfirmModal({
       isOpen: true,
-      title: 'Delete Loyalty Campaign',
-      message: 'Are you sure you want to delete this loyalty campaign? All active customer progress for this campaign will be archived. This action cannot be undone.',
+      title: "Delete Loyalty Campaign",
+      message:
+        "Are you sure you want to delete this loyalty campaign? All active customer progress for this campaign will be archived. This action cannot be undone.",
       onConfirm: async () => {
         try {
           const res = await apiFetch(`/campaigns/${campaignId}`, {
-            method: 'DELETE',
+            method: "DELETE",
           });
           const data = await res.json();
           if (!res.ok) {
-            throw new Error(data.error || 'Failed to delete campaign');
+            throw new Error(data.error || "Failed to delete campaign");
           }
-          setCampaigns(campaigns.filter(c => c._id !== campaignId));
-          setConfirmModal({ isOpen: false, title: '', message: '', onConfirm: null });
+          setCampaigns(campaigns.filter((c) => c._id !== campaignId));
+          setConfirmModal({
+            isOpen: false,
+            title: "",
+            message: "",
+            onConfirm: null,
+          });
           setAlertModal({
             isOpen: true,
-            title: 'Campaign Deleted',
-            message: 'The campaign has been successfully deleted.',
-            type: 'success'
+            title: "Campaign Deleted",
+            message: "The campaign has been successfully deleted.",
+            type: "success",
           });
         } catch (err) {
-          setConfirmModal({ isOpen: false, title: '', message: '', onConfirm: null });
+          setConfirmModal({
+            isOpen: false,
+            title: "",
+            message: "",
+            onConfirm: null,
+          });
           setAlertModal({
             isOpen: true,
-            title: 'Delete Failed',
+            title: "Delete Failed",
             message: err.message,
-            type: 'error'
+            type: "error",
           });
         }
-      }
+      },
     });
   };
 
@@ -183,9 +219,8 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
     setSelectedCampaign(camp);
     setQrMode(mode);
     setDynamicToken(null);
-    setDynamicQrDataUrl('');
-    setCountdown(0);
-    if (mode === 'checkin') {
+    setDynamicQrDataUrl("");
+    if (mode === "checkin") {
       generateDynamicQr(camp._id);
     }
   };
@@ -193,26 +228,35 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
   const closeQrModal = () => {
     setSelectedCampaign(null);
     setDynamicToken(null);
-    setDynamicQrDataUrl('');
-    setCountdown(0);
-    if (timerRef.current) clearInterval(timerRef.current);
+    setDynamicQrDataUrl("");
   };
 
-  const { totalStamps, uniqueCustomers, openRewardsCount, recentStamps } = metrics;
+  const { totalStamps, uniqueCustomers, openRewardsCount, recentStamps } =
+    metrics;
 
   return (
-    <div className="space-y-8 text-slate-800 animate-fade-in-up">
+    <div className="space-y-8 text-slate-800">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-black tracking-tight text-slate-900">Merchant Dashboard</h1>
-          <p className="text-sm text-slate-500 mt-1">Real-time loyalty management for {business.name}</p>
+          <h1 className="text-2xl md:text-3xl font-black tracking-tight text-slate-900">
+            Merchant Dashboard
+          </h1>
+          <p className="text-sm text-slate-500 mt-1">
+            Real-time loyalty management for {business.name}
+          </p>
         </div>
         <button
-          onClick={() => { setShowForm(true); setError(''); setSuccess(''); }}
+          onClick={() => {
+            setShowForm(true);
+            setError("");
+            setSuccess("");
+          }}
           className="group inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white text-xs font-bold uppercase tracking-wider shadow-md shadow-red-500/10 hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5"
         >
-          <span className="flex items-center justify-center w-5 h-5 rounded-full bg-white/20 text-sm font-black transition-transform duration-300 group-hover:rotate-90">+</span>
+          <span className="flex items-center justify-center w-5 h-5 rounded-full bg-white/20 text-sm font-black transition-transform duration-300 group-hover:rotate-90">
+            +
+          </span>
           Add New Campaign
         </button>
       </div>
@@ -220,14 +264,41 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
       {/* Analytics Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {[
-          { label: 'Total Stamps', value: totalStamps, color: 'text-red-600', desc: 'Check-ins logged' },
-          { label: 'Active Customers', value: uniqueCustomers, color: 'text-slate-800', desc: 'Unique enrollments' },
-          { label: 'Unlocked Rewards', value: openRewardsCount, color: 'text-amber-600', desc: 'Milestones completed' },
-          { label: 'Active Campaigns', value: campaigns.length, color: 'text-emerald-600', desc: 'Running now' },
+          {
+            label: "Total Stamps",
+            value: totalStamps,
+            color: "text-red-600",
+            desc: "Check-ins logged",
+          },
+          {
+            label: "Active Customers",
+            value: uniqueCustomers,
+            color: "text-slate-800",
+            desc: "Unique enrollments",
+          },
+          {
+            label: "Unlocked Rewards",
+            value: openRewardsCount,
+            color: "text-amber-600",
+            desc: "Milestones completed",
+          },
+          {
+            label: "Active Campaigns",
+            value: campaigns.length,
+            color: "text-emerald-600",
+            desc: "Running now",
+          },
         ].map((stat, i) => (
-          <div key={i} className="bg-white border border-slate-200/80 p-5 rounded-2xl shadow-sm hover:shadow-md hover:scale-[1.015] transition-all duration-300">
-            <div className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2">{stat.label}</div>
-            <div className={`text-3xl font-extrabold ${stat.color}`}>{stat.value}</div>
+          <div
+            key={i}
+            className="bg-white border border-slate-200/80 p-5 rounded-2xl shadow-sm hover:shadow-md hover:scale-[1.015] transition-all duration-300"
+          >
+            <div className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2">
+              {stat.label}
+            </div>
+            <div className={`text-3xl font-extrabold ${stat.color}`}>
+              {stat.value}
+            </div>
             <p className="text-[10px] text-slate-400 mt-2">{stat.desc}</p>
           </div>
         ))}
@@ -235,20 +306,26 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
 
       {/* Campaigns Section */}
       <div className="space-y-4">
-        <h3 className="text-lg font-black text-slate-900">Active Loyalty Campaigns</h3>
+        <h3 className="text-lg font-black text-slate-900">
+          Active Loyalty Campaigns
+        </h3>
 
         {campaigns.length === 0 ? (
           <div className="text-center py-12 bg-white border border-slate-200/80 rounded-2xl text-slate-400 text-sm shadow-sm">
-            No active loyalty campaigns. Click &quot;Add New Campaign&quot; above to create your first stamp card!
+            No active loyalty campaigns. Click &quot;Add New Campaign&quot;
+            above to create your first stamp card!
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {campaigns.map((camp) => (
-              <div key={camp._id} className="bg-white border border-slate-200/80 rounded-2xl p-5 md:p-6 hover:shadow-md hover:scale-[1.015] transition-all duration-300 flex flex-col justify-between space-y-4 shadow-sm">
+              <div
+                key={camp._id}
+                className="bg-white border border-slate-200/80 rounded-2xl p-5 md:p-6 hover:shadow-md hover:scale-[1.015] transition-all duration-300 flex flex-col justify-between space-y-4 shadow-sm"
+              >
                 <div className="space-y-3">
                   <div className="flex justify-between items-start">
                     <span className="text-[9px] uppercase tracking-widest font-extrabold px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-600">
-                      {camp.isActive ? 'Active' : 'Draft'}
+                      {camp.isActive ? "Active" : "Draft"}
                     </span>
                     <div className="flex items-center gap-1.5">
                       <span className="text-[10px] text-slate-500 font-semibold bg-slate-100 px-2 py-0.5 rounded">
@@ -259,46 +336,77 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
                         className="p-1 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all duration-200"
                         title="Delete Campaign"
                       >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                          />
                         </svg>
                       </button>
                     </div>
                   </div>
-                  <h4 className="text-md font-bold text-slate-900">{camp.title}</h4>
-                  <p className="text-slate-600 text-xs leading-normal">{camp.description}</p>
-                  
+                  <h4 className="text-md font-bold text-slate-900">
+                    {camp.title}
+                  </h4>
+                  <p className="text-slate-600 text-xs leading-normal">
+                    {camp.description}
+                  </p>
+
                   <div className="grid grid-cols-3 gap-2">
                     <div className="bg-slate-50 border border-slate-100 p-2 rounded-lg text-center">
-                      <div className="text-xs font-black text-red-600">{camp.requiredStamps}</div>
-                      <div className="text-[8px] text-slate-400 font-bold uppercase">Stamps</div>
+                      <div className="text-xs font-black text-red-600">
+                        {camp.requiredStamps}
+                      </div>
+                      <div className="text-[8px] text-slate-400 font-bold uppercase">
+                        Stamps
+                      </div>
                     </div>
                     <div className="bg-slate-50 border border-slate-100 p-2 rounded-lg text-center">
-                      <div className="text-xs font-black text-slate-800">{camp.pointsPerCheckin || 10}</div>
-                      <div className="text-[8px] text-slate-400 font-bold uppercase">Pts/Day</div>
+                      <div className="text-xs font-black text-slate-800">
+                        {camp.pointsPerCheckin || 10}
+                      </div>
+                      <div className="text-[8px] text-slate-400 font-bold uppercase">
+                        Pts/Day
+                      </div>
                     </div>
                     <div className="bg-slate-50 border border-slate-100 p-2 rounded-lg text-center">
-                      <div className="text-xs font-black text-amber-700">🎁</div>
-                      <div className="text-[8px] text-slate-400 font-bold uppercase">Reward</div>
+                      <div className="text-xs font-black text-amber-700">
+                        🎁
+                      </div>
+                      <div className="text-[8px] text-slate-400 font-bold uppercase">
+                        Reward
+                      </div>
                     </div>
                   </div>
 
                   <div className="bg-slate-50 border border-slate-100 p-3 rounded-xl">
-                    <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider block mb-0.5">Reward</span>
-                    <span className="text-xs font-bold text-amber-700">🎁 {camp.rewardTitle}</span>
+                    <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider block mb-0.5">
+                      Reward
+                    </span>
+                    <span className="text-xs font-bold text-amber-700">
+                      🎁 {camp.rewardTitle}
+                    </span>
                   </div>
                 </div>
 
                 {/* QR Buttons */}
                 <div className="flex gap-2">
                   <button
-                    onClick={() => openQrModal(camp, 'join')}
+                    onClick={() => openQrModal(camp, "join")}
                     className="flex-1 text-center py-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-[10px] transition-colors border border-slate-200/50 uppercase tracking-wider"
                   >
                     📎 Join QR
                   </button>
                   <button
-                    onClick={() => openQrModal(camp, 'checkin')}
+                    onClick={() => openQrModal(camp, "checkin")}
                     className="flex-1 text-center py-2.5 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 font-bold text-[10px] transition-colors border border-red-200/50 uppercase tracking-wider"
                   >
                     ⚡ Check-In QR
@@ -312,7 +420,9 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
 
       {/* Recent Visits Logs */}
       <div className="bg-white border border-slate-200/80 p-5 md:p-6 rounded-2xl shadow-sm">
-        <h3 className="text-lg font-black text-slate-900 mb-4">Recent Stamp Scan History</h3>
+        <h3 className="text-lg font-black text-slate-900 mb-4">
+          Recent Stamp Scan History
+        </h3>
 
         {recentStamps.length === 0 ? (
           <div className="text-center py-8 text-slate-400 text-sm">
@@ -331,15 +441,34 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
               </thead>
               <tbody className="divide-y divide-slate-100 text-sm text-slate-700">
                 {recentStamps.map((stamp) => (
-                  <tr key={stamp._id} className="hover:bg-slate-50/50 transition-colors">
+                  <tr
+                    key={stamp._id}
+                    className="hover:bg-slate-50/50 transition-colors"
+                  >
                     <td className="py-3 px-4">
-                      <div className="font-semibold text-xs text-slate-900">{stamp.customerId?.name || 'Anonymous'}</div>
-                      <div className="text-[10px] text-slate-400">{stamp.customerId?.email}</div>
+                      <div className="font-semibold text-xs text-slate-900">
+                        {stamp.customerId?.name || "Anonymous"}
+                      </div>
+                      <div className="text-[10px] text-slate-400">
+                        {stamp.customerId?.email}
+                      </div>
                     </td>
-                    <td className="py-3 px-4 font-mono text-xs">{stamp.billNumber}</td>
-                    <td className="py-3 px-4 text-xs font-semibold">₹{stamp.amount}</td>
+                    <td className="py-3 px-4 font-mono text-xs">
+                      {stamp.billNumber}
+                    </td>
+                    <td className="py-3 px-4 text-xs font-semibold">
+                      ₹{stamp.amount}
+                    </td>
+                    <td className="py-3 px-4 font-mono text-xs">
+                      {stamp.billNumber}
+                    </td>
+                    <td className="py-3 px-4 text-xs font-semibold">
+                      ₹{stamp.amount}
+                    </td>
                     <td className="py-3 px-4 text-[10px] text-slate-400">
-                      {new Date(stamp.createdAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
+                      {new Date(stamp.createdAt).toLocaleString("en-IN", {
+                        timeZone: "Asia/Kolkata",
+                      })}
                     </td>
                   </tr>
                 ))}
@@ -356,59 +485,117 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
             <button
               onClick={() => setShowForm(false)}
               className="absolute top-4 right-4 text-slate-400 hover:text-slate-900 text-xl font-bold bg-slate-50 hover:bg-slate-100 w-8 h-8 rounded-full flex items-center justify-center transition-colors"
-            >×</button>
+            >
+              ×
+            </button>
 
             <div>
-              <h3 className="text-xl font-black text-slate-900">Configure New Campaign</h3>
-              <p className="text-xs text-slate-500 mt-1">Set up a stamp loyalty card with streak tracking.</p>
+              <h3 className="text-xl font-black text-slate-900">
+                Configure New Campaign
+              </h3>
+              <p className="text-xs text-slate-500 mt-1">
+                Set up a stamp loyalty card with streak tracking.
+              </p>
             </div>
 
             {error && (
-              <div className="bg-red-50 border border-red-100 text-red-600 text-xs p-3.5 rounded-xl font-medium">⚠️ {error}</div>
+              <div className="bg-red-50 border border-red-100 text-red-600 text-xs p-3.5 rounded-xl font-medium">
+                ⚠️ {error}
+              </div>
             )}
             {success && (
-              <div className="bg-emerald-50 border border-emerald-100 text-emerald-600 text-xs p-3.5 rounded-xl font-medium">✓ {success}</div>
+              <div className="bg-emerald-50 border border-emerald-100 text-emerald-600 text-xs p-3.5 rounded-xl font-medium">
+                ✓ {success}
+              </div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <label className="block text-slate-500 text-xs font-semibold uppercase tracking-wider">Campaign Title</label>
-                <input type="text" required placeholder="e.g. Cafe Premium Stamp Card" value={title} onChange={(e) => setTitle(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 text-sm focus:outline-none focus:border-red-500 transition-colors" />
+                <label className="block text-slate-500 text-xs font-semibold uppercase tracking-wider">
+                  Campaign Title
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Cafe Premium Stamp Card"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 text-sm focus:outline-none focus:border-red-500 transition-colors"
+                />
               </div>
 
               <div className="space-y-2">
-                <label className="block text-slate-500 text-xs font-semibold uppercase tracking-wider">Reward Title</label>
-                <input type="text" required placeholder="e.g. Free Hot Beverage & Donut" value={rewardTitle} onChange={(e) => setRewardTitle(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 text-sm focus:outline-none focus:border-red-500 transition-colors" />
+                <label className="block text-slate-500 text-xs font-semibold uppercase tracking-wider">
+                  Reward Title
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Free Hot Beverage & Donut"
+                  value={rewardTitle}
+                  onChange={(e) => setRewardTitle(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 text-sm focus:outline-none focus:border-red-500 transition-colors"
+                />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <label className="block text-slate-500 text-xs font-semibold uppercase tracking-wider">Required Stamps</label>
-                  <input type="number" required min={2} max={25} value={requiredStamps} onChange={(e) => setRequiredStamps(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 text-sm focus:outline-none focus:border-red-500 transition-colors" />
+                  <label className="block text-slate-500 text-xs font-semibold uppercase tracking-wider">
+                    Required Stamps
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    min={2}
+                    max={25}
+                    value={requiredStamps}
+                    onChange={(e) => setRequiredStamps(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 text-sm focus:outline-none focus:border-red-500 transition-colors"
+                  />
                 </div>
                 <div className="space-y-2">
-                  <label className="block text-slate-500 text-xs font-semibold uppercase tracking-wider">Points / Check-in</label>
-                  <input type="number" required min={1} max={100} value={pointsPerCheckin} onChange={(e) => setPointsPerCheckin(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 text-sm focus:outline-none focus:border-red-500 transition-colors" />
+                  <label className="block text-slate-500 text-xs font-semibold uppercase tracking-wider">
+                    Points / Check-in
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    min={1}
+                    max={100}
+                    value={pointsPerCheckin}
+                    onChange={(e) => setPointsPerCheckin(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 text-sm focus:outline-none focus:border-red-500 transition-colors"
+                  />
                 </div>
                 <div className="space-y-2">
-                  <label className="block text-slate-500 text-xs font-semibold uppercase tracking-wider">Description</label>
-                  <input type="text" required placeholder="e.g. Daily check-in" value={description} onChange={(e) => setDescription(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 text-sm focus:outline-none focus:border-red-500 transition-colors" />
+                  <label className="block text-slate-500 text-xs font-semibold uppercase tracking-wider">
+                    Description
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Daily check-in"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 text-sm focus:outline-none focus:border-red-500 transition-colors"
+                  />
                 </div>
               </div>
 
               <div className="flex gap-3 pt-2">
-                <button type="button" onClick={() => setShowForm(false)}
-                  className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all uppercase tracking-wider">
+                <button
+                  type="button"
+                  onClick={() => setShowForm(false)}
+                  className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all uppercase tracking-wider"
+                >
                   Cancel
                 </button>
-                <button type="submit" disabled={loading}
-                  className="flex-1 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-red-500/10 transition-all text-xs uppercase tracking-wider">
-                  {loading ? 'Creating...' : 'Launch Campaign'}
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="flex-1 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-red-500/10 transition-all text-xs uppercase tracking-wider"
+                >
+                  {loading ? "Creating..." : "Launch Campaign"}
                 </button>
               </div>
             </form>
@@ -425,29 +612,43 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
               className="absolute top-4 right-4 text-slate-400 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 w-8 h-8 rounded-full flex items-center justify-center transition-colors"
               aria-label="Close modal"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
 
             {/* QR Mode Tabs */}
             <div className="flex bg-slate-100 rounded-xl p-1 shadow-inner border border-slate-200/40">
               <button
-                onClick={() => setQrMode('join')}
+                onClick={() => setQrMode("join")}
                 className={`flex-1 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1.5 ${
-                  qrMode === 'join' 
-                    ? 'bg-white text-slate-900 shadow-sm ring-1 ring-black/5' 
-                    : 'text-slate-500 hover:text-slate-800'
+                  qrMode === "join"
+                    ? "bg-white text-slate-900 shadow-sm ring-1 ring-black/5"
+                    : "text-slate-500 hover:text-slate-800"
                 }`}
               >
                 <span>🔗</span> Join QR
               </button>
               <button
-                onClick={() => { setQrMode('checkin'); if (!dynamicToken) generateDynamicQr(selectedCampaign._id); }}
+                onClick={() => {
+                  setQrMode("checkin");
+                  if (!dynamicToken) generateDynamicQr(selectedCampaign._id);
+                }}
                 className={`flex-1 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1.5 ${
-                  qrMode === 'checkin' 
-                    ? 'bg-white text-red-600 shadow-sm ring-1 ring-black/5' 
-                    : 'text-slate-500 hover:text-slate-800'
+                  qrMode === "checkin"
+                    ? "bg-white text-red-600 shadow-sm ring-1 ring-black/5"
+                    : "text-slate-500 hover:text-slate-800"
                 }`}
               >
                 <span>⚡</span> Check-In QR
@@ -455,18 +656,26 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
             </div>
 
             <div className="space-y-1">
-              <h3 className="text-lg font-extrabold text-slate-900">{selectedCampaign.title}</h3>
+              <h3 className="text-lg font-extrabold text-slate-900">
+                {selectedCampaign.title}
+              </h3>
               <p className="text-xs text-slate-500">
-                {qrMode === 'join' ? 'Permanent QR — customers scan to join' : 'Dynamic QR — rotates every 60 seconds'}
+                {qrMode === "join"
+                  ? "Permanent QR — customers scan to join"
+                  : "Dynamic QR — rotates every 60 seconds"}
               </p>
             </div>
 
             {/* JOIN QR MODE */}
-            {qrMode === 'join' && (
+            {qrMode === "join" && (
               <>
                 {joinQrDataUrl ? (
                   <div className="bg-white border border-slate-100 p-5 rounded-3xl w-fit mx-auto shadow-md ring-8 ring-slate-50 transition-all hover:scale-[1.02] duration-300">
-                    <img src={joinQrDataUrl} alt="Join QR Code" className="w-52 h-52 select-none pointer-events-none" />
+                    <img
+                      src={joinQrDataUrl}
+                      alt="Join QR Code"
+                      className="w-52 h-52 select-none pointer-events-none"
+                    />
                   </div>
                 ) : (
                   <div className="w-52 h-52 bg-slate-50 border border-slate-100 rounded-2xl mx-auto flex items-center justify-center text-slate-400 text-xs animate-pulse">
@@ -474,16 +683,23 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
                   </div>
                 )}
                 <div className="bg-slate-50 border border-slate-200/60 p-3 rounded-xl">
-                  <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider block mb-0.5">Join URL</span>
+                  <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider block mb-0.5">
+                    Join URL
+                  </span>
                   <span className="text-[10px] font-mono text-slate-600 break-all select-all">{`${appUrl}/join/${selectedCampaign._id}`}</span>
                 </div>
                 <div className="flex gap-3 pt-1">
-                  <a href={joinQrDataUrl} download={`join-qr-${selectedCampaign._id}.png`}
-                    className="flex-1 text-center py-3 bg-red-600 hover:bg-red-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-red-500/10 transition-all uppercase tracking-wider">
+                  <a
+                    href={joinQrDataUrl}
+                    download={`join-qr-${selectedCampaign._id}.png`}
+                    className="flex-1 text-center py-3 bg-red-600 hover:bg-red-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-red-500/10 transition-all uppercase tracking-wider"
+                  >
                     💾 Download
                   </a>
-                  <button onClick={() => window.print()}
-                    className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-all uppercase tracking-wider">
+                  <button
+                    onClick={() => window.print()}
+                    className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-all uppercase tracking-wider"
+                  >
                     🖨️ Print
                   </button>
                 </div>
@@ -491,48 +707,35 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
             )}
 
             {/* CHECKIN QR MODE */}
-            {qrMode === 'checkin' && (
+            {qrMode === "checkin" && (
               <>
                 {dynamicQrDataUrl ? (
                   <div className="relative space-y-4">
                     <div className="bg-white border-2 border-red-50/80 p-5 rounded-3xl w-fit mx-auto shadow-md ring-8 ring-red-50/50 transition-all hover:scale-[1.02] duration-300">
-                      <img src={dynamicQrDataUrl} alt="Check-in QR Code" className="w-52 h-52 select-none pointer-events-none" />
+                      <img
+                        src={dynamicQrDataUrl}
+                        alt="Check-in QR Code"
+                        className="w-52 h-52 select-none pointer-events-none"
+                      />
                     </div>
-                    {/* Countdown ring */}
-                    <div className="mt-4 flex items-center justify-center gap-3">
-                      <div className={`relative w-12 h-12 rounded-full border-4 flex items-center justify-center ${
-                        countdown > 30 ? 'border-emerald-400' : countdown > 10 ? 'border-amber-400' : 'border-red-500'
-                      }`}>
-                        <span className={`text-sm font-black ${
-                          countdown > 30 ? 'text-emerald-600' : countdown > 10 ? 'text-amber-600' : 'text-red-600'
-                        }`}>{countdown}</span>
-                      </div>
-                      <div className="text-left">
-                        <div className="text-xs font-bold text-slate-700">seconds remaining</div>
-                        <div className="text-[10px] text-slate-400">
-                          {autoRotate ? 'Auto-rotates on expiry' : 'Manual rotation'}
-                        </div>
-                      </div>
+                    {/* Refresh status */}
+                    <div className="mt-4 flex items-center justify-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                      <span className="text-xs font-bold text-slate-500">
+                        Secure Single-use QR. Reloads automatically.
+                      </span>
                     </div>
                   </div>
                 ) : (
                   <div className="w-52 h-52 bg-red-50 border-2 border-red-200/60 rounded-2xl mx-auto flex items-center justify-center">
                     <div className="text-center space-y-2">
                       <div className="w-8 h-8 border-4 border-red-200 border-t-red-600 rounded-full animate-spin mx-auto"></div>
-                      <p className="text-[10px] text-slate-500">Generating secure QR...</p>
+                      <p className="text-[10px] text-slate-500">
+                        Generating secure QR...
+                      </p>
                     </div>
                   </div>
                 )}
-
-                <div className="flex items-center justify-between bg-slate-50 border border-slate-200/60 p-3 rounded-xl">
-                  <span className="text-xs text-slate-600 font-medium">Auto-rotate on expiry</span>
-                  <button
-                    onClick={() => setAutoRotate(!autoRotate)}
-                    className={`w-10 h-5 rounded-full transition-colors relative ${autoRotate ? 'bg-red-500' : 'bg-slate-300'}`}
-                  >
-                    <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${autoRotate ? 'left-5' : 'left-0.5'}`}></span>
-                  </button>
-                </div>
 
                 <button
                   onClick={() => generateDynamicQr(selectedCampaign._id)}
@@ -553,12 +756,23 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
               ⚠️
             </div>
             <div className="space-y-1">
-              <h3 className="text-lg font-black text-slate-900">{confirmModal.title}</h3>
-              <p className="text-xs text-slate-500 leading-relaxed">{confirmModal.message}</p>
+              <h3 className="text-lg font-black text-slate-900">
+                {confirmModal.title}
+              </h3>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                {confirmModal.message}
+              </p>
             </div>
             <div className="flex gap-3 pt-1">
               <button
-                onClick={() => setConfirmModal({ isOpen: false, title: '', message: '', onConfirm: null })}
+                onClick={() =>
+                  setConfirmModal({
+                    isOpen: false,
+                    title: "",
+                    message: "",
+                    onConfirm: null,
+                  })
+                }
                 className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-all uppercase tracking-wider"
               >
                 Cancel
@@ -578,23 +792,36 @@ export default function MerchantDashboardHub({ business, metrics, initialCampaig
       {alertModal.isOpen && (
         <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate-[fade-in_0.2s_ease-out]">
           <div className="bg-white border border-slate-200 rounded-3xl max-w-sm w-full p-6 text-center space-y-5 relative shadow-2xl animate-[scale-up_0.2s_ease-out]">
-            <div className={`w-12 h-12 rounded-full flex items-center justify-center mx-auto text-xl font-bold border ${
-              alertModal.type === 'success' 
-                ? 'bg-emerald-50 border-emerald-100 text-emerald-600' 
-                : 'bg-red-50 border-red-100 text-red-600'
-            }`}>
-              {alertModal.type === 'success' ? '✓' : '⚠️'}
+            <div
+              className={`w-12 h-12 rounded-full flex items-center justify-center mx-auto text-xl font-bold border ${
+                alertModal.type === "success"
+                  ? "bg-emerald-50 border-emerald-100 text-emerald-600"
+                  : "bg-red-50 border-red-100 text-red-600"
+              }`}
+            >
+              {alertModal.type === "success" ? "✓" : "⚠️"}
             </div>
             <div className="space-y-1">
-              <h3 className="text-lg font-black text-slate-900">{alertModal.title}</h3>
-              <p className="text-xs text-slate-500 leading-relaxed">{alertModal.message}</p>
+              <h3 className="text-lg font-black text-slate-900">
+                {alertModal.title}
+              </h3>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                {alertModal.message}
+              </p>
             </div>
             <button
-              onClick={() => setAlertModal({ isOpen: false, title: '', message: '', type: 'info' })}
+              onClick={() =>
+                setAlertModal({
+                  isOpen: false,
+                  title: "",
+                  message: "",
+                  type: "info",
+                })
+              }
               className={`w-full py-3 font-bold text-xs rounded-xl transition-all uppercase tracking-wider ${
-                alertModal.type === 'success'
-                  ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-500/10'
-                  : 'bg-red-600 hover:bg-red-500 text-white shadow-lg shadow-red-500/10'
+                alertModal.type === "success"
+                  ? "bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-500/10"
+                  : "bg-red-600 hover:bg-red-500 text-white shadow-lg shadow-red-500/10"
               }`}
             >
               Okay

@@ -37,7 +37,7 @@ export const generateQrSession = async (req, res) => {
 
     // Generate cryptographically secure token
     const token = crypto.randomBytes(32).toString('hex');
-    const expiresAt = new Date(Date.now() + 60000); // 60 seconds
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours (expires immediately upon scan)
 
     const session = await QrSession.create({
       campaignId: campaign._id,
