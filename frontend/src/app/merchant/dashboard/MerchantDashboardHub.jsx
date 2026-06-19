@@ -747,9 +747,11 @@ export default function MerchantDashboardHub({
                 <h3 className="text-xl font-extrabold text-slate-900 pr-8">
                   {selectedCampaign.title}
                 </h3>
-                <p className="text-xs text-slate-400 mt-0.5">Loyalty Campaign QR Suite</p>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Loyalty Campaign QR Suite
+                </p>
               </div>
-              
+
               {/* QR Mode Tabs */}
               <div className="flex bg-slate-100 rounded-xl p-1 shadow-inner border border-slate-200/40">
                 <button
@@ -893,7 +895,8 @@ export default function MerchantDashboardHub({
                               Bulk QR Generator
                             </div>
                             <div className="text-[10px] text-slate-500">
-                              Generate multiple single-use check-in codes at once
+                              Generate multiple single-use check-in codes at
+                              once
                             </div>
                           </div>
                         </div>
@@ -960,7 +963,9 @@ export default function MerchantDashboardHub({
                     <div className="space-y-4">
                       {/* Success banner */}
                       <div className="bg-emerald-50 border border-emerald-250/60 rounded-xl p-3 flex items-center gap-2">
-                        <span className="text-emerald-600 text-sm font-bold">✓</span>
+                        <span className="text-emerald-600 text-sm font-bold">
+                          ✓
+                        </span>
                         <span className="text-[11px] font-bold text-emerald-700">
                           {bulkQrCodes.length} QR codes generated successfully!
                         </span>
@@ -1037,6 +1042,7 @@ export default function MerchantDashboardHub({
           </div>
         </div>
       )}
+
       {/* CUSTOM CONFIRMATION MODAL */}
       {confirmModal.isOpen && (
         <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate-[fade-in_0.2s_ease-out]">
@@ -1118,7 +1124,6 @@ export default function MerchantDashboardHub({
           </div>
         </div>
       )}
-
       {/* ZOOM QR MODAL FOR DIRECT SCREEN SCANS */}
       {selectedZoomQr && (
         <div
