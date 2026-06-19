@@ -157,7 +157,6 @@ export default function WalletHub({ user, initialCards, initialRewards, initialE
               {[
                 { id: 'explore', label: 'Explore', emoji: '🧭' },
                 { id: 'home', label: 'My Wallet', emoji: '⭐' },
-                { id: 'rewards', label: 'Rewards', emoji: '🎁' },
                 { id: 'profile', label: 'Profile', emoji: '👤' },
               ].map(tab => (
                 <button
@@ -634,16 +633,6 @@ export default function WalletHub({ user, initialCards, initialRewards, initialE
             </svg>
           </button>
         </div>
-
-        <button
-          onClick={() => setActiveTab('rewards')}
-          className={`flex flex-col items-center gap-1 flex-1 transition-all ${activeTab === 'rewards' ? 'text-red-600 scale-105' : 'text-slate-400 hover:text-slate-600'}`}
-        >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5a2 2 0 10-2 2h2zm-2 4h4M5 11h14a1 1 0 011 1v7a1 1 0 01-1 1H5a1 1 0 01-1-1v-7a1 1 0 011-1z" />
-          </svg>
-          <span className="text-[9px] font-bold tracking-wide">Reward</span>
-        </button>
 
         <button
           onClick={() => setActiveTab('profile')}
