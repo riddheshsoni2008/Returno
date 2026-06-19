@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { apiFetch } from '@/lib/api';
@@ -23,6 +23,9 @@ export default function CheckinClient() {
   const [otpSent, setOtpSent] = useState(false);
   const [otpCode, setOtpCode] = useState('');
   const [feedbackMsg, setFeedbackMsg] = useState({ type: '', text: '' });
+
+  // Store JWT auth token directly — avoids unreliable cookie round-trip
+  const authTokenRef = useRef(null);
 
   // Check session on mount
   useEffect(() => {
@@ -57,10 +60,21 @@ export default function CheckinClient() {
     setProcessing(true);
     setError('');
     try {
-      const res = await apiFetch('/checkin/validate', {
+      // Build request options with explicit auth header if we have a fresh token
+      const fetchOptions = {
         method: 'POST',
         body: JSON.stringify({ token }),
-      });
+      };
+
+      // If we just got a fresh JWT from OTP verify, pass it directly
+      // This bypasses the cookie round-trip which fails on cross-origin mobile
+      if (authTokenRef.current) {
+        fetchOptions.headers = {
+          'Authorization': `Bearer ${authTokenRef.current}`,
+        };
+      }
+
+      const res = await apiFetch('/checkin/validate', fetchOptions);
       const data = await res.json();
       if (!res.ok) {
         if (data.notEnrolled) {
@@ -107,6 +121,9 @@ export default function CheckinClient() {
       if (!res.ok) throw new Error(data.error);
       
       if (data.token) {
+        // Save to ref for immediate use in the next API call
+        authTokenRef.current = data.token;
+        // Also save to cookie for future page loads
         document.cookie = `token=${data.token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
       }
       
