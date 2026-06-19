@@ -125,6 +125,12 @@ export default function CheckinClient() {
         authTokenRef.current = data.token;
         // Also save to cookie for future page loads
         document.cookie = `token=${data.token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
+        // Save to localStorage as a robust cross-origin fallback
+        try {
+          localStorage.setItem('token', data.token);
+        } catch (err) {
+          console.error('Error writing token to localStorage:', err);
+        }
       }
       
       setUser(data.user);

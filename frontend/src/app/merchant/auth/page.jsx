@@ -107,6 +107,11 @@ function MerchantAuthContent() {
 
       if (data.token) {
         document.cookie = `token=${data.token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
+        try {
+          localStorage.setItem("token", data.token);
+        } catch (err) {
+          console.error("Error writing token to localStorage:", err);
+        }
       }
 
       setSuccess("Merchant portal authorized! Redirecting...");

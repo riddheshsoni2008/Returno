@@ -25,6 +25,11 @@ export default function SignOutButton() {
       if (typeof document !== "undefined") {
         document.cookie =
           "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; SameSite=Lax";
+        try {
+          localStorage.removeItem('token');
+        } catch (err) {
+          // Ignore
+        }
       }
       router.push("/merchant/auth");
       router.refresh();

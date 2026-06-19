@@ -777,6 +777,8 @@ export default function MerchantDashboardHub({
               <p className="text-xs text-slate-500">
                 {qrMode === "join"
                   ? "Permanent QR — customers scan to join"
+                  : qrMode === "bulk"
+                  ? "Batch single-use QRs — download or print"
                   : "Dynamic QR — rotates every 60 seconds"}
               </p>
             </div>

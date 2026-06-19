@@ -44,6 +44,11 @@ export default function Navbar() {
     } finally {
       if (typeof document !== 'undefined') {
         document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; SameSite=Lax";
+        try {
+          localStorage.removeItem('token');
+        } catch (err) {
+          // Ignore
+        }
       }
       setUser(null);
       window.location.reload();
