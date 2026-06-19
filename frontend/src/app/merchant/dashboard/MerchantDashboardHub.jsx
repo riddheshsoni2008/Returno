@@ -56,6 +56,7 @@ export default function MerchantDashboardHub({
   const [bulkLoading, setBulkLoading] = useState(false);
   const [bulkQrCodes, setBulkQrCodes] = useState([]); // array of { token, dataUrl, index }
   const [bulkGenerated, setBulkGenerated] = useState(false);
+  const [selectedZoomQr, setSelectedZoomQr] = useState(null);
 
   // Generate Join QR when selectedCampaign changes
   useEffect(() => {
@@ -64,7 +65,7 @@ export default function MerchantDashboardHub({
       QRCode.toDataURL(joinUrl, {
         width: 320,
         margin: 2,
-        color: { dark: "#1e1b4b", light: "#ffffff" },
+        color: { dark: "#000000", light: "#ffffff" },
       })
         .then((url) => setJoinQrDataUrl(url))
         .catch(console.error);
@@ -78,7 +79,7 @@ export default function MerchantDashboardHub({
       QRCode.toDataURL(checkinUrl, {
         width: 320,
         margin: 2,
-        color: { dark: "#991b1b", light: "#ffffff" },
+        color: { dark: "#000000", light: "#ffffff" },
       })
         .then((url) => setDynamicQrDataUrl(url))
         .catch(console.error);
@@ -239,6 +240,7 @@ export default function MerchantDashboardHub({
     setDynamicQrDataUrl("");
     setBulkQrCodes([]);
     setBulkGenerated(false);
+    setSelectedZoomQr(null);
   };
 
   const generateBulkQr = async () => {
@@ -260,7 +262,7 @@ export default function MerchantDashboardHub({
         const dataUrl = await QRCode.toDataURL(url, {
           width: 280,
           margin: 2,
-          color: { dark: "#991b1b", light: "#ffffff" },
+          color: { dark: "#000000", light: "#ffffff" },
         });
         return { token: t.token, dataUrl, index: i + 1 };
       });
@@ -956,13 +958,19 @@ export default function MerchantDashboardHub({
                     <div className="max-h-[50vh] overflow-y-auto pr-1 space-y-0">
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                         {bulkQrCodes.map((qr) => (
-                          <div key={qr.index} className="bg-white border border-slate-200/80 rounded-2xl p-3 text-center hover:shadow-md hover:scale-[1.02] transition-all duration-200 group">
+                          <div 
+                            key={qr.index} 
+                            onClick={() => setSelectedZoomQr(qr)}
+                            className="bg-white border border-slate-200/80 rounded-2xl p-3 text-center hover:shadow-md hover:scale-[1.02] transition-all duration-200 group cursor-pointer"
+                          >
                             <img src={qr.dataUrl} alt={`QR #${qr.index}`} className="w-full aspect-square rounded-lg" />
                             <div className="mt-2 text-[10px] font-bold text-slate-600">QR #{qr.index}</div>
-                            <div className="text-[8px] text-slate-400 font-semibold">Single Use</div>
+                            <div className="text-[8px] text-slate-400 font-semibold mb-1">Single Use</div>
+                            <span className="text-[9px] text-amber-600 font-bold block mb-1 group-hover:underline">🔍 Scan Code</span>
                             <a
                               href={qr.dataUrl}
                               download={`checkin-qr-${qr.index}.png`}
+                              onClick={(e) => e.stopPropagation()}
                               className="mt-1.5 inline-block text-[9px] font-bold text-red-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
                             >
                               ↓ Download
@@ -1056,6 +1064,62 @@ export default function MerchantDashboardHub({
             >
               Okay
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* ZOOM QR MODAL FOR DIRECT SCREEN SCANS */}
+      {selectedZoomQr && (
+        <div 
+          className="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[110] flex items-center justify-center p-4 animate-[fade-in_0.2s_ease-out]"
+          onClick={() => setSelectedZoomQr(null)}
+        >
+          <div 
+            className="bg-white border border-slate-200 rounded-3xl max-w-sm w-full p-6 text-center space-y-4 relative shadow-2xl animate-[scale-up_0.2s_ease-out]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button 
+              onClick={() => setSelectedZoomQr(null)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors w-8 h-8 rounded-full bg-slate-50 hover:bg-slate-100 flex items-center justify-center font-bold text-sm"
+            >
+              ✕
+            </button>
+            <div className="space-y-1">
+              <h3 className="text-base font-black text-slate-900">
+                Scan QR #{selectedZoomQr.index}
+              </h3>
+              <p className="text-xs text-slate-500">
+                Single-use check-in code
+              </p>
+            </div>
+            
+            <div className="bg-white border border-slate-100 p-5 rounded-3xl w-fit mx-auto shadow-md ring-8 ring-slate-50">
+              <img 
+                src={selectedZoomQr.dataUrl} 
+                alt={`QR #${selectedZoomQr.index}`} 
+                className="w-56 h-56 select-none pointer-events-none" 
+              />
+            </div>
+            
+            <p className="text-[10px] text-slate-400 font-semibold leading-relaxed">
+              Aim your phone camera at this code to scan it instantly without downloading.
+            </p>
+            
+            <div className="flex gap-2 pt-2">
+              <a
+                href={selectedZoomQr.dataUrl}
+                download={`checkin-qr-${selectedCampaign?.title?.replace(/\s+/g, "-").toLowerCase() || 'code'}-${selectedZoomQr.index}.png`}
+                className="flex-1 py-2.5 bg-red-600 hover:bg-red-500 text-white font-bold text-[10px] rounded-xl shadow-lg shadow-red-500/10 transition-all uppercase tracking-wider text-center"
+              >
+                Download PNG
+              </a>
+              <button
+                onClick={() => setSelectedZoomQr(null)}
+                className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-bold text-[10px] rounded-xl transition-all uppercase tracking-wider"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
