@@ -784,11 +784,12 @@ export default function MerchantDashboardHub({
 
       {/* QR MODAL DIALOG */}
       {selectedCampaign && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[100] flex items-center justify-center p-4 sm:p-6 md:p-10 animate-[fade-in_0.2s_ease-out]">
-          <div className="bg-white border border-slate-200/80 rounded-3xl max-w-lg w-full p-6 md:p-8 flex flex-col relative shadow-2xl max-h-[85vh] overflow-hidden animate-[scale-up_0.2s_ease-out]">
+        <div className="fixed inset-0 bg-slate-950/40 backdrop-blur-xl z-[100] flex items-center justify-center p-4 animate-[fade-in_0.2s_ease-out]">
+          <div className="bg-white/95 border border-slate-100 rounded-[2.5rem] max-w-lg w-full p-6 md:p-8 flex flex-col relative shadow-[0_20px_50px_rgba(15,23,42,0.15)] ring-1 ring-black/[0.02] max-h-[88vh] overflow-hidden animate-[scale-up_0.25s_ease-out]">
+            {/* Close button */}
             <button
               onClick={closeQrModal}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 w-8 h-8 rounded-full flex items-center justify-center transition-colors z-20"
+              className="absolute top-6 right-6 text-slate-400 hover:text-slate-900 bg-slate-50 hover:bg-slate-100/80 w-9 h-9 rounded-full flex items-center justify-center transition-all z-20 shadow-sm border border-slate-100 hover:scale-105 active:scale-95"
               aria-label="Close modal"
             >
               <svg
@@ -801,31 +802,34 @@ export default function MerchantDashboardHub({
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeWidth="2"
+                  strokeWidth="2.5"
                   d="M6 18L18 6M6 6l12 12"
                 />
               </svg>
             </button>
 
-            {/* Header Content (Non-scrollable) */}
-            <div className="space-y-4 pb-4 border-b border-slate-100 text-center">
-              <div>
-                <h3 className="text-xl font-extrabold text-slate-900 pr-8">
-                  {selectedCampaign.title}
-                </h3>
-                <p className="text-xs text-slate-400 mt-0.5">
-                  Loyalty Campaign QR Suite
-                </p>
-              </div>
+            {/* Header Content */}
+            <div className="flex flex-col items-center text-center space-y-2 pb-6 border-b border-slate-100 shrink-0">
+              <span className="px-3 py-1 bg-red-50 text-red-600 font-bold text-[9px] uppercase tracking-widest rounded-full border border-red-100/50">
+                ⚡ Merchant Loyalty Suite
+              </span>
+              <h3 className="text-xl md:text-2xl font-black text-slate-900 leading-tight pr-8">
+                {selectedCampaign.title}
+              </h3>
+              <p className="text-xs text-slate-500 font-medium">
+                Deploy, print, and track secure stamp codes.
+              </p>
+            </div>
 
-              {/* QR Mode Tabs */}
-              <div className="flex bg-slate-100 rounded-xl p-1 shadow-inner border border-slate-200/40">
+            {/* Segmented Sliders/Tabs */}
+            <div className="my-5 bg-slate-50 border border-slate-100 rounded-2xl p-1 shadow-inner shrink-0">
+              <div className="flex">
                 <button
                   onClick={() => setQrMode("join")}
-                  className={`flex-1 py-2.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1 ${
+                  className={`flex-1 py-2.5 rounded-xl text-xs font-extrabold transition-all duration-300 flex items-center justify-center gap-1.5 ${
                     qrMode === "join"
-                      ? "bg-white text-slate-900 shadow-sm ring-1 ring-black/5"
-                      : "text-slate-500 hover:text-slate-800"
+                      ? "bg-slate-900 text-white shadow-md shadow-slate-900/10 scale-[1.01]"
+                      : "text-slate-500 hover:text-slate-800 hover:bg-slate-100/50"
                   }`}
                 >
                   <span>🔗</span> Join QR
@@ -835,162 +839,194 @@ export default function MerchantDashboardHub({
                     setQrMode("checkin");
                     if (!dynamicToken) generateDynamicQr(selectedCampaign._id);
                   }}
-                  className={`flex-1 py-2.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1 ${
+                  className={`flex-1 py-2.5 rounded-xl text-xs font-extrabold transition-all duration-300 flex items-center justify-center gap-1.5 ${
                     qrMode === "checkin"
-                      ? "bg-white text-red-600 shadow-sm ring-1 ring-black/5"
-                      : "text-slate-500 hover:text-slate-800"
+                      ? "bg-red-600 text-white shadow-md shadow-red-650/15 scale-[1.01]"
+                      : "text-slate-500 hover:text-slate-800 hover:bg-slate-100/50"
                   }`}
                 >
-                  <span>⚡</span> Live Check-In
+                  <span>⚡</span> Live QR
                 </button>
                 <button
                   onClick={() => {
                     setQrMode("bulk");
                     fetchActiveBulkSessions(selectedCampaign._id);
                   }}
-                  className={`flex-1 py-2.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1 ${
+                  className={`flex-1 py-2.5 rounded-xl text-xs font-extrabold transition-all duration-300 flex items-center justify-center gap-1.5 ${
                     qrMode === "bulk"
-                      ? "bg-white text-amber-700 shadow-sm ring-1 ring-black/5"
-                      : "text-slate-500 hover:text-slate-800"
+                      ? "bg-amber-600 text-white shadow-md shadow-amber-600/15 scale-[1.01]"
+                      : "text-slate-500 hover:text-slate-800 hover:bg-slate-100/50"
                   }`}
                 >
                   <span>📦</span> Bulk Codes
                 </button>
               </div>
-
-              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest bg-slate-50 py-1.5 rounded-lg border border-slate-200/40">
-                {qrMode === "join"
-                  ? "Permanent QR — Customer scans to join campaign"
-                  : qrMode === "bulk"
-                    ? "Batch single-use QRs — Scan off screen, print or download"
-                    : "Live QR — Single-use rotating scan code"}
-              </p>
             </div>
 
-            {/* Scrollable Content Container (No Nested Scrollbar conflict) */}
-            <div className="flex-1 overflow-y-auto min-h-0 pr-1 py-4 scrollable-content">
-              {/* JOIN QR MODE */}
+            {/* Scrollable Modal Body */}
+            <div className="flex-1 overflow-y-auto min-h-0 pr-1 pb-2 scrollable-content">
+              
+              {/* JOIN QR TAB */}
               {qrMode === "join" && (
-                <div className="space-y-5 flex flex-col items-center py-2 animate-[fade-in_0.2s_ease-out]">
-                  {joinQrDataUrl ? (
-                    <div className="bg-white border border-slate-100 p-5 rounded-3xl w-fit shadow-md ring-8 ring-slate-50 transition-all hover:scale-[1.02] duration-300">
-                      <img
-                        src={joinQrDataUrl}
-                        alt="Join QR Code"
-                        className="w-52 h-52 select-none pointer-events-none"
-                      />
+                <div className="space-y-6 flex flex-col items-center py-2 animate-[fade-in_0.2s_ease-out]">
+                  <div className="w-full max-w-sm bg-gradient-to-b from-slate-50 to-white border border-slate-200/80 rounded-3xl p-6 shadow-sm relative overflow-hidden group">
+                    <div className="absolute -top-12 -right-12 w-24 h-24 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 rounded-full blur-xl group-hover:scale-150 transition-all duration-500"></div>
+                    
+                    <div className="flex justify-between items-center mb-5 border-b border-dashed border-slate-250 pb-4">
+                      <div>
+                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">Permanent QR</div>
+                        <div className="text-xs font-black text-slate-800 mt-0.5">Campaign Invitation Card</div>
+                      </div>
+                      <span className="w-2.5 h-2.5 rounded-full bg-slate-900 animate-pulse"></span>
                     </div>
-                  ) : (
-                    <div className="w-52 h-52 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center text-slate-400 text-xs animate-pulse">
-                      Generating...
+
+                    <div className="bg-white border border-slate-100 p-5 rounded-2xl w-fit mx-auto shadow-sm ring-4 ring-slate-50 mb-5 relative group-hover:border-slate-300 transition-all duration-300">
+                      {joinQrDataUrl ? (
+                        <img
+                          src={joinQrDataUrl}
+                          alt="Join QR Code"
+                          className="w-44 h-44 select-none pointer-events-none"
+                        />
+                      ) : (
+                        <div className="w-44 h-44 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 text-xs animate-pulse">
+                          Generating secure code...
+                        </div>
+                      )}
                     </div>
-                  )}
-                  <div className="bg-slate-50 border border-slate-200/60 p-3 rounded-xl w-full text-left">
-                    <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider block mb-0.5">
-                      Join URL
-                    </span>
-                    <span className="text-[10px] font-mono text-slate-600 break-all select-all">{`${appUrl}/join/${selectedCampaign._id}`}</span>
+
+                    <div className="space-y-1.5 text-left">
+                      <label className="block text-slate-400 text-[9px] font-bold uppercase tracking-widest">
+                        Invitation Link
+                      </label>
+                      <div className="flex gap-2 bg-white border border-slate-200/80 rounded-xl p-1.5 shadow-sm group-hover:border-slate-300 transition-all duration-300">
+                        <span className="text-[10px] font-mono text-slate-500 break-all select-all flex-1 py-1 px-2.5 overflow-hidden text-ellipsis whitespace-nowrap self-center">
+                          {`${appUrl}/join/${selectedCampaign._id}`}
+                        </span>
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(`${appUrl}/join/${selectedCampaign._id}`);
+                            setAlertModal({
+                              isOpen: true,
+                              title: "Copied!",
+                              message: "Invitation link successfully copied to clipboard.",
+                              type: "success"
+                            });
+                          }}
+                          className="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] rounded-lg transition-all active:scale-95 whitespace-nowrap"
+                        >
+                          Copy Link
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex gap-3 pt-1 w-full">
+
+                  <div className="flex gap-3 w-full max-w-sm pt-1">
                     <a
                       href={joinQrDataUrl}
                       download={`join-qr-${selectedCampaign._id}.png`}
-                      className="flex-1 text-center py-3 bg-red-600 hover:bg-red-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-red-500/10 transition-all uppercase tracking-wider"
+                      className="flex-1 text-center py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-lg shadow-slate-900/10 hover:scale-[1.01] active:scale-[0.99] transition-all uppercase tracking-wider flex items-center justify-center gap-1.5"
                     >
-                      💾 Download QR
+                      💾 Save to PC
                     </a>
                     <button
                       onClick={() => window.print()}
-                      className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-all uppercase tracking-wider"
+                      className="flex-1 py-3.5 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-bold text-xs rounded-xl hover:scale-[1.01] active:scale-[0.99] transition-all uppercase tracking-wider flex items-center justify-center gap-1.5"
                     >
-                      🖨️ Print
+                      🖨️ Print Card
                     </button>
                   </div>
                 </div>
               )}
 
-              {/* CHECKIN QR MODE */}
+              {/* DYNAMIC CHECK-IN TAB */}
               {qrMode === "checkin" && (
-                <div className="space-y-5 flex flex-col items-center py-2 animate-[fade-in_0.2s_ease-out]">
-                  {dynamicQrDataUrl ? (
-                    <div className="relative space-y-4 flex flex-col items-center">
-                      <div className="bg-white border-2 border-red-50/80 p-5 rounded-3xl w-fit shadow-md ring-8 ring-red-50/50 transition-all hover:scale-[1.02] duration-300">
+                <div className="space-y-6 flex flex-col items-center py-2 animate-[fade-in_0.2s_ease-out]">
+                  <div className="w-full max-w-sm bg-gradient-to-b from-rose-50/20 to-white border border-rose-100/50 rounded-3xl p-6 shadow-sm relative overflow-hidden group">
+                    <div className="flex justify-between items-center mb-5 border-b border-dashed border-rose-100 pb-4">
+                      <div>
+                        <div className="text-[10px] font-bold text-rose-500 uppercase tracking-widest font-mono">Security Key</div>
+                        <div className="text-xs font-black text-slate-800 mt-0.5">Rotating Session Token</div>
+                      </div>
+                      <div className="flex items-center gap-1.5 bg-rose-50 border border-rose-100/50 px-2.5 py-0.5 rounded-full">
+                        <span className="w-1.5 h-1.5 rounded-full bg-rose-600 animate-ping"></span>
+                        <span className="text-[9px] font-extrabold text-rose-700 uppercase tracking-wider">Live</span>
+                      </div>
+                    </div>
+
+                    <div className="bg-white border border-rose-100 p-5 rounded-3xl w-fit mx-auto shadow-sm ring-8 ring-rose-50/50 transition-all hover:scale-[1.02] duration-300 mb-5 relative">
+                      {dynamicQrDataUrl ? (
                         <img
                           src={dynamicQrDataUrl}
                           alt="Check-in QR Code"
-                          className="w-52 h-52 select-none pointer-events-none"
+                          className="w-44 h-44 select-none pointer-events-none"
                         />
-                      </div>
-                      {/* Refresh status */}
-                      <div className="mt-4 flex items-center justify-center gap-2">
-                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                        <span className="text-xs font-bold text-slate-500">
-                          Secure Single-use QR. Reloads automatically.
-                        </span>
-                      </div>
+                      ) : (
+                        <div className="w-44 h-44 bg-rose-50/40 rounded-xl flex items-center justify-center">
+                          <div className="text-center space-y-2">
+                            <div className="w-7 h-7 border-3 border-rose-200 border-t-rose-600 rounded-full animate-spin mx-auto"></div>
+                            <p className="text-[9px] font-extrabold text-rose-600 uppercase tracking-wider">Generating...</p>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  ) : (
-                    <div className="w-52 h-52 bg-red-50 border-2 border-red-200/60 rounded-2xl flex items-center justify-center">
-                      <div className="text-center space-y-2">
-                        <div className="w-8 h-8 border-4 border-red-200 border-t-red-600 rounded-full animate-spin mx-auto"></div>
-                        <p className="text-[10px] text-slate-500">
-                          Generating secure QR...
-                        </p>
-                      </div>
-                    </div>
-                  )}
+
+                    <p className="text-[10px] text-slate-400 font-bold text-center leading-relaxed px-4">
+                      This code rotates automatically every 60 seconds. Leave this screen open for customer stamp scanning.
+                    </p>
+                  </div>
 
                   <button
                     onClick={() => generateDynamicQr(selectedCampaign._id)}
-                    className="w-full py-3 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-red-500/10 transition-all uppercase tracking-wider"
+                    className="w-full max-w-sm py-3.5 bg-gradient-to-r from-red-600 to-rose-650 hover:from-red-500 hover:to-rose-600 text-white font-bold text-xs rounded-xl shadow-lg shadow-red-500/10 hover:scale-[1.01] active:scale-[0.99] transition-all uppercase tracking-wider flex items-center justify-center gap-2"
                   >
-                    🔄 Generate New QR Now
+                    🔄 Force Refresh Code
                   </button>
                 </div>
               )}
 
-              {/* BULK QR MODE */}
+              {/* BULK QR CODE TAB */}
               {qrMode === "bulk" && (
-                <div className="space-y-4 text-left py-2 animate-[fade-in_0.2s_ease-out]">
+                <div className="space-y-5 py-2 animate-[fade-in_0.2s_ease-out]">
                   {!bulkGenerated ? (
-                    <div className="space-y-5">
-                      <div className="bg-amber-50/50 border border-amber-200/60 rounded-2xl p-5 space-y-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white text-lg shadow-md">
+                    <div className="w-full max-w-md mx-auto space-y-5">
+                      <div className="bg-gradient-to-b from-amber-50/30 to-white border border-amber-200/40 rounded-3xl p-6 space-y-5 shadow-sm">
+                        <div className="flex items-center gap-3.5 border-b border-slate-100 pb-4">
+                          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white text-lg shadow-md shadow-amber-500/10">
                             📦
                           </div>
                           <div>
-                            <div className="text-sm font-bold text-slate-900">
-                              Bulk QR Generator
+                            <div className="text-sm font-black text-slate-900">
+                              Generate Stamp Sheets
                             </div>
-                            <div className="text-[10px] text-slate-500">
-                              Generate multiple single-use check-in codes at
-                              once
+                            <div className="text-[10px] text-slate-500 font-semibold mt-0.5">
+                              Print batch codes for physical cards or tables.
                             </div>
                           </div>
                         </div>
-                        <div className="space-y-2">
-                          <label className="block text-slate-500 text-[10px] font-bold uppercase tracking-wider">
-                            How many QR codes?
+
+                        <div className="space-y-3">
+                          <label className="block text-slate-500 text-[10px] font-extrabold uppercase tracking-widest">
+                            Batch Size (Quantity)
                           </label>
-                          <div className="flex gap-2">
+                          <div className="grid grid-cols-4 gap-2">
                             {[10, 20, 50, 100].map((n) => (
                               <button
                                 key={n}
                                 onClick={() => setBulkCount(n)}
-                                className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all border ${
+                                className={`py-3 rounded-xl text-xs font-black transition-all border ${
                                   bulkCount === n
-                                    ? "bg-amber-600 text-white border-amber-600 shadow-md shadow-amber-500/20"
-                                    : "bg-white text-slate-600 border-slate-200 hover:border-amber-300 hover:text-amber-700"
+                                    ? "bg-amber-600 border-amber-600 text-white shadow-md shadow-amber-500/15"
+                                    : "bg-slate-50 border-slate-150 text-slate-600 hover:bg-slate-100 hover:text-slate-800"
                                 }`}
                               >
                                 {n}
                               </button>
                             ))}
                           </div>
-                          <div className="flex items-center gap-2 mt-2">
-                            <span className="text-[10px] text-slate-500 font-bold">
-                              Custom:
+
+                          <div className="flex items-center gap-2 pt-2 border-t border-slate-100/60 mt-3">
+                            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                              Or enter custom count:
                             </span>
                             <input
                               type="number"
@@ -1005,107 +1041,118 @@ export default function MerchantDashboardHub({
                                   ),
                                 )
                               }
-                              className="w-20 bg-white border border-slate-200 rounded-lg py-2 px-3 text-sm text-center text-slate-800 font-bold focus:outline-none focus:border-amber-500"
+                              className="w-16 bg-slate-50 border border-slate-200 rounded-lg py-2 px-2.5 text-xs text-center text-slate-800 font-extrabold focus:outline-none focus:border-amber-500 transition-colors"
                             />
-                            <span className="text-[10px] text-slate-400">
-                              (max 100)
+                            <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">
+                              (Max 100)
                             </span>
                           </div>
                         </div>
                       </div>
+
                       <button
                         onClick={generateBulkQr}
                         disabled={bulkLoading}
-                        className="w-full py-3.5 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-lg shadow-amber-500/15 transition-all uppercase tracking-wider flex items-center justify-center gap-2"
+                        className="w-full py-4 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-lg shadow-amber-500/15 hover:scale-[1.01] active:scale-[0.99] transition-all uppercase tracking-wider flex items-center justify-center gap-2"
                       >
                         {bulkLoading ? (
                           <>
                             <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                            Generating {bulkCount} QR Codes...
+                            Generating Codes...
                           </>
                         ) : (
-                          <>⚡ Generate {bulkCount} QR Codes</>
+                          <>⚡ Create {bulkCount} Stamp Codes</>
                         )}
                       </button>
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      {/* Success banner */}
-                      <div className="bg-emerald-50 border border-emerald-250/60 rounded-xl p-3 flex items-center gap-2">
-                        <span className="text-emerald-600 text-sm font-bold">
-                          ✓
-                        </span>
-                        <span className="text-[11px] font-bold text-emerald-700">
-                          {bulkQrCodes.length} QR codes generated successfully!
-                        </span>
+                      {/* Summary toolbar */}
+                      <div className="bg-slate-50 border border-slate-150 rounded-2xl p-4 flex flex-col sm:flex-row gap-3.5 justify-between items-center shadow-sm">
+                        <div className="flex items-center gap-2.5">
+                          <span className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center text-white text-[10px] font-black shadow-sm">✓</span>
+                          <div className="text-left">
+                            <div className="text-xs font-black text-slate-900">
+                              Active QR Sheets
+                            </div>
+                            <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">
+                              {bulkQrCodes.length} Unused Codes Ready
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex gap-2 w-full sm:w-auto shrink-0">
+                          <button
+                            onClick={downloadAllQr}
+                            className="flex-1 sm:flex-none py-2 px-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] rounded-xl shadow-sm transition-all uppercase tracking-wider flex items-center justify-center gap-1.5 hover:scale-[1.02] active:scale-[0.98]"
+                          >
+                            💾 Save All
+                          </button>
+                          <button
+                            onClick={printBulkQr}
+                            className="flex-1 sm:flex-none py-2 px-3.5 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-bold text-[10px] rounded-xl transition-all uppercase tracking-wider flex items-center justify-center gap-1.5 hover:scale-[1.02] active:scale-[0.98]"
+                          >
+                            🖨️ Print
+                          </button>
+                          <button
+                            onClick={() => {
+                              setConfirmModal({
+                                isOpen: true,
+                                title: "Clear Unused QRs?",
+                                message: "This will permanently delete all unused bulk QR codes from the database and reclaim storage space. Proceed?",
+                                onConfirm: () => {
+                                  setConfirmModal({ isOpen: false, title: "", message: "", onConfirm: null });
+                                  clearUnusedBulkSessions();
+                                }
+                              });
+                            }}
+                            className="py-2 px-3 bg-red-50 hover:bg-red-100 border border-red-100 text-red-655 font-bold text-[10px] rounded-xl transition-all uppercase tracking-wider flex items-center justify-center gap-1 hover:scale-[1.02] active:scale-[0.98]"
+                            title="Delete all unused from DB"
+                          >
+                            🔄 Reset
+                          </button>
+                        </div>
                       </div>
 
-                      {/* Action buttons */}
-                      <div className="flex gap-2">
-                        <button
-                          onClick={downloadAllQr}
-                          className="flex-1 py-3 bg-red-600 hover:bg-red-500 text-white font-bold text-[10px] rounded-xl shadow-lg shadow-red-500/10 transition-all uppercase tracking-wider flex items-center justify-center gap-1.5"
-                        >
-                          💾 Download All
-                        </button>
-                        <button
-                          onClick={printBulkQr}
-                          className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-bold text-[10px] rounded-xl transition-all uppercase tracking-wider flex items-center justify-center gap-1.5"
-                        >
-                          🖨️ Print All
-                        </button>
-                        <button
-                          onClick={() => {
-                            setConfirmModal({
-                              isOpen: true,
-                              title: "Clear Unused QRs?",
-                              message: "This will permanently delete all unused bulk QR codes from the database and reclaim storage space. Proceed?",
-                              onConfirm: () => {
-                                setConfirmModal({ isOpen: false, title: "", message: "", onConfirm: null });
-                                clearUnusedBulkSessions();
-                              }
-                            });
-                          }}
-                          className="py-3 px-4 bg-amber-50 hover:bg-amber-100 border border-amber-200/50 text-amber-700 font-bold text-[10px] rounded-xl transition-all uppercase tracking-wider flex items-center justify-center gap-1"
-                          title="Clear from Database"
-                        >
-                          🔄 Reset
-                        </button>
-                      </div>
-
-                      {/* QR Grid */}
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
+                      {/* Grid */}
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5 max-h-[42vh] overflow-y-auto pr-1 py-1 scrollable-content">
                         {bulkQrCodes.map((qr) => (
                           <div
                             key={qr.index}
                             onClick={() => setSelectedZoomQr(qr)}
-                            className="bg-white border border-slate-200/80 rounded-2xl p-3 text-center hover:shadow-md hover:scale-[1.02] hover:border-amber-350/80 transition-all duration-200 group cursor-pointer flex flex-col justify-between items-center min-h-[175px] shadow-sm"
+                            className="bg-white border border-slate-200 rounded-2xl p-4 text-center hover:shadow-md hover:scale-[1.02] hover:border-amber-300 transition-all duration-300 group cursor-pointer flex flex-col justify-between items-center relative overflow-hidden shadow-sm aspect-[4/5] min-h-[190px]"
                           >
-                            <div className="w-24 h-24 flex items-center justify-center overflow-hidden bg-slate-50 rounded-xl p-1 border border-slate-100">
+                            {/* Physical notches */}
+                            <div className="absolute -left-1.5 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-slate-150 border-r border-slate-200/80 z-10"></div>
+                            <div className="absolute -right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-slate-150 border-l border-slate-200/80 z-10"></div>
+
+                            {/* Divider line */}
+                            <div className="absolute top-1/2 left-3 right-3 border-b border-dashed border-slate-200 z-0"></div>
+
+                            {/* Top: QR */}
+                            <div className="bg-slate-50 border border-slate-100 p-2.5 rounded-xl w-24 h-24 flex items-center justify-center group-hover:border-amber-200 group-hover:bg-amber-50/20 transition-all duration-300 shadow-inner z-10">
                               <img
                                 src={qr.dataUrl}
                                 alt={`QR #${qr.index}`}
                                 className="w-full h-full object-contain rounded-lg"
                               />
                             </div>
-                            <div className="w-full mt-2">
-                              <div className="text-[10px] font-extrabold text-slate-800">
-                                QR #{qr.index}
+
+                            {/* Bottom: Metadata */}
+                            <div className="w-full z-10 space-y-1.5 pt-2">
+                              <div>
+                                <div className="text-[10px] font-black text-slate-800">
+                                  CODE #{qr.index}
+                                </div>
+                                <div className="text-[7.5px] text-slate-400 font-extrabold uppercase tracking-widest">
+                                  Single check-in
+                                </div>
                               </div>
-                              <div className="text-[8px] text-slate-400 font-bold uppercase tracking-wider mb-1.5">
-                                Single Use
-                              </div>
-                              <span className="text-[9px] bg-amber-50 text-amber-700 font-bold py-1 px-2.5 rounded-full inline-block group-hover:bg-amber-100 transition-colors">
-                                🔍 Click to Scan
+
+                              <span className="w-full py-1 text-[8.5px] bg-amber-50 text-amber-700 group-hover:bg-amber-100 font-bold rounded-lg transition-colors flex items-center justify-center gap-1 border border-amber-100/50">
+                                🔍 Open Scan
                               </span>
-                              <a
-                                href={qr.dataUrl}
-                                download={`checkin-qr-${qr.index}.png`}
-                                onClick={(e) => e.stopPropagation()}
-                                className="mt-2 block text-[9px] font-bold text-red-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                              >
-                                ↓ Download PNG
-                              </a>
                             </div>
                           </div>
                         ))}
