@@ -163,17 +163,23 @@ export const validateCheckin = async (req, res) => {
       return res.status(404).json({ error: 'Campaign is inactive or does not exist' });
     }
 
-    // 5. Check customer is enrolled
-    const enrollment = customer.joinedCampaigns.find(
+    // 5. Check customer is enrolled, if not, AUTO-JOIN them!
+    let enrollment = customer.joinedCampaigns.find(
       jc => jc.campaignId.toString() === campaign._id.toString()
     );
 
     if (!enrollment) {
-      return res.status(400).json({
-        error: 'You have not joined this campaign yet. Please scan the campaign join QR first.',
-        notEnrolled: true,
-        campaignId: campaign._id
+      // Automatically enroll the user into the campaign
+      customer.joinedCampaigns.push({
+        campaignId: campaign._id,
+        currentStreak: 0,
+        longestStreak: 0,
+        totalPoints: 0,
+        totalCheckins: 0,
+        lastCheckinDate: null
       });
+      // Get reference to the newly created enrollment subdocument
+      enrollment = customer.joinedCampaigns[customer.joinedCampaigns.length - 1];
     }
 
     // 6. Check if already checked in today
