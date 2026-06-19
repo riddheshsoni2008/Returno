@@ -445,8 +445,11 @@ export default function WalletHub({
                           </span>
                           <span className="text-[10px] text-red-600">✔</span>
                         </div>
-                        <div className="text-[10px] font-bold text-red-600 mt-0.5">
-                          Win: {item.rewardTitle}
+                        <div className="text-[11px] font-bold text-slate-700 mt-0.5 truncate max-w-[190px]">
+                          {item.title}
+                        </div>
+                        <div className="text-[10px] font-bold text-red-600 mt-0.5 truncate max-w-[190px]">
+                          🎁 Win: {item.rewardTitle}
                         </div>
                         {item.businessId?.address && (
                           <div className="text-[9px] text-slate-400 mt-0.5 max-w-[190px] truncate">
