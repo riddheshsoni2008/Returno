@@ -782,7 +782,7 @@ export default function MerchantDashboardHub({
                   : "Dynamic QR — rotates every 60 seconds"}
               </p>
             </div>
-
+ 
             {/* JOIN QR MODE */}
             {qrMode === "join" && (
               <>
