@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { apiFetch } from '@/lib/api';
@@ -11,6 +11,8 @@ export default function JoinClient({ campaign, business, user }) {
   const [joining, setJoining] = useState(false);
   const [joinResult, setJoinResult] = useState(null);
   const [errorMsg, setErrorMsg] = useState('');
+
+  const joinAttempted = useRef(false);
 
   const handleJoin = async () => {
     if (joining || joinResult) return;
@@ -33,8 +35,9 @@ export default function JoinClient({ campaign, business, user }) {
   };
 
   useEffect(() => {
-    // Auto-join campaign immediately on page load
-    if (user && !joinResult && !joining) {
+    // Auto-join campaign immediately on page load, exactly once
+    if (user && !joinResult && !joining && !joinAttempted.current) {
+      joinAttempted.current = true;
       handleJoin();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
