@@ -132,21 +132,24 @@ export const validateCheckin = async (req, res) => {
       return res.status(401).json({ error: 'Customer not found' });
     }
 
-    // 1. Find QR session by token
-    const qrSession = await QrSession.findOne({ token });
-    if (!qrSession) {
-      return res.status(400).json({ error: 'Invalid or expired QR code. Please ask the shop to generate a new one.' });
-    }
-
-    // 2. Check token expiry
+    // 1 & 2 & 3. Atomically find and claim the active QR session
     const now = new Date();
-    if (now > qrSession.expiresAt || qrSession.isExpired) {
-      return res.status(400).json({ error: 'This QR code has expired. Ask the shop staff to generate a fresh one.' });
-    }
+    const qrSession = await QrSession.findOneAndUpdate(
+      { 
+        token, 
+        isExpired: false, 
+        expiresAt: { $gt: now } 
+      },
+      { 
+        $set: { isExpired: true },
+        $push: { usedBy: customer._id }
+      },
+      { new: true } // Return updated doc to ensure we have the correct campaignId
+    );
 
-    // 3. Prevent replay — check if customer already used this token
-    if (qrSession.usedBy.some(id => id.toString() === customer._id.toString())) {
-      return res.status(400).json({ error: 'You have already used this QR code.' });
+    if (!qrSession) {
+      // It was either already used, expired, or invalid.
+      return res.status(400).json({ error: 'This QR code is invalid, expired, or has already been scanned. Please ask the shop for a fresh one.' });
     }
 
     // 4. Find the business and campaign
@@ -237,10 +240,7 @@ export const validateCheckin = async (req, res) => {
       } : undefined
     });
 
-    // 12. Mark token as used by this customer and expire it immediately (single-use)
-    qrSession.usedBy.push(customer._id);
-    qrSession.isExpired = true;
-    await qrSession.save();
+    // (Token was already marked expired and used atomically at the start of the request)
 
     // 13. Audit log
     await AuditLog.create({
