@@ -29,28 +29,30 @@ export const generateQrSession = async (req, res) => {
       return res.status(400).json({ error: "Campaign is not active" });
     }
 
-    // Clean up database bloat: Delete any existing QR sessions for this campaign that were never scanned
-    // This prevents thousands of unused dynamic tokens from filling up the database
+    // Clean up ONLY dynamic tokens — NEVER delete bulk pre-printed tokens
+    // Without the type filter, this would wipe out bulk QRs that customers are actively trying to scan
     await QrSession.deleteMany({
       campaignId: campaign._id,
+      type: 'dynamic',
       usedBy: { $size: 0 },
     });
 
-    // For any previously USED tokens that might still be unexpired (shouldn't happen with single-use, but just in case), ensure they are expired
+    // Expire any still-active dynamic tokens for this campaign
     await QrSession.updateMany(
-      { campaignId: campaign._id, isExpired: false },
+      { campaignId: campaign._id, type: 'dynamic', isExpired: false },
       { $set: { isExpired: true } },
     );
 
     // Generate cryptographically secure token
     const token = crypto.randomBytes(32).toString("hex");
-    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours (expires immediately upon scan)
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
     const session = await QrSession.create({
       campaignId: campaign._id,
       businessId: business._id,
       token,
       expiresAt,
+      type: 'dynamic',
     });
 
     return res.json({
@@ -95,7 +97,7 @@ export const generateBulkQrSessions = async (req, res) => {
 
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
-    // Generate all tokens
+    // Generate all tokens — explicitly mark as 'bulk' so dynamic QR refresh never deletes them
     const sessions = [];
     for (let i = 0; i < quantity; i++) {
       const token = crypto.randomBytes(32).toString("hex");
@@ -106,6 +108,7 @@ export const generateBulkQrSessions = async (req, res) => {
         expiresAt,
         usedBy: [],
         isExpired: false,
+        type: 'bulk',
       });
     }
 
