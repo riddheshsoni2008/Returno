@@ -29,7 +29,14 @@ export const generateQrSession = async (req, res) => {
       return res.status(400).json({ error: 'Campaign is not active' });
     }
 
-    // Expire any existing active sessions for this campaign
+    // Clean up database bloat: Delete any existing QR sessions for this campaign that were never scanned
+    // This prevents thousands of unused dynamic tokens from filling up the database
+    await QrSession.deleteMany({ 
+      campaignId: campaign._id,
+      usedBy: { $size: 0 } 
+    });
+
+    // For any previously USED tokens that might still be unexpired (shouldn't happen with single-use, but just in case), ensure they are expired
     await QrSession.updateMany(
       { campaignId: campaign._id, isExpired: false },
       { $set: { isExpired: true } }

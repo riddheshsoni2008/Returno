@@ -27,9 +27,7 @@ export default function MerchantNav() {
       >
         Customers
       </Link>
-      <Link href="/merchant/rewards" className={linkClass("/merchant/rewards")}>
-        Rewards
-      </Link>
+
       <Link
         href="/merchant/settings"
         className={linkClass("/merchant/settings")}
