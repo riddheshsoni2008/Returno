@@ -54,7 +54,7 @@ const formatBusinessForFE = (business) => {
 // =============================================
 export const joinCampaign = async (req, res) => {
   try {
-    const { campaignId } = req.params;
+    const campaignId = req.params.campaignId || req.params.id;
 
     const customer = await Customer.findById(req.user.id);
     if (!customer) {
