@@ -1,17 +1,21 @@
 "use client";
 
-import { useState, useEffect, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
-import { apiFetch } from '@/lib/api';
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { apiFetch } from "@/lib/api";
 
 export default function CustomerAuthPage() {
   return (
-    <Suspense fallback={
-      <main className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-850">
-        <div className="text-sm font-semibold tracking-wider text-slate-400 animate-pulse">Initializing Customer Session...</div>
-      </main>
-    }>
+    <Suspense
+      fallback={
+        <main className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-850">
+          <div className="text-sm font-semibold tracking-wider text-slate-400 animate-pulse">
+            Initializing Customer Session...
+          </div>
+        </main>
+      }
+    >
       <CustomerAuthContent />
     </Suspense>
   );
@@ -22,18 +26,18 @@ function CustomerAuthContent() {
   const searchParams = useSearchParams();
 
   // Mode: 'login' or 'signup'
-  const [mode, setMode] = useState('login');
+  const [mode, setMode] = useState("login");
 
   // Form inputs
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [otpCode, setOtpCode] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [otpCode, setOtpCode] = useState("");
 
   // Status states
   const [otpSent, setOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [cooldown, setCooldown] = useState(0);
 
   useEffect(() => {
@@ -50,28 +54,28 @@ function CustomerAuthContent() {
     if (e) e.preventDefault();
     if (loading) return;
     setLoading(true);
-    setError('');
-    setSuccess('');
+    setError("");
+    setSuccess("");
 
     try {
       const payload = { email: email.toLowerCase().trim() };
-      if (mode === 'signup') {
+      if (mode === "signup") {
         payload.name = name.trim();
       }
 
-      const res = await apiFetch('/auth/otp/send', {
-        method: 'POST',
+      const res = await apiFetch("/auth/otp/send", {
+        method: "POST",
         body: JSON.stringify(payload),
       });
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || 'Failed to send verification code');
+        throw new Error(data.error || "Failed to send verification code");
       }
 
       setOtpSent(true);
       setCooldown(60);
-      setSuccess(data.message || 'OTP verification code sent to your email!');
+      setSuccess(data.message || "OTP verification code sent to your email!");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -83,27 +87,30 @@ function CustomerAuthContent() {
     e.preventDefault();
     if (loading) return;
     setLoading(true);
-    setError('');
-    setSuccess('');
+    setError("");
+    setSuccess("");
 
     try {
-      const res = await apiFetch('/auth/otp/verify', {
-        method: 'POST',
-        body: JSON.stringify({ email: email.toLowerCase().trim(), code: otpCode.trim() }),
+      const res = await apiFetch("/auth/otp/verify", {
+        method: "POST",
+        body: JSON.stringify({
+          email: email.toLowerCase().trim(),
+          code: otpCode.trim(),
+        }),
       });
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || 'Verification failed');
+        throw new Error(data.error || "Verification failed");
       }
 
       if (data.token) {
         document.cookie = `token=${data.token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
       }
 
-      const redirectUrl = searchParams.get('redirect') || '/wallet';
+      const redirectUrl = searchParams.get("redirect") || "/wallet";
 
-      setSuccess('Logged in successfully! Redirecting...');
+      setSuccess("Logged in successfully! Redirecting...");
       setTimeout(() => {
         router.push(redirectUrl);
         router.refresh();
@@ -122,11 +129,19 @@ function CustomerAuthContent() {
 
       {/* Header */}
       <header className="w-full max-w-md mx-auto flex justify-between items-center z-10 pt-4">
-        <Link href="/" className="text-2xl font-black tracking-tight text-slate-900 flex items-center gap-2">
-          <span className="w-8 h-8 rounded-xl bg-gradient-to-tr from-red-600 to-rose-600 flex items-center justify-center text-sm shadow-lg shadow-red-500/20 text-white">✨</span>
+        <Link
+          href="/"
+          className="text-2xl font-black tracking-tight text-slate-900 flex items-center gap-2"
+        >
+          <span className="w-8 h-8 rounded-xl bg-gradient-to-tr from-red-600 to-rose-600 flex items-center justify-center text-sm shadow-lg shadow-red-500/20 text-white">
+            ✨
+          </span>
           Returno
         </Link>
-        <Link href="/merchant/auth" className="text-xs font-semibold text-red-600 hover:text-red-500 transition-colors bg-white border border-slate-200/80 rounded-full px-4 py-2 shadow-sm">
+        <Link
+          href="/merchant/auth"
+          className="text-xs font-semibold text-red-600 hover:text-red-500 transition-colors bg-white border border-slate-200/80 rounded-full px-4 py-2 shadow-sm"
+        >
           Merchant Portal
         </Link>
       </header>
@@ -136,10 +151,16 @@ function CustomerAuthContent() {
         <div className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-xl space-y-6 animate-fade-in-up">
           <div className="space-y-2">
             <h2 className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">
-              {otpSent ? "Verify your email" : mode === 'login' ? "Welcome back" : "Create your account"}
+              {otpSent
+                ? "Verify your email"
+                : mode === "login"
+                  ? "Welcome back"
+                  : "Create your account"}
             </h2>
             <p className="text-sm text-slate-550 font-medium">
-              {otpSent ? `Enter the 6-digit code sent to ${email}` : "Sign in or register using email verification code"}
+              {otpSent
+                ? `Enter the 6-digit code sent to ${email}`
+                : "Sign in or register using email verification code"}
             </p>
           </div>
 
@@ -148,15 +169,23 @@ function CustomerAuthContent() {
             <div className="grid grid-cols-2 p-1 bg-slate-50 rounded-xl border border-slate-200/50">
               <button
                 type="button"
-                onClick={() => { setMode('login'); setError(''); setSuccess(''); }}
-                className={`py-2.5 rounded-lg text-xs font-bold tracking-wide uppercase transition-all ${mode === 'login' ? 'bg-red-600 text-white shadow shadow-red-500/10' : 'text-slate-400 hover:text-slate-700'}`}
+                onClick={() => {
+                  setMode("login");
+                  setError("");
+                  setSuccess("");
+                }}
+                className={`py-2.5 rounded-lg text-xs font-bold tracking-wide uppercase transition-all ${mode === "login" ? "bg-red-600 text-white shadow shadow-red-500/10" : "text-slate-400 hover:text-slate-700"}`}
               >
                 Log In
               </button>
               <button
                 type="button"
-                onClick={() => { setMode('signup'); setError(''); setSuccess(''); }}
-                className={`py-2.5 rounded-lg text-xs font-bold tracking-wide uppercase transition-all ${mode === 'signup' ? 'bg-red-600 text-white shadow shadow-red-500/10' : 'text-slate-400 hover:text-slate-700'}`}
+                onClick={() => {
+                  setMode("signup");
+                  setError("");
+                  setSuccess("");
+                }}
+                className={`py-2.5 rounded-lg text-xs font-bold tracking-wide uppercase transition-all ${mode === "signup" ? "bg-red-600 text-white shadow shadow-red-500/10" : "text-slate-400 hover:text-slate-700"}`}
               >
                 Sign Up
               </button>
@@ -180,9 +209,11 @@ function CustomerAuthContent() {
           {/* Forms */}
           {!otpSent ? (
             <form onSubmit={handleSendOtp} className="space-y-5">
-              {mode === 'signup' && (
+              {mode === "signup" && (
                 <div className="space-y-2">
-                  <label className="block text-slate-500 text-xs font-semibold uppercase tracking-wider">Your Name</label>
+                  <label className="block text-slate-500 text-xs font-semibold uppercase tracking-wider">
+                    Your Name
+                  </label>
                   <input
                     type="text"
                     required
@@ -194,7 +225,9 @@ function CustomerAuthContent() {
                 </div>
               )}
               <div className="space-y-2">
-                <label className="block text-slate-500 text-xs font-semibold uppercase tracking-wider">Email Address</label>
+                <label className="block text-slate-500 text-xs font-semibold uppercase tracking-wider">
+                  Email Address
+                </label>
                 <input
                   type="email"
                   required
@@ -203,20 +236,24 @@ function CustomerAuthContent() {
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 text-sm focus:outline-none focus:border-red-500 transition-colors"
                 />
-                <h3 className="text-slate-400 text-xs mt-2">OTP may arrive in your Inbox or Spam folder</h3>
+                <h3 className="text-slate-400 text-xs mt-2">
+                  OTP may arrive in your Inbox or Spam folder
+                </h3>
               </div>
               <button
                 type="submit"
                 disabled={loading}
                 className="w-full bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-red-500/10 transition-all text-xs uppercase tracking-wider"
               >
-                {loading ? 'Sending Code...' : 'Send Verification OTP'}
+                {loading ? "Sending Code..." : "Send Verification OTP"}
               </button>
             </form>
           ) : (
             <form onSubmit={handleVerifyOtp} className="space-y-5">
               <div className="space-y-3">
-                <label className="block text-slate-500 text-xs font-semibold uppercase tracking-wider text-center">Enter 6-Digit Code</label>
+                <label className="block text-slate-500 text-xs font-semibold uppercase tracking-wider text-center">
+                  Enter 6-Digit Code
+                </label>
                 <input
                   type="text"
                   required
@@ -227,7 +264,11 @@ function CustomerAuthContent() {
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3.5 px-4 text-slate-800 text-center tracking-[0.75em] text-xl font-black focus:outline-none focus:border-red-500 transition-colors"
                 />
                 <div className="flex justify-between items-center text-xs text-slate-500 px-1 pt-1">
-                  <button type="button" onClick={() => setOtpSent(false)} className="text-slate-550 hover:text-red-600 transition-colors">
+                  <button
+                    type="button"
+                    onClick={() => setOtpSent(false)}
+                    className="text-slate-550 hover:text-red-600 transition-colors"
+                  >
                     ← Change Email
                   </button>
                   {cooldown > 0 ? (
@@ -249,7 +290,7 @@ function CustomerAuthContent() {
                 disabled={loading}
                 className="w-full bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-red-500/10 transition-all text-xs uppercase tracking-wider"
               >
-                {loading ? 'Verifying...' : 'Verify & Log In'}
+                {loading ? "Verifying..." : "Verify & Log In"}
               </button>
             </form>
           )}
