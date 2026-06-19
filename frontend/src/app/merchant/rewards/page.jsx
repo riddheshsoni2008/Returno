@@ -11,7 +11,7 @@ export default async function MerchantRewardsPage() {
   }
 
   const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://returno-eight.vercel.app';
 
   let campaigns = [];
   let pendingClaims = [];
