@@ -782,97 +782,100 @@ export default function MerchantDashboardHub({
         </div>
       )}
 
-      {/* QR MODAL DIALOG */}
       {selectedCampaign && (
-        <div className="fixed inset-0 bg-slate-950/40 backdrop-blur-xl z-[100] flex items-center justify-center p-4 animate-[fade-in_0.2s_ease-out]">
-          <div className="bg-white/95 border border-slate-100 rounded-[2.5rem] max-w-lg w-full p-6 md:p-8 flex flex-col relative shadow-[0_20px_50px_rgba(15,23,42,0.15)] ring-1 ring-black/[0.02] max-h-[88vh] overflow-hidden animate-[scale-up_0.25s_ease-out]">
-            {/* Close button */}
-            <button
-              onClick={closeQrModal}
-              className="absolute top-6 right-6 text-slate-400 hover:text-slate-900 bg-slate-50 hover:bg-slate-100/80 w-9 h-9 rounded-full flex items-center justify-center transition-all z-20 shadow-sm border border-slate-100 hover:scale-105 active:scale-95"
-              aria-label="Close modal"
-            >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
+        <div className="fixed inset-0 bg-white z-[100] flex flex-col animate-[fade-in_0.2s_ease-out]">
+          
+          {/* TOP BAR / HEADER */}
+          <div className="w-full border-b border-slate-150 py-4 px-6 bg-white shrink-0">
+            <div className="max-w-6xl mx-auto flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <span className="px-2.5 py-1 bg-red-50 text-red-600 font-bold text-[9px] uppercase tracking-widest rounded-full border border-red-100/50">
+                  ⚡ Campaign Suite
+                </span>
+                <h3 className="text-lg md:text-xl font-black text-slate-900 tracking-tight">
+                  {selectedCampaign.title}
+                </h3>
+              </div>
+              <button
+                onClick={closeQrModal}
+                className="text-slate-500 hover:text-slate-900 bg-slate-100 hover:bg-slate-200/80 px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border border-slate-200/50 active:scale-95"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2.5"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-
-            {/* Header Content */}
-            <div className="flex flex-col items-center text-center space-y-2 pb-6 border-b border-slate-100 shrink-0">
-              <span className="px-3 py-1 bg-red-50 text-red-600 font-bold text-[9px] uppercase tracking-widest rounded-full border border-red-100/50">
-                ⚡ Merchant Loyalty Suite
-              </span>
-              <h3 className="text-xl md:text-2xl font-black text-slate-900 leading-tight pr-8">
-                {selectedCampaign.title}
-              </h3>
-              <p className="text-xs text-slate-500 font-medium">
-                Deploy, print, and track secure stamp codes.
-              </p>
+                ✕ Close Workspace
+              </button>
             </div>
+          </div>
 
-            {/* Segmented Sliders/Tabs */}
-            <div className="my-5 bg-slate-50 border border-slate-100 rounded-2xl p-1 shadow-inner shrink-0">
-              <div className="flex">
+          {/* MAIN CONTAINER */}
+          <div className="flex-1 max-w-6xl w-full mx-auto p-4 md:p-6 flex flex-col md:flex-row gap-6 min-h-0 overflow-hidden">
+            
+            {/* TABS SIDEBAR (Left on Desktop, Top on Mobile) */}
+            <div className="w-full md:w-64 shrink-0 flex flex-col gap-4">
+              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest hidden md:block">
+                Navigation
+              </div>
+              
+              <div className="flex md:flex-col bg-slate-100 md:bg-transparent rounded-2xl md:rounded-none p-1 md:p-0 gap-1">
                 <button
                   onClick={() => setQrMode("join")}
-                  className={`flex-1 py-2.5 rounded-xl text-xs font-extrabold transition-all duration-300 flex items-center justify-center gap-1.5 ${
+                  className={`flex-1 md:flex-initial py-3 px-4 rounded-xl text-xs font-extrabold transition-all duration-200 flex items-center justify-center md:justify-start gap-2.5 ${
                     qrMode === "join"
                       ? "bg-slate-900 text-white shadow-md shadow-slate-900/10 scale-[1.01]"
-                      : "text-slate-500 hover:text-slate-800 hover:bg-slate-100/50"
+                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/80"
                   }`}
                 >
-                  <span>🔗</span> Join QR
+                  <span className="text-sm">🔗</span> Join QR
                 </button>
                 <button
                   onClick={() => {
                     setQrMode("checkin");
                     if (!dynamicToken) generateDynamicQr(selectedCampaign._id);
                   }}
-                  className={`flex-1 py-2.5 rounded-xl text-xs font-extrabold transition-all duration-300 flex items-center justify-center gap-1.5 ${
+                  className={`flex-1 md:flex-initial py-3 px-4 rounded-xl text-xs font-extrabold transition-all duration-200 flex items-center justify-center md:justify-start gap-2.5 ${
                     qrMode === "checkin"
                       ? "bg-red-600 text-white shadow-md shadow-red-650/15 scale-[1.01]"
-                      : "text-slate-500 hover:text-slate-800 hover:bg-slate-100/50"
+                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/80"
                   }`}
                 >
-                  <span>⚡</span> Live QR
+                  <span className="text-sm">⚡</span> Live QR
                 </button>
                 <button
                   onClick={() => {
                     setQrMode("bulk");
                     fetchActiveBulkSessions(selectedCampaign._id);
                   }}
-                  className={`flex-1 py-2.5 rounded-xl text-xs font-extrabold transition-all duration-300 flex items-center justify-center gap-1.5 ${
+                  className={`flex-1 md:flex-initial py-3 px-4 rounded-xl text-xs font-extrabold transition-all duration-200 flex items-center justify-center md:justify-start gap-2.5 ${
                     qrMode === "bulk"
                       ? "bg-amber-600 text-white shadow-md shadow-amber-600/15 scale-[1.01]"
-                      : "text-slate-500 hover:text-slate-800 hover:bg-slate-100/50"
+                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/80"
                   }`}
                 >
-                  <span>📦</span> Bulk Codes
+                  <span className="text-sm">📦</span> Bulk Codes
                 </button>
+              </div>
+
+              {/* Informative Help Card (Only on Desktop) */}
+              <div className="hidden md:block bg-slate-50 border border-slate-200/50 rounded-2xl p-4 mt-auto">
+                <h4 className="text-[10px] font-black text-slate-800 uppercase tracking-widest mb-1.5">
+                  Workspace Guide
+                </h4>
+                <p className="text-[10.5px] text-slate-505 leading-relaxed font-medium">
+                  {qrMode === "join" && "Share this permanent QR link to enroll customers into your campaign."}
+                  {qrMode === "checkin" && "Place this live rotating QR on a counter tablet. Codes expire dynamically to prevent scan fraud."}
+                  {qrMode === "bulk" && "Generate, print, and save sheets of unique single-use stamp codes for offline customer cards."}
+                </p>
               </div>
             </div>
 
-            {/* Scrollable Modal Body */}
-            <div className="flex-1 overflow-y-auto min-h-0 pr-1 pb-2 scrollable-content">
+            {/* CONTENT AREA (Right on Desktop, Bottom on Mobile) */}
+            <div className="flex-1 bg-slate-50 border border-slate-200/50 rounded-3xl p-6 overflow-y-auto min-h-0 scrollable-content">
               
               {/* JOIN QR TAB */}
               {qrMode === "join" && (
                 <div className="space-y-6 flex flex-col items-center py-2 animate-[fade-in_0.2s_ease-out]">
-                  <div className="w-full max-w-sm bg-gradient-to-b from-slate-50 to-white border border-slate-200/80 rounded-3xl p-6 shadow-sm relative overflow-hidden group">
-                    <div className="absolute -top-12 -right-12 w-24 h-24 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 rounded-full blur-xl group-hover:scale-150 transition-all duration-500"></div>
+                  <div className="w-full max-w-sm bg-white border border-slate-200/60 rounded-3xl p-6 shadow-sm relative overflow-hidden group">
+                    <div className="absolute -top-12 -right-12 w-24 h-24 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 rounded-full blur-xl group-hover:scale-150 transition-all duration-500"></div>
                     
-                    <div className="flex justify-between items-center mb-5 border-b border-dashed border-slate-250 pb-4">
+                    <div className="flex justify-between items-center mb-5 border-b border-dashed border-slate-200 pb-4">
                       <div>
                         <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">Permanent QR</div>
                         <div className="text-xs font-black text-slate-800 mt-0.5">Campaign Invitation Card</div>
@@ -930,7 +933,7 @@ export default function MerchantDashboardHub({
                     </a>
                     <button
                       onClick={() => window.print()}
-                      className="flex-1 py-3.5 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-bold text-xs rounded-xl hover:scale-[1.01] active:scale-[0.99] transition-all uppercase tracking-wider flex items-center justify-center gap-1.5"
+                      className="flex-1 py-3.5 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold text-xs rounded-xl hover:scale-[1.01] active:scale-[0.99] transition-all uppercase tracking-wider flex items-center justify-center gap-1.5"
                     >
                       🖨️ Print Card
                     </button>
@@ -941,7 +944,7 @@ export default function MerchantDashboardHub({
               {/* DYNAMIC CHECK-IN TAB */}
               {qrMode === "checkin" && (
                 <div className="space-y-6 flex flex-col items-center py-2 animate-[fade-in_0.2s_ease-out]">
-                  <div className="w-full max-w-sm bg-gradient-to-b from-rose-50/20 to-white border border-rose-100/50 rounded-3xl p-6 shadow-sm relative overflow-hidden group">
+                  <div className="w-full max-w-sm bg-white border border-slate-200/60 rounded-3xl p-6 shadow-sm relative overflow-hidden group">
                     <div className="flex justify-between items-center mb-5 border-b border-dashed border-rose-100 pb-4">
                       <div>
                         <div className="text-[10px] font-bold text-rose-500 uppercase tracking-widest font-mono">Security Key</div>
@@ -986,15 +989,15 @@ export default function MerchantDashboardHub({
 
               {/* BULK QR CODE TAB */}
               {qrMode === "bulk" && (
-                <div className="space-y-5 py-2 animate-[fade-in_0.2s_ease-out]">
+                <div className="space-y-5 py-2 animate-[fade-in_0.2s_ease-out] h-full flex flex-col">
                   {!bulkGenerated ? (
-                    <div className="w-full max-w-md mx-auto space-y-5">
-                      <div className="bg-gradient-to-b from-amber-50/30 to-white border border-amber-200/40 rounded-3xl p-6 space-y-5 shadow-sm">
+                    <div className="w-full max-w-md mx-auto space-y-5 my-auto">
+                      <div className="bg-white border border-slate-200 rounded-3xl p-6 space-y-5 shadow-sm">
                         <div className="flex items-center gap-3.5 border-b border-slate-100 pb-4">
                           <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white text-lg shadow-md shadow-amber-500/10">
                             📦
                           </div>
-                          <div>
+                          <div className="text-left">
                             <div className="text-sm font-black text-slate-900">
                               Generate Stamp Sheets
                             </div>
@@ -1005,7 +1008,7 @@ export default function MerchantDashboardHub({
                         </div>
 
                         <div className="space-y-3">
-                          <label className="block text-slate-500 text-[10px] font-extrabold uppercase tracking-widest">
+                          <label className="block text-slate-500 text-[10px] font-extrabold uppercase tracking-widest text-left">
                             Batch Size (Quantity)
                           </label>
                           <div className="grid grid-cols-4 gap-2">
@@ -1024,7 +1027,7 @@ export default function MerchantDashboardHub({
                             ))}
                           </div>
 
-                          <div className="flex items-center gap-2 pt-2 border-t border-slate-100/60 mt-3">
+                          <div className="flex items-center gap-2 pt-2 border-t border-slate-100/60 mt-3 justify-start">
                             <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
                               Or enter custom count:
                             </span>
@@ -1066,9 +1069,9 @@ export default function MerchantDashboardHub({
                       </button>
                     </div>
                   ) : (
-                    <div className="space-y-4">
+                    <div className="space-y-4 flex flex-col h-full">
                       {/* Summary toolbar */}
-                      <div className="bg-slate-50 border border-slate-150 rounded-2xl p-4 flex flex-col sm:flex-row gap-3.5 justify-between items-center shadow-sm">
+                      <div className="bg-white border border-slate-200 rounded-2xl p-4 flex flex-col sm:flex-row gap-3.5 justify-between items-center shadow-sm shrink-0">
                         <div className="flex items-center gap-2.5">
                           <span className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center text-white text-[10px] font-black shadow-sm">✓</span>
                           <div className="text-left">
@@ -1116,7 +1119,7 @@ export default function MerchantDashboardHub({
                       </div>
 
                       {/* Grid */}
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5 max-h-[42vh] overflow-y-auto pr-1 py-1 scrollable-content">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 overflow-y-auto pr-1 py-1 scrollable-content flex-1 min-h-0">
                         {bulkQrCodes.map((qr) => (
                           <div
                             key={qr.index}
@@ -1124,11 +1127,11 @@ export default function MerchantDashboardHub({
                             className="bg-white border border-slate-200 rounded-2xl p-4 text-center hover:shadow-md hover:scale-[1.02] hover:border-amber-300 transition-all duration-300 group cursor-pointer flex flex-col justify-between items-center relative overflow-hidden shadow-sm aspect-[4/5] min-h-[190px]"
                           >
                             {/* Physical notches */}
-                            <div className="absolute -left-1.5 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-slate-150 border-r border-slate-200/80 z-10"></div>
-                            <div className="absolute -right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-slate-150 border-l border-slate-200/80 z-10"></div>
+                            <div className="absolute -left-1.5 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-slate-50 border-r border-slate-200/80 z-10"></div>
+                            <div className="absolute -right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-slate-50 border-l border-slate-200/80 z-10"></div>
 
                             {/* Divider line */}
-                            <div className="absolute top-1/2 left-3 right-3 border-b border-dashed border-slate-200 z-0"></div>
+                            <div className="absolute top-1/2 left-3 right-3 border-b border-dashed border-slate-200/60 z-0"></div>
 
                             {/* Top: QR */}
                             <div className="bg-slate-50 border border-slate-100 p-2.5 rounded-xl w-24 h-24 flex items-center justify-center group-hover:border-amber-200 group-hover:bg-amber-50/20 transition-all duration-300 shadow-inner z-10">
