@@ -251,7 +251,10 @@ export default function MerchantDashboardHub({
     try {
       const res = await apiFetch("/qr/generate-bulk", {
         method: "POST",
-        body: JSON.stringify({ campaignId: selectedCampaign._id, count: bulkCount }),
+        body: JSON.stringify({
+          campaignId: selectedCampaign._id,
+          count: bulkCount,
+        }),
       });
       const data = await res.json();
       if (!data.success) throw new Error(data.error);
@@ -289,20 +292,23 @@ export default function MerchantDashboardHub({
       link.download = `checkin-qr-${selectedCampaign.title.replace(/\s+/g, "-").toLowerCase()}-${qr.index}.png`;
       link.click();
       // Small delay to prevent browser throttling
-      await new Promise(r => setTimeout(r, 100));
+      await new Promise((r) => setTimeout(r, 100));
     }
   };
 
   const printBulkQr = () => {
     const printWindow = window.open("", "_blank");
     if (!printWindow) return;
-    const gridItems = bulkQrCodes.map((qr) =>
-      `<div style="text-align:center;page-break-inside:avoid;padding:12px;border:1px solid #e2e8f0;border-radius:12px;">
+    const gridItems = bulkQrCodes
+      .map(
+        (qr) =>
+          `<div style="text-align:center;page-break-inside:avoid;padding:12px;border:1px solid #e2e8f0;border-radius:12px;">
         <img src="${qr.dataUrl}" style="width:160px;height:160px;" />
         <div style="margin-top:6px;font-size:11px;font-weight:700;color:#334155;">${selectedCampaign.title}</div>
         <div style="font-size:9px;color:#94a3b8;margin-top:2px;">QR #${qr.index} • Single Use</div>
-      </div>`
-    ).join("");
+      </div>`,
+      )
+      .join("");
 
     printWindow.document.write(`
       <html>
@@ -780,11 +786,11 @@ export default function MerchantDashboardHub({
                 {qrMode === "join"
                   ? "Permanent QR — customers scan to join"
                   : qrMode === "bulk"
-                  ? "Batch single-use QRs — download or print"
-                  : "Dynamic QR — rotates every 60 seconds"}
+                    ? "Batch single-use QRs — download or print"
+                    : "Dynamic QR — rotates every 60 seconds"}
               </p>
             </div>
- 
+
             {/* JOIN QR MODE */}
             {qrMode === "join" && (
               <>
@@ -872,14 +878,22 @@ export default function MerchantDashboardHub({
                   <div className="space-y-5">
                     <div className="bg-amber-50 border border-amber-200/60 rounded-2xl p-5 space-y-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white text-lg shadow-md">📦</div>
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white text-lg shadow-md">
+                          📦
+                        </div>
                         <div className="text-left">
-                          <div className="text-sm font-bold text-slate-900">Bulk QR Generator</div>
-                          <div className="text-[10px] text-slate-500">Generate multiple single-use check-in codes at once</div>
+                          <div className="text-sm font-bold text-slate-900">
+                            Bulk QR Generator
+                          </div>
+                          <div className="text-[10px] text-slate-500">
+                            Generate multiple single-use check-in codes at once
+                          </div>
                         </div>
                       </div>
                       <div className="space-y-2">
-                        <label className="block text-slate-500 text-[10px] font-bold uppercase tracking-wider">How many QR codes?</label>
+                        <label className="block text-slate-500 text-[10px] font-bold uppercase tracking-wider">
+                          How many QR codes?
+                        </label>
                         <div className="flex gap-2">
                           {[10, 20, 50, 100].map((n) => (
                             <button
@@ -896,16 +910,27 @@ export default function MerchantDashboardHub({
                           ))}
                         </div>
                         <div className="flex items-center gap-2 mt-2">
-                          <span className="text-[10px] text-slate-500 font-semibold">Custom:</span>
+                          <span className="text-[10px] text-slate-500 font-semibold">
+                            Custom:
+                          </span>
                           <input
                             type="number"
                             min={1}
                             max={100}
                             value={bulkCount}
-                            onChange={(e) => setBulkCount(Math.min(100, Math.max(1, parseInt(e.target.value) || 1)))}
+                            onChange={(e) =>
+                              setBulkCount(
+                                Math.min(
+                                  100,
+                                  Math.max(1, parseInt(e.target.value) || 1),
+                                ),
+                              )
+                            }
                             className="w-20 bg-white border border-slate-200 rounded-lg py-2 px-3 text-sm text-center text-slate-800 font-bold focus:outline-none focus:border-amber-500"
                           />
-                          <span className="text-[10px] text-slate-400">(max 100)</span>
+                          <span className="text-[10px] text-slate-400">
+                            (max 100)
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -929,7 +954,9 @@ export default function MerchantDashboardHub({
                     {/* Success banner */}
                     <div className="bg-emerald-50 border border-emerald-200/60 rounded-xl p-3 flex items-center gap-2">
                       <span className="text-emerald-600 text-sm">✓</span>
-                      <span className="text-xs font-bold text-emerald-700">{bulkQrCodes.length} QR codes generated successfully!</span>
+                      <span className="text-xs font-bold text-emerald-700">
+                        {bulkQrCodes.length} QR codes generated successfully!
+                      </span>
                     </div>
 
                     {/* Action buttons */}
@@ -947,7 +974,10 @@ export default function MerchantDashboardHub({
                         🖨️ Print All
                       </button>
                       <button
-                        onClick={() => { setBulkGenerated(false); setBulkQrCodes([]); }}
+                        onClick={() => {
+                          setBulkGenerated(false);
+                          setBulkQrCodes([]);
+                        }}
                         className="py-3 px-4 bg-amber-50 hover:bg-amber-100 border border-amber-200/50 text-amber-700 font-bold text-[10px] rounded-xl transition-all uppercase tracking-wider"
                       >
                         🔄
@@ -958,15 +988,25 @@ export default function MerchantDashboardHub({
                     <div className="max-h-[50vh] overflow-y-auto pr-1 space-y-0">
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                         {bulkQrCodes.map((qr) => (
-                          <div 
-                            key={qr.index} 
+                          <div
+                            key={qr.index}
                             onClick={() => setSelectedZoomQr(qr)}
                             className="bg-white border border-slate-200/80 rounded-2xl p-3 text-center hover:shadow-md hover:scale-[1.02] transition-all duration-200 group cursor-pointer"
                           >
-                            <img src={qr.dataUrl} alt={`QR #${qr.index}`} className="w-full aspect-square rounded-lg" />
-                            <div className="mt-2 text-[10px] font-bold text-slate-600">QR #{qr.index}</div>
-                            <div className="text-[8px] text-slate-400 font-semibold mb-1">Single Use</div>
-                            <span className="text-[9px] text-amber-600 font-bold block mb-1 group-hover:underline">🔍 Scan Code</span>
+                            <img
+                              src={qr.dataUrl}
+                              alt={`QR #${qr.index}`}
+                              className="w-full aspect-square rounded-lg"
+                            />
+                            <div className="mt-2 text-[10px] font-bold text-slate-600">
+                              QR #{qr.index}
+                            </div>
+                            <div className="text-[8px] text-slate-400 font-semibold mb-1">
+                              Single Use
+                            </div>
+                            <span className="text-[9px] text-amber-600 font-bold block mb-1 group-hover:underline">
+                              🔍 Scan Code
+                            </span>
                             <a
                               href={qr.dataUrl}
                               download={`checkin-qr-${qr.index}.png`}
@@ -1070,15 +1110,15 @@ export default function MerchantDashboardHub({
 
       {/* ZOOM QR MODAL FOR DIRECT SCREEN SCANS */}
       {selectedZoomQr && (
-        <div 
+        <div
           className="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[110] flex items-center justify-center p-4 animate-[fade-in_0.2s_ease-out]"
           onClick={() => setSelectedZoomQr(null)}
         >
-          <div 
+          <div
             className="bg-white border border-slate-200 rounded-3xl max-w-sm w-full p-6 text-center space-y-4 relative shadow-2xl animate-[scale-up_0.2s_ease-out]"
             onClick={(e) => e.stopPropagation()}
           >
-            <button 
+            <button
               onClick={() => setSelectedZoomQr(null)}
               className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors w-8 h-8 rounded-full bg-slate-50 hover:bg-slate-100 flex items-center justify-center font-bold text-sm"
             >
@@ -1088,27 +1128,26 @@ export default function MerchantDashboardHub({
               <h3 className="text-base font-black text-slate-900">
                 Scan QR #{selectedZoomQr.index}
               </h3>
-              <p className="text-xs text-slate-500">
-                Single-use check-in code
-              </p>
+              <p className="text-xs text-slate-500">Single-use check-in code</p>
             </div>
-            
+
             <div className="bg-white border border-slate-100 p-5 rounded-3xl w-fit mx-auto shadow-md ring-8 ring-slate-50">
-              <img 
-                src={selectedZoomQr.dataUrl} 
-                alt={`QR #${selectedZoomQr.index}`} 
-                className="w-56 h-56 select-none pointer-events-none" 
+              <img
+                src={selectedZoomQr.dataUrl}
+                alt={`QR #${selectedZoomQr.index}`}
+                className="w-56 h-56 select-none pointer-events-none"
               />
             </div>
-            
+
             <p className="text-[10px] text-slate-400 font-semibold leading-relaxed">
-              Aim your phone camera at this code to scan it instantly without downloading.
+              Aim your phone camera at this code to scan it instantly without
+              downloading.
             </p>
-            
+
             <div className="flex gap-2 pt-2">
               <a
                 href={selectedZoomQr.dataUrl}
-                download={`checkin-qr-${selectedCampaign?.title?.replace(/\s+/g, "-").toLowerCase() || 'code'}-${selectedZoomQr.index}.png`}
+                download={`checkin-qr-${selectedCampaign?.title?.replace(/\s+/g, "-").toLowerCase() || "code"}-${selectedZoomQr.index}.png`}
                 className="flex-1 py-2.5 bg-red-600 hover:bg-red-500 text-white font-bold text-[10px] rounded-xl shadow-lg shadow-red-500/10 transition-all uppercase tracking-wider text-center"
               >
                 Download PNG
