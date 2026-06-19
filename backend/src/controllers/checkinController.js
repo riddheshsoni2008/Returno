@@ -1,8 +1,8 @@
-import Customer from '../models/Customer.js';
-import Business from '../models/Business.js';
-import Checkin from '../models/Checkin.js';
-import QrSession from '../models/QrSession.js';
-import AuditLog from '../models/AuditLog.js';
+import Customer from "../models/Customer.js";
+import Business from "../models/Business.js";
+import Checkin from "../models/Checkin.js";
+import QrSession from "../models/QrSession.js";
+import AuditLog from "../models/AuditLog.js";
 
 // Helper: check if two dates are the same calendar day (IST)
 const isSameDay = (d1, d2) => {
@@ -12,9 +12,11 @@ const isSameDay = (d1, d2) => {
   };
   const a = toIST(d1);
   const b = toIST(d2);
-  return a.getFullYear() === b.getFullYear() &&
+  return (
+    a.getFullYear() === b.getFullYear() &&
     a.getMonth() === b.getMonth() &&
-    a.getDate() === b.getDate();
+    a.getDate() === b.getDate()
+  );
 };
 
 // Helper: check if d1 is exactly the day before d2 (IST)
@@ -39,8 +41,8 @@ const formatBusinessForFE = (business) => {
   if (obj.loyaltyConfiguration) {
     obj.category = obj.loyaltyConfiguration.category;
     obj.address = obj.loyaltyConfiguration.address;
-    obj.city = obj.loyaltyConfiguration.city || '';
-    obj.state = obj.loyaltyConfiguration.state || '';
+    obj.city = obj.loyaltyConfiguration.city || "";
+    obj.state = obj.loyaltyConfiguration.state || "";
     obj.location = obj.loyaltyConfiguration.location;
     obj.geofenceRadius = obj.loyaltyConfiguration.geofenceRadius;
   }
@@ -58,32 +60,32 @@ export const joinCampaign = async (req, res) => {
 
     const customer = await Customer.findById(req.user.id);
     if (!customer) {
-      return res.status(401).json({ error: 'Customer not found' });
+      return res.status(401).json({ error: "Customer not found" });
     }
 
     const business = await Business.findOne({ "campaigns._id": campaignId });
     if (!business) {
-      return res.status(404).json({ error: 'Campaign not found' });
+      return res.status(404).json({ error: "Campaign not found" });
     }
 
     const campaign = business.campaigns.id(campaignId);
     if (!campaign || !campaign.isActive) {
-      return res.status(404).json({ error: 'Campaign not found or inactive' });
+      return res.status(404).json({ error: "Campaign not found or inactive" });
     }
 
     // Check if already enrolled
     const existingIndex = customer.joinedCampaigns.findIndex(
-      jc => jc.campaignId.toString() === campaignId
+      (jc) => jc.campaignId.toString() === campaignId,
     );
 
     if (existingIndex !== -1) {
       return res.json({
         success: true,
         alreadyJoined: true,
-        message: 'You are already enrolled in this campaign',
+        message: "You are already enrolled in this campaign",
         enrollment: customer.joinedCampaigns[existingIndex],
         campaign,
-        business: formatBusinessForFE(business)
+        business: formatBusinessForFE(business),
       });
     }
 
@@ -92,26 +94,27 @@ export const joinCampaign = async (req, res) => {
       campaignId: campaign._id,
       businessId: business._id,
       campaignName: campaign.title,
-      rewards: []
+      rewards: [],
     };
 
     customer.joinedCampaigns.push(enrollment);
     await customer.save();
 
     // Get the newly pushed enrollment
-    const newEnrollment = customer.joinedCampaigns[customer.joinedCampaigns.length - 1];
+    const newEnrollment =
+      customer.joinedCampaigns[customer.joinedCampaigns.length - 1];
 
     return res.status(201).json({
       success: true,
       alreadyJoined: false,
-      message: 'Successfully joined the campaign!',
+      message: "Successfully joined the campaign!",
       enrollment: newEnrollment,
       campaign,
-      business: formatBusinessForFE(business)
+      business: formatBusinessForFE(business),
     });
   } catch (error) {
-    console.error('Join Campaign API Error:', error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Join Campaign API Error:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
@@ -130,32 +133,36 @@ export const validateCheckin = async (req, res) => {
 
     if (!token) {
       console.warn(`- Validation failed: Missing token.`);
-      return res.status(400).json({ error: 'Check-in token is required' });
+      return res.status(400).json({ error: "Check-in token is required" });
     }
 
     const customer = await Customer.findById(req.user.id);
     if (!customer) {
-      console.warn(`- Validation failed: Customer not found in database for ID ${req.user.id}`);
-      return res.status(401).json({ error: 'Customer not found' });
+      console.warn(
+        `- Validation failed: Customer not found in database for ID ${req.user.id}`,
+      );
+      return res.status(401).json({ error: "Customer not found" });
     }
 
     // 1 & 2 & 3. Atomically find and claim the active QR session
     const now = new Date();
     const qrSession = await QrSession.findOneAndUpdate(
-      { 
-        token, 
-        isExpired: false, 
-        expiresAt: { $gt: now } 
+      {
+        token,
+        isExpired: false,
+        expiresAt: { $gt: now },
       },
-      { 
+      {
         $set: { isExpired: true },
-        $push: { usedBy: customer._id }
+        $push: { usedBy: customer._id },
       },
-      { returnDocument: 'after' } // Return updated doc to ensure we have the correct campaignId
+      { returnDocument: "after" }, // Return updated doc to ensure we have the correct campaignId
     );
 
     if (!qrSession) {
-      console.warn(`- Validation failed: QR Session was either already used, expired, or invalid.`);
+      console.warn(
+        `- Validation failed: QR Session was either already used, expired, or invalid.`,
+      );
       console.log(`- Current time: ${now.toISOString()}`);
       // Let's do a debug check to print why it was invalid
       const debugSession = await QrSession.findOne({ token });
@@ -165,36 +172,50 @@ export const validateCheckin = async (req, res) => {
           isExpired: debugSession.isExpired,
           expiresAt: debugSession.expiresAt.toISOString(),
           usedCount: debugSession.usedBy.length,
-          type: debugSession.type
+          type: debugSession.type,
         });
       } else {
         console.log(`- Debug QR session: No document with token found in DB.`);
       }
 
       // It was either already used, expired, or invalid.
-      return res.status(400).json({ error: 'This QR code is invalid, expired, or has already been scanned. Please ask the shop for a fresh one.' });
+      return res
+        .status(400)
+        .json({
+          error:
+            "This QR code is invalid, expired, or has already been scanned. Please ask the shop for a fresh one.",
+        });
     }
 
-    console.log(`- QR session successfully claimed: Session ID=${qrSession._id}, Campaign ID=${qrSession.campaignId}, Type=${qrSession.type}`);
+    console.log(
+      `- QR session successfully claimed: Session ID=${qrSession._id}, Campaign ID=${qrSession.campaignId}, Type=${qrSession.type}`,
+    );
 
     // 4. Find the business and campaign
-    const business = await Business.findOne({ "campaigns._id": qrSession.campaignId });
+    const business = await Business.findOne({
+      "campaigns._id": qrSession.campaignId,
+    });
     if (!business) {
-      return res.status(404).json({ error: 'Campaign business not found' });
+      return res.status(404).json({ error: "Campaign business not found" });
     }
 
     const campaign = business.campaigns.id(qrSession.campaignId);
     if (!campaign || !campaign.isActive) {
-      return res.status(404).json({ error: 'Campaign is inactive or does not exist' });
+      return res
+        .status(404)
+        .json({ error: "Campaign is inactive or does not exist" });
     }
 
     // 5. Check customer is enrolled, if not, AUTO-JOIN them!
     let enrollment = customer.joinedCampaigns.find(
-      jc => jc.campaignId && jc.campaignId.toString() === campaign._id.toString()
+      (jc) =>
+        jc.campaignId && jc.campaignId.toString() === campaign._id.toString(),
     );
 
     if (!enrollment) {
-      console.log(`- Customer not enrolled. Auto-enrolling Customer ${customer._id} to Campaign ${campaign._id} under Business ${business._id}`);
+      console.log(
+        `- Customer not enrolled. Auto-enrolling Customer ${customer._id} to Campaign ${campaign._id} under Business ${business._id}`,
+      );
       // Automatically enroll the user into the campaign
       customer.joinedCampaigns.push({
         campaignId: campaign._id,
@@ -204,14 +225,18 @@ export const validateCheckin = async (req, res) => {
         longestStreak: 0,
         totalPoints: 0,
         totalCheckins: 0,
-        lastCheckinDate: null
+        lastCheckinDate: null,
       });
       // Get reference to the newly created enrollment subdocument
-      enrollment = customer.joinedCampaigns[customer.joinedCampaigns.length - 1];
+      enrollment =
+        customer.joinedCampaigns[customer.joinedCampaigns.length - 1];
     }
 
     // 6. Check if already checked in today
-    if (enrollment.lastCheckinDate && isSameDay(enrollment.lastCheckinDate, now)) {
+    if (
+      enrollment.lastCheckinDate &&
+      isSameDay(enrollment.lastCheckinDate, now)
+    ) {
       return res.json({
         success: true,
         alreadyClaimed: true,
@@ -219,7 +244,7 @@ export const validateCheckin = async (req, res) => {
         currentStreak: enrollment.currentStreak,
         longestStreak: enrollment.longestStreak,
         totalPoints: enrollment.totalPoints,
-        totalCheckins: enrollment.totalCheckins
+        totalCheckins: enrollment.totalCheckins,
       });
     }
 
@@ -234,7 +259,8 @@ export const validateCheckin = async (req, res) => {
     }
 
     // 8. Calculate points
-    const pointsAwarded = campaign.pointsPerCheckin * newStreak * campaign.streakBonusMultiplier;
+    const pointsAwarded =
+      campaign.pointsPerCheckin * newStreak * campaign.streakBonusMultiplier;
 
     // 9. Update enrollment progress
     enrollment.currentStreak = newStreak;
@@ -252,8 +278,8 @@ export const validateCheckin = async (req, res) => {
     if (targetRewardVolume > existingRewardsCount) {
       enrollment.rewards.push({
         rewardTitle: campaign.rewardTitle,
-        status: 'unredeemed',
-        unlockedAt: new Date()
+        status: "unredeemed",
+        unlockedAt: new Date(),
       });
       rewardUnlocked = true;
     }
@@ -268,10 +294,13 @@ export const validateCheckin = async (req, res) => {
       qrSessionId: qrSession._id,
       pointsAwarded,
       streakAtCheckin: newStreak,
-      location: (lat !== undefined && lng !== undefined) ? {
-        type: 'Point',
-        coordinates: [parseFloat(lng), parseFloat(lat)]
-      } : undefined
+      location:
+        lat !== undefined && lng !== undefined
+          ? {
+              type: "Point",
+              coordinates: [parseFloat(lng), parseFloat(lat)],
+            }
+          : undefined,
     });
 
     // (Token was already marked expired and used atomically at the start of the request)
@@ -279,10 +308,10 @@ export const validateCheckin = async (req, res) => {
     // 13. Audit log
     await AuditLog.create({
       actorId: customer._id,
-      actorType: 'Customer',
-      action: 'CHECKIN_SUCCESS',
+      actorType: "Customer",
+      action: "CHECKIN_SUCCESS",
       details: `Checked in to campaign "${campaign.title}" (ID: ${campaign._id}). Streak: ${newStreak}, Points: +${pointsAwarded}`,
-      severity: 'info'
+      severity: "info",
     });
 
     return res.json({
@@ -294,14 +323,17 @@ export const validateCheckin = async (req, res) => {
       longestStreak: enrollment.longestStreak,
       totalPoints: enrollment.totalPoints,
       totalCheckins: enrollment.totalCheckins,
-      currentStamps: enrollment.totalCheckins % target === 0 && enrollment.totalCheckins > 0 ? target : enrollment.totalCheckins % target,
+      currentStamps:
+        enrollment.totalCheckins % target === 0 && enrollment.totalCheckins > 0
+          ? target
+          : enrollment.totalCheckins % target,
       requiredStamps: target,
       campaignTitle: campaign.title,
-      rewardTitle: campaign.rewardTitle
+      rewardTitle: campaign.rewardTitle,
     });
   } catch (error) {
-    console.error('Validate Checkin API Error:', error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Validate Checkin API Error:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
@@ -314,18 +346,20 @@ export const getCheckinHistory = async (req, res) => {
     const { campaignId } = req.params;
     const customer = await Customer.findById(req.user.id);
     if (!customer) {
-      return res.status(401).json({ error: 'Customer not found' });
+      return res.status(401).json({ error: "Customer not found" });
     }
 
     const checkins = await Checkin.find({
       customerId: customer._id,
-      campaignId
-    }).sort({ createdAt: -1 }).limit(30);
+      campaignId,
+    })
+      .sort({ createdAt: -1 })
+      .limit(30);
 
     return res.json({ success: true, checkins });
   } catch (error) {
-    console.error('Checkin History API Error:', error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Checkin History API Error:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
@@ -338,22 +372,24 @@ export const getStreakInfo = async (req, res) => {
     const { campaignId } = req.params;
     const customer = await Customer.findById(req.user.id);
     if (!customer) {
-      return res.status(401).json({ error: 'Customer not found' });
+      return res.status(401).json({ error: "Customer not found" });
     }
 
     const enrollment = customer.joinedCampaigns.find(
-      jc => jc.campaignId.toString() === campaignId
+      (jc) => jc.campaignId.toString() === campaignId,
     );
 
     if (!enrollment) {
-      return res.status(404).json({ error: 'Not enrolled in this campaign' });
+      return res.status(404).json({ error: "Not enrolled in this campaign" });
     }
 
     // Check if streak is still active (last check-in was today or yesterday)
     const now = new Date();
     let streakActive = false;
     if (enrollment.lastCheckinDate) {
-      streakActive = isSameDay(enrollment.lastCheckinDate, now) || isYesterday(enrollment.lastCheckinDate, now);
+      streakActive =
+        isSameDay(enrollment.lastCheckinDate, now) ||
+        isYesterday(enrollment.lastCheckinDate, now);
     }
 
     return res.json({
@@ -363,10 +399,10 @@ export const getStreakInfo = async (req, res) => {
       totalPoints: enrollment.totalPoints,
       totalCheckins: enrollment.totalCheckins,
       lastCheckinDate: enrollment.lastCheckinDate,
-      streakActive
+      streakActive,
     });
   } catch (error) {
-    console.error('Streak Info API Error:', error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Streak Info API Error:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 };

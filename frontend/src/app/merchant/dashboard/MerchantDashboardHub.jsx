@@ -1124,15 +1124,8 @@ export default function MerchantDashboardHub({
                           <div
                             key={qr.index}
                             onClick={() => setSelectedZoomQr(qr)}
-                            className="bg-white border border-slate-200 rounded-2xl p-4 text-center hover:shadow-md hover:scale-[1.02] hover:border-amber-300 transition-all duration-300 group cursor-pointer flex flex-col justify-between items-center relative overflow-hidden shadow-sm aspect-[4/5] min-h-[190px]"
+                            className="bg-white border border-slate-200 rounded-2xl p-4 text-center hover:shadow-md hover:scale-[1.02] hover:border-amber-300 transition-all duration-300 group cursor-pointer flex flex-col items-center relative overflow-hidden shadow-sm w-full"
                           >
-                            {/* Physical notches */}
-                            <div className="absolute -left-1.5 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-slate-50 border-r border-slate-200/80 z-10"></div>
-                            <div className="absolute -right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-slate-50 border-l border-slate-200/80 z-10"></div>
-
-                            {/* Divider line */}
-                            <div className="absolute top-1/2 left-3 right-3 border-b border-dashed border-slate-200/60 z-0"></div>
-
                             {/* Top: QR */}
                             <div className="bg-slate-50 border border-slate-100 p-2.5 rounded-xl w-24 h-24 flex items-center justify-center group-hover:border-amber-200 group-hover:bg-amber-50/20 transition-all duration-300 shadow-inner z-10">
                               <img
@@ -1142,18 +1135,25 @@ export default function MerchantDashboardHub({
                               />
                             </div>
 
+                            {/* Physical notches & Divider line */}
+                            <div className="w-full relative my-3 shrink-0">
+                              <div className="absolute -left-[22px] top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full bg-slate-50 border-r border-slate-200/80 z-10"></div>
+                              <div className="absolute -right-[22px] top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full bg-slate-50 border-l border-slate-200/80 z-10"></div>
+                              <div className="w-full border-b border-dashed border-slate-200/60"></div>
+                            </div>
+
                             {/* Bottom: Metadata */}
-                            <div className="w-full z-10 space-y-1.5 pt-2">
+                            <div className="w-full z-10 space-y-1.5">
                               <div>
                                 <div className="text-[10px] font-black text-slate-800">
                                   CODE #{qr.index}
                                 </div>
-                                <div className="text-[7.5px] text-slate-400 font-extrabold uppercase tracking-widest">
+                                <div className="text-[7.5px] text-slate-400 font-extrabold uppercase tracking-widest mt-0.5">
                                   Single check-in
                                 </div>
                               </div>
 
-                              <span className="w-full py-1 text-[8.5px] bg-amber-50 text-amber-700 group-hover:bg-amber-100 font-bold rounded-lg transition-colors flex items-center justify-center gap-1 border border-amber-100/50">
+                              <span className="w-full py-1.5 text-[8.5px] bg-amber-55 text-amber-700 group-hover:bg-amber-100 font-bold rounded-lg transition-colors flex items-center justify-center gap-1 border border-amber-100/50">
                                 🔍 Open Scan
                               </span>
                             </div>
