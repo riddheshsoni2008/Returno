@@ -33,23 +33,29 @@ export const sendOtp = async (req, res) => {
     const cleanedEmail = email.toLowerCase().trim();
     let customer = await Customer.findOne({ email: cleanedEmail });
 
-    if (!customer) {
+    // If 'name' is provided, it is a signup request
+    if (name) {
+      if (customer) {
+        return res.status(400).json({
+          error: "Email already registered. Please log in instead.",
+        });
+      }
       console.log(
         `[Customer OTP Send] New customer signup detected. Creating pending profile.`,
       );
-      if (!name) {
-        return res
-          .status(400)
-          .json({
-            error:
-              "Account not found. Please check your email or sign up to create a new account.",
-          });
-      }
       customer = await Customer.create({
         name: name.trim(),
         email: cleanedEmail,
         role: "customer",
       });
+    } else {
+      // Login request
+      if (!customer) {
+        return res.status(400).json({
+          error:
+            "Account not found. Please check your email or sign up to create a new account.",
+        });
+      }
     }
 
     const now = new Date();
@@ -345,17 +351,16 @@ export const sendBusinessOtp = async (req, res) => {
     const cleanedEmail = email.toLowerCase().trim();
     let business = await Business.findOne({ email: cleanedEmail });
 
-    if (!business) {
+    // If 'businessName' and 'ownerName' are provided, it is a signup request
+    if (businessName && ownerName) {
+      if (business) {
+        return res.status(400).json({
+          error: "Email already registered. Please log in instead.",
+        });
+      }
       console.log(
         `[Business OTP Send] New business signup detected. Creating pending profile.`,
       );
-      if (!businessName || !ownerName) {
-        return res
-          .status(400)
-          .json({
-            error: "Business name and Owner name are required for new signup",
-          });
-      }
       business = await Business.create({
         businessName: businessName.trim(),
         ownerName: ownerName.trim(),
@@ -363,6 +368,13 @@ export const sendBusinessOtp = async (req, res) => {
         role: "business",
         qrCode: `static_qr_${Math.floor(100000 + Math.random() * 900000)}`,
       });
+    } else {
+      // Login request
+      if (!business) {
+        return res.status(400).json({
+          error: "Account not found. Please check your email or sign up to create a new account.",
+        });
+      }
     }
 
     const now = new Date();

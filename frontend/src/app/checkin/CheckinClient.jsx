@@ -17,6 +17,7 @@ export default function CheckinClient() {
   const [error, setError] = useState('');
 
   // Auth state
+  const [isSignup, setIsSignup] = useState(true);
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [otpSent, setOtpSent] = useState(false);
@@ -83,7 +84,7 @@ export default function CheckinClient() {
     try {
       const res = await apiFetch('/auth/otp/send', {
         method: 'POST',
-        body: JSON.stringify({ email, name: name || undefined }),
+        body: JSON.stringify({ email, name: isSignup ? name : undefined }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
@@ -167,13 +168,31 @@ export default function CheckinClient() {
         {!user && (
           <div className="space-y-5">
             <div className="text-center border-t border-slate-100 pt-4">
-              <h3 className="font-bold text-sm text-slate-800">Sign in to check in</h3>
+              <div className="flex justify-center gap-4 mb-4">
+                <button 
+                  onClick={() => setIsSignup(false)}
+                  className={`text-sm font-bold pb-2 border-b-2 transition-colors ${!isSignup ? 'border-red-600 text-red-600' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
+                >
+                  Log In
+                </button>
+                <button 
+                  onClick={() => setIsSignup(true)}
+                  className={`text-sm font-bold pb-2 border-b-2 transition-colors ${isSignup ? 'border-red-600 text-red-600' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
+                >
+                  Sign Up
+                </button>
+              </div>
+              <h3 className="font-bold text-sm text-slate-800">
+                {isSignup ? 'Create an account to join' : 'Welcome back, log in to check in'}
+              </h3>
               <p className="text-xs text-slate-500 mt-1">Quick OTP — no password needed</p>
             </div>
             {!otpSent ? (
               <form onSubmit={handleSendOtp} className="space-y-3">
-                <input type="text" placeholder="Your name" value={name} onChange={(e) => setName(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 text-sm focus:outline-none focus:border-red-500 transition-colors" />
+                {isSignup && (
+                  <input type="text" required placeholder="Your name" value={name} onChange={(e) => setName(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 text-sm focus:outline-none focus:border-red-500 transition-colors" />
+                )}
                 <input type="email" required placeholder="Email address" value={email} onChange={(e) => setEmail(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 text-sm focus:outline-none focus:border-red-500 transition-colors" />
                 <button type="submit" className="w-full py-3 bg-red-600 hover:bg-red-500 rounded-xl text-xs font-bold uppercase tracking-wider text-white shadow-lg shadow-red-500/10 transition-colors">

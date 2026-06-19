@@ -10,7 +10,7 @@ export default async function MerchantDashboardPage() {
     redirect('/merchant/auth');
   }
 
-  const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+  const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:5000/api';
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://returno-eight.vercel.app';
   let business = null;
   let metrics = null;

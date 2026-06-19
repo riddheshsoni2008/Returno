@@ -7,7 +7,7 @@ export default async function CampaignJoinPage(props) {
   const params = await props.params;
   const campaignId = params.campaignId;
 
-  const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+  const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:5000/api';
   let campaign = null;
   let business = null;
   
