@@ -248,3 +248,80 @@ export const getCampaignQrStats = async (req, res) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+// =============================================
+// GET /api/qr/bulk/:campaignId
+// Retrieve all active, unused bulk QR sessions for a campaign
+// =============================================
+export const getActiveBulkSessions = async (req, res) => {
+  try {
+    const { campaignId } = req.params;
+
+    const business = await Business.findById(req.user.id);
+    if (!business) {
+      return res.status(404).json({ error: "Business profile not found" });
+    }
+
+    const campaign = business.campaigns.id(campaignId);
+    if (!campaign) {
+      return res.status(403).json({ error: "Unauthorized or campaign not found" });
+    }
+
+    const now = new Date();
+    const activeBulkSessions = await QrSession.find({
+      campaignId: campaign._id,
+      type: "bulk",
+      isExpired: false,
+      expiresAt: { $gt: now },
+      usedBy: { $size: 0 } // Unused only
+    }).sort({ createdAt: 1 }); // Oldest first
+
+    return res.json({
+      success: true,
+      sessions: activeBulkSessions.map((s) => ({
+        token: s.token,
+        sessionId: s._id,
+        expiresAt: s.expiresAt,
+      })),
+    });
+  } catch (error) {
+    console.error("GET Active Bulk Sessions Error:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+// =============================================
+// DELETE /api/qr/bulk/:campaignId
+// Delete all unused bulk QR sessions for a campaign to reclaim space
+// =============================================
+export const deleteUnusedBulkSessions = async (req, res) => {
+  try {
+    const { campaignId } = req.params;
+
+    const business = await Business.findById(req.user.id);
+    if (!business) {
+      return res.status(404).json({ error: "Business profile not found" });
+    }
+
+    const campaign = business.campaigns.id(campaignId);
+    if (!campaign) {
+      return res.status(403).json({ error: "Unauthorized or campaign not found" });
+    }
+
+    // Delete unused bulk sessions (expired or active)
+    const result = await QrSession.deleteMany({
+      campaignId: campaign._id,
+      type: "bulk",
+      usedBy: { $size: 0 }
+    });
+
+    return res.json({
+      success: true,
+      deletedCount: result.deletedCount,
+      message: "Unused bulk QR codes cleared successfully to reclaim space.",
+    });
+  } catch (error) {
+    console.error("DELETE Unused Bulk Sessions Error:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};

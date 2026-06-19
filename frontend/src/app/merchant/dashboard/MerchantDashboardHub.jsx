@@ -231,6 +231,8 @@ export default function MerchantDashboardHub({
     setBulkGenerated(false);
     if (mode === "checkin") {
       generateDynamicQr(camp._id);
+    } else if (mode === "bulk") {
+      fetchActiveBulkSessions(camp._id);
     }
   };
 
@@ -241,6 +243,70 @@ export default function MerchantDashboardHub({
     setBulkQrCodes([]);
     setBulkGenerated(false);
     setSelectedZoomQr(null);
+  };
+
+  const fetchActiveBulkSessions = async (campaignId) => {
+    if (!campaignId) return;
+    setBulkLoading(true);
+    setBulkQrCodes([]);
+    setBulkGenerated(false);
+    try {
+      const res = await apiFetch(`/qr/bulk/${campaignId}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.sessions && data.sessions.length > 0) {
+          // Generate QR data URLs for each existing session token
+          const qrPromises = data.sessions.map(async (t, i) => {
+            const url = `${appUrl}/checkin?token=${t.token}`;
+            const dataUrl = await QRCode.toDataURL(url, {
+              width: 280,
+              margin: 2,
+              color: { dark: "#000000", light: "#ffffff" },
+            });
+            return { token: t.token, dataUrl, index: i + 1 };
+          });
+          const results = await Promise.all(qrPromises);
+          setBulkQrCodes(results);
+          setBulkGenerated(true);
+        }
+      }
+    } catch (err) {
+      console.error("Error fetching active bulk sessions:", err);
+    } finally {
+      setBulkLoading(false);
+    }
+  };
+
+  const clearUnusedBulkSessions = async () => {
+    if (!selectedCampaign) return;
+    setBulkLoading(true);
+    try {
+      const res = await apiFetch(`/qr/bulk/${selectedCampaign._id}`, {
+        method: "DELETE"
+      });
+      const data = await res.json();
+      if (data.success) {
+        setBulkQrCodes([]);
+        setBulkGenerated(false);
+        setAlertModal({
+          isOpen: true,
+          title: "Database Cleared",
+          message: `${data.deletedCount} unused QR codes deleted successfully to reclaim database space.`,
+          type: "success"
+        });
+      } else {
+        throw new Error(data.error);
+      }
+    } catch (err) {
+      setAlertModal({
+        isOpen: true,
+        title: "Clear Failed",
+        message: err.message || "Failed to clear unused QR codes",
+        type: "error"
+      });
+    } finally {
+      setBulkLoading(false);
+    }
   };
 
   const generateBulkQr = async () => {
@@ -778,7 +844,10 @@ export default function MerchantDashboardHub({
                   <span>⚡</span> Live Check-In
                 </button>
                 <button
-                  onClick={() => setQrMode("bulk")}
+                  onClick={() => {
+                    setQrMode("bulk");
+                    fetchActiveBulkSessions(selectedCampaign._id);
+                  }}
                   className={`flex-1 py-2.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1 ${
                     qrMode === "bulk"
                       ? "bg-white text-amber-700 shadow-sm ring-1 ring-black/5"
@@ -826,7 +895,7 @@ export default function MerchantDashboardHub({
                     <a
                       href={joinQrDataUrl}
                       download={`join-qr-${selectedCampaign._id}.png`}
-                      className="flex-1 text-center py-3 bg-red-655 hover:bg-red-600 text-white font-bold text-xs rounded-xl shadow-lg shadow-red-500/10 transition-all uppercase tracking-wider"
+                      className="flex-1 text-center py-3 bg-red-600 hover:bg-red-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-red-500/10 transition-all uppercase tracking-wider"
                     >
                       💾 Download QR
                     </a>
@@ -975,7 +1044,7 @@ export default function MerchantDashboardHub({
                       <div className="flex gap-2">
                         <button
                           onClick={downloadAllQr}
-                          className="flex-1 py-3 bg-red-650 hover:bg-red-600 text-white font-bold text-[10px] rounded-xl shadow-lg shadow-red-500/10 transition-all uppercase tracking-wider flex items-center justify-center gap-1.5"
+                          className="flex-1 py-3 bg-red-600 hover:bg-red-500 text-white font-bold text-[10px] rounded-xl shadow-lg shadow-red-500/10 transition-all uppercase tracking-wider flex items-center justify-center gap-1.5"
                         >
                           💾 Download All
                         </button>
@@ -987,11 +1056,18 @@ export default function MerchantDashboardHub({
                         </button>
                         <button
                           onClick={() => {
-                            setBulkGenerated(false);
-                            setBulkQrCodes([]);
+                            setConfirmModal({
+                              isOpen: true,
+                              title: "Clear Unused QRs?",
+                              message: "This will permanently delete all unused bulk QR codes from the database and reclaim storage space. Proceed?",
+                              onConfirm: () => {
+                                setConfirmModal({ isOpen: false, title: "", message: "", onConfirm: null });
+                                clearUnusedBulkSessions();
+                              }
+                            });
                           }}
                           className="py-3 px-4 bg-amber-50 hover:bg-amber-100 border border-amber-200/50 text-amber-700 font-bold text-[10px] rounded-xl transition-all uppercase tracking-wider flex items-center justify-center gap-1"
-                          title="Reset Generator"
+                          title="Clear from Database"
                         >
                           🔄 Reset
                         </button>
