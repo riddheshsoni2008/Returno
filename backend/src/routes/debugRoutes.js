@@ -1,15 +1,15 @@
 import express from "express";
-import { getSmtpDiagnostics } from "../services/emailService.js";
+import { getEmailDiagnostics } from "../services/emailService.js";
 
 const router = express.Router();
 
 // ==========================================
-// GET /api/debug/email — SMTP diagnostic endpoint
+// GET /api/debug/email — Email service diagnostic endpoint
 // ==========================================
 
 router.get("/email", async (req, res) => {
   try {
-    const diagnostics = await getSmtpDiagnostics();
+    const diagnostics = await getEmailDiagnostics();
     return res.json({
       success: true,
       diagnostics,
@@ -18,7 +18,7 @@ router.get("/email", async (req, res) => {
     console.error("[Debug Email] Failed to run diagnostics:", error);
     return res.status(500).json({
       success: false,
-      error: "Failed to run SMTP diagnostics.",
+      error: "Failed to run email diagnostics.",
       details: error.message,
     });
   }
