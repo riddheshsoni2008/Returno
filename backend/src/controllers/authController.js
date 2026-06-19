@@ -2,7 +2,7 @@ import fs from 'fs';
 import Customer from '../models/Customer.js';
 import Business from '../models/Business.js';
 import { generateToken, hashOtp, verifyToken } from '../utils/auth.js';
-import { sendOtpEmail } from '../services/emailService.js';
+import { sendOtpEmail, validateEmailFormat } from '../services/emailService.js';
 
 const setTokenCookie = (res, token) => {
   res.cookie('token', token, {
@@ -117,6 +117,92 @@ export const sendOtp = async (req, res) => {
   } catch (error) {
     console.error('[Customer OTP Send] Fatal Error:', error);
     return res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+// ==========================================
+// GENERIC SEND-OTP ENDPOINT (POST /api/auth/send-otp)
+// ==========================================
+
+export const sendOtpGeneric = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // 1. Validate email format
+    if (!email || !validateEmailFormat(email)) {
+      return res.status(400).json({
+        success: false,
+        error: 'A valid email address is required.',
+      });
+    }
+
+    const cleanedEmail = email.toLowerCase().trim();
+
+    // 2. Check if the customer exists
+    let customer = await Customer.findOne({ email: cleanedEmail });
+    if (!customer) {
+      return res.status(404).json({
+        success: false,
+        error: 'No account found with this email. Please sign up first.',
+      });
+    }
+
+    // 3. Cooldown check: 30 seconds
+    const now = new Date();
+    if (customer.otp && customer.otp.lastSentAt) {
+      const elapsedSeconds = Math.floor(
+        (now - new Date(customer.otp.lastSentAt)) / 1000,
+      );
+      if (elapsedSeconds < 30) {
+        return res.status(429).json({
+          success: false,
+          error: `Please wait ${30 - elapsedSeconds} seconds before requesting another OTP.`,
+        });
+      }
+    }
+
+    // 4. Generate 6-digit OTP
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    console.log(
+      `[Generic OTP Send] Generated OTP for "${cleanedEmail}"`,
+    );
+
+    // 5. Store OTP in database
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+    const hashedCode = hashOtp(otpCode, cleanedEmail);
+
+    customer.otp = {
+      hashedCode,
+      expiresAt,
+      attempts: 0,
+      lastSentAt: now,
+      requestCount: (customer.otp?.requestCount || 0) + 1,
+      windowStart: customer.otp?.windowStart || now,
+    };
+    await customer.save();
+
+    // 6. Send email using transporter.sendMail()
+    const deliveryResult = await sendOtpEmail(cleanedEmail, otpCode);
+
+    if (!deliveryResult || !deliveryResult.success) {
+      // Revert OTP so user isn't locked out
+      customer.otp = undefined;
+      await customer.save();
+
+      return res.status(502).json({
+        success: false,
+        error: deliveryResult?.error || 'Failed to send OTP email.',
+        code: deliveryResult?.code || 'EMAIL_SEND_FAILED',
+      });
+    }
+
+    return res.json({ success: true });
+  } catch (error) {
+    console.error('[Generic OTP Send] Fatal Error:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Internal Server Error',
+    });
   }
 };
 

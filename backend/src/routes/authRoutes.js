@@ -1,6 +1,7 @@
 import express from "express";
 import {
   sendOtp,
+  sendOtpGeneric,
   verifyOtp,
   sendBusinessOtp,
   verifyBusinessOtp,
@@ -9,6 +10,9 @@ import {
 } from "../controllers/authController.js";
 
 const router = express.Router();
+
+// Generic send-otp endpoint (POST /api/auth/send-otp)
+router.post("/send-otp", sendOtpGeneric);
 
 // Customer Auth Routes
 router.post("/otp/send", sendOtp);
