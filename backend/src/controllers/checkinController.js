@@ -190,13 +190,16 @@ export const validateCheckin = async (req, res) => {
 
     // 5. Check customer is enrolled, if not, AUTO-JOIN them!
     let enrollment = customer.joinedCampaigns.find(
-      jc => jc.campaignId.toString() === campaign._id.toString()
+      jc => jc.campaignId && jc.campaignId.toString() === campaign._id.toString()
     );
 
     if (!enrollment) {
+      console.log(`- Customer not enrolled. Auto-enrolling Customer ${customer._id} to Campaign ${campaign._id} under Business ${business._id}`);
       // Automatically enroll the user into the campaign
       customer.joinedCampaigns.push({
         campaignId: campaign._id,
+        businessId: business._id,
+        campaignName: campaign.title,
         currentStreak: 0,
         longestStreak: 0,
         totalPoints: 0,
