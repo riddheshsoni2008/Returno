@@ -105,6 +105,11 @@ export default function CheckinClient() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
+      
+      if (data.token) {
+        document.cookie = `token=${data.token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
+      }
+      
       setUser(data.user);
       setFeedbackMsg({ type: 'success', text: 'Verified!' });
     } catch (err) {
