@@ -718,11 +718,11 @@ export default function MerchantDashboardHub({
 
       {/* QR MODAL DIALOG */}
       {selectedCampaign && (
-        <div className="fixed inset-0 bg-white z-[100] flex items-center justify-center p-4 animate-[fade-in_0.2s_ease-out]">
-          <div className="bg-white max-w-md w-full p-6 text-center space-y-5 relative max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[100] flex items-center justify-center p-4 sm:p-6 md:p-10 animate-[fade-in_0.2s_ease-out]">
+          <div className="bg-white border border-slate-200/80 rounded-3xl max-w-lg w-full p-6 md:p-8 flex flex-col relative shadow-2xl max-h-[85vh] overflow-hidden animate-[scale-up_0.2s_ease-out]">
             <button
               onClick={closeQrModal}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 w-8 h-8 rounded-full flex items-center justify-center transition-colors"
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 w-8 h-8 rounded-full flex items-center justify-center transition-colors z-20"
               aria-label="Close modal"
             >
               <svg
@@ -741,288 +741,299 @@ export default function MerchantDashboardHub({
               </svg>
             </button>
 
-            {/* QR Mode Tabs */}
-            <div className="flex bg-slate-100 rounded-xl p-1 shadow-inner border border-slate-200/40">
-              <button
-                onClick={() => setQrMode("join")}
-                className={`flex-1 py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1 ${
-                  qrMode === "join"
-                    ? "bg-white text-slate-900 shadow-sm ring-1 ring-black/5"
-                    : "text-slate-500 hover:text-slate-800"
-                }`}
-              >
-                <span>🔗</span> Join
-              </button>
-              <button
-                onClick={() => {
-                  setQrMode("checkin");
-                  if (!dynamicToken) generateDynamicQr(selectedCampaign._id);
-                }}
-                className={`flex-1 py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1 ${
-                  qrMode === "checkin"
-                    ? "bg-white text-red-600 shadow-sm ring-1 ring-black/5"
-                    : "text-slate-500 hover:text-slate-800"
-                }`}
-              >
-                <span>⚡</span> Check-In
-              </button>
-              <button
-                onClick={() => setQrMode("bulk")}
-                className={`flex-1 py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1 ${
-                  qrMode === "bulk"
-                    ? "bg-white text-amber-700 shadow-sm ring-1 ring-black/5"
-                    : "text-slate-500 hover:text-slate-800"
-                }`}
-              >
-                <span>📦</span> Bulk
-              </button>
-            </div>
+            {/* Header Content (Non-scrollable) */}
+            <div className="space-y-4 pb-4 border-b border-slate-100 text-center">
+              <div>
+                <h3 className="text-xl font-extrabold text-slate-900 pr-8">
+                  {selectedCampaign.title}
+                </h3>
+                <p className="text-xs text-slate-400 mt-0.5">Loyalty Campaign QR Suite</p>
+              </div>
+              
+              {/* QR Mode Tabs */}
+              <div className="flex bg-slate-100 rounded-xl p-1 shadow-inner border border-slate-200/40">
+                <button
+                  onClick={() => setQrMode("join")}
+                  className={`flex-1 py-2.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1 ${
+                    qrMode === "join"
+                      ? "bg-white text-slate-900 shadow-sm ring-1 ring-black/5"
+                      : "text-slate-500 hover:text-slate-800"
+                  }`}
+                >
+                  <span>🔗</span> Join QR
+                </button>
+                <button
+                  onClick={() => {
+                    setQrMode("checkin");
+                    if (!dynamicToken) generateDynamicQr(selectedCampaign._id);
+                  }}
+                  className={`flex-1 py-2.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1 ${
+                    qrMode === "checkin"
+                      ? "bg-white text-red-600 shadow-sm ring-1 ring-black/5"
+                      : "text-slate-500 hover:text-slate-800"
+                  }`}
+                >
+                  <span>⚡</span> Live Check-In
+                </button>
+                <button
+                  onClick={() => setQrMode("bulk")}
+                  className={`flex-1 py-2.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1 ${
+                    qrMode === "bulk"
+                      ? "bg-white text-amber-700 shadow-sm ring-1 ring-black/5"
+                      : "text-slate-500 hover:text-slate-800"
+                  }`}
+                >
+                  <span>📦</span> Bulk Codes
+                </button>
+              </div>
 
-            <div className="space-y-1">
-              <h3 className="text-lg font-extrabold text-slate-900">
-                {selectedCampaign.title}
-              </h3>
-              <p className="text-xs text-slate-500">
+              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest bg-slate-50 py-1.5 rounded-lg border border-slate-200/40">
                 {qrMode === "join"
-                  ? "Permanent QR — customers scan to join"
+                  ? "Permanent QR — Customer scans to join campaign"
                   : qrMode === "bulk"
-                    ? "Batch single-use QRs — download or print"
-                    : "Dynamic QR — rotates every 60 seconds"}
+                    ? "Batch single-use QRs — Scan off screen, print or download"
+                    : "Live QR — Single-use rotating scan code"}
               </p>
             </div>
 
-            {/* JOIN QR MODE */}
-            {qrMode === "join" && (
-              <>
-                {joinQrDataUrl ? (
-                  <div className="bg-white border border-slate-100 p-5 rounded-3xl w-fit mx-auto shadow-md ring-8 ring-slate-50 transition-all hover:scale-[1.02] duration-300">
-                    <img
-                      src={joinQrDataUrl}
-                      alt="Join QR Code"
-                      className="w-52 h-52 select-none pointer-events-none"
-                    />
-                  </div>
-                ) : (
-                  <div className="w-52 h-52 bg-slate-50 border border-slate-100 rounded-2xl mx-auto flex items-center justify-center text-slate-400 text-xs animate-pulse">
-                    Generating...
-                  </div>
-                )}
-                <div className="bg-slate-50 border border-slate-200/60 p-3 rounded-xl">
-                  <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider block mb-0.5">
-                    Join URL
-                  </span>
-                  <span className="text-[10px] font-mono text-slate-600 break-all select-all">{`${appUrl}/join/${selectedCampaign._id}`}</span>
-                </div>
-                <div className="flex gap-3 pt-1">
-                  <a
-                    href={joinQrDataUrl}
-                    download={`join-qr-${selectedCampaign._id}.png`}
-                    className="flex-1 text-center py-3 bg-red-600 hover:bg-red-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-red-500/10 transition-all uppercase tracking-wider"
-                  >
-                    💾 Download
-                  </a>
-                  <button
-                    onClick={() => window.print()}
-                    className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-all uppercase tracking-wider"
-                  >
-                    🖨️ Print
-                  </button>
-                </div>
-              </>
-            )}
-
-            {/* CHECKIN QR MODE */}
-            {qrMode === "checkin" && (
-              <>
-                {dynamicQrDataUrl ? (
-                  <div className="relative space-y-4">
-                    <div className="bg-white border-2 border-red-50/80 p-5 rounded-3xl w-fit mx-auto shadow-md ring-8 ring-red-50/50 transition-all hover:scale-[1.02] duration-300">
+            {/* Scrollable Content Container (No Nested Scrollbar conflict) */}
+            <div className="flex-1 overflow-y-auto min-h-0 pr-1 py-4 scrollable-content">
+              {/* JOIN QR MODE */}
+              {qrMode === "join" && (
+                <div className="space-y-5 flex flex-col items-center py-2 animate-[fade-in_0.2s_ease-out]">
+                  {joinQrDataUrl ? (
+                    <div className="bg-white border border-slate-100 p-5 rounded-3xl w-fit shadow-md ring-8 ring-slate-50 transition-all hover:scale-[1.02] duration-300">
                       <img
-                        src={dynamicQrDataUrl}
-                        alt="Check-in QR Code"
+                        src={joinQrDataUrl}
+                        alt="Join QR Code"
                         className="w-52 h-52 select-none pointer-events-none"
                       />
                     </div>
-                    {/* Refresh status */}
-                    <div className="mt-4 flex items-center justify-center gap-2">
-                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                      <span className="text-xs font-bold text-slate-500">
-                        Secure Single-use QR. Reloads automatically.
-                      </span>
+                  ) : (
+                    <div className="w-52 h-52 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center text-slate-400 text-xs animate-pulse">
+                      Generating...
                     </div>
+                  )}
+                  <div className="bg-slate-50 border border-slate-200/60 p-3 rounded-xl w-full text-left">
+                    <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider block mb-0.5">
+                      Join URL
+                    </span>
+                    <span className="text-[10px] font-mono text-slate-600 break-all select-all">{`${appUrl}/join/${selectedCampaign._id}`}</span>
                   </div>
-                ) : (
-                  <div className="w-52 h-52 bg-red-50 border-2 border-red-200/60 rounded-2xl mx-auto flex items-center justify-center">
-                    <div className="text-center space-y-2">
-                      <div className="w-8 h-8 border-4 border-red-200 border-t-red-600 rounded-full animate-spin mx-auto"></div>
-                      <p className="text-[10px] text-slate-500">
-                        Generating secure QR...
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                <button
-                  onClick={() => generateDynamicQr(selectedCampaign._id)}
-                  className="w-full py-3 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-red-500/10 transition-all uppercase tracking-wider"
-                >
-                  🔄 Generate New QR Now
-                </button>
-              </>
-            )}
-
-            {/* BULK QR MODE */}
-            {qrMode === "bulk" && (
-              <>
-                {!bulkGenerated ? (
-                  <div className="space-y-5">
-                    <div className="bg-amber-50 border border-amber-200/60 rounded-2xl p-5 space-y-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white text-lg shadow-md">
-                          📦
-                        </div>
-                        <div className="text-left">
-                          <div className="text-sm font-bold text-slate-900">
-                            Bulk QR Generator
-                          </div>
-                          <div className="text-[10px] text-slate-500">
-                            Generate multiple single-use check-in codes at once
-                          </div>
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <label className="block text-slate-500 text-[10px] font-bold uppercase tracking-wider">
-                          How many QR codes?
-                        </label>
-                        <div className="flex gap-2">
-                          {[10, 20, 50, 100].map((n) => (
-                            <button
-                              key={n}
-                              onClick={() => setBulkCount(n)}
-                              className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all border ${
-                                bulkCount === n
-                                  ? "bg-amber-600 text-white border-amber-600 shadow-md shadow-amber-500/20"
-                                  : "bg-white text-slate-600 border-slate-200 hover:border-amber-300 hover:text-amber-700"
-                              }`}
-                            >
-                              {n}
-                            </button>
-                          ))}
-                        </div>
-                        <div className="flex items-center gap-2 mt-2">
-                          <span className="text-[10px] text-slate-500 font-semibold">
-                            Custom:
-                          </span>
-                          <input
-                            type="number"
-                            min={1}
-                            max={100}
-                            value={bulkCount}
-                            onChange={(e) =>
-                              setBulkCount(
-                                Math.min(
-                                  100,
-                                  Math.max(1, parseInt(e.target.value) || 1),
-                                ),
-                              )
-                            }
-                            className="w-20 bg-white border border-slate-200 rounded-lg py-2 px-3 text-sm text-center text-slate-800 font-bold focus:outline-none focus:border-amber-500"
-                          />
-                          <span className="text-[10px] text-slate-400">
-                            (max 100)
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <button
-                      onClick={generateBulkQr}
-                      disabled={bulkLoading}
-                      className="w-full py-3.5 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-lg shadow-amber-500/15 transition-all uppercase tracking-wider flex items-center justify-center gap-2"
+                  <div className="flex gap-3 pt-1 w-full">
+                    <a
+                      href={joinQrDataUrl}
+                      download={`join-qr-${selectedCampaign._id}.png`}
+                      className="flex-1 text-center py-3 bg-red-655 hover:bg-red-600 text-white font-bold text-xs rounded-xl shadow-lg shadow-red-500/10 transition-all uppercase tracking-wider"
                     >
-                      {bulkLoading ? (
-                        <>
-                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                          Generating {bulkCount} QR Codes...
-                        </>
-                      ) : (
-                        <>⚡ Generate {bulkCount} QR Codes</>
-                      )}
+                      💾 Download QR
+                    </a>
+                    <button
+                      onClick={() => window.print()}
+                      className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-all uppercase tracking-wider"
+                    >
+                      🖨️ Print
                     </button>
                   </div>
-                ) : (
-                  <div className="space-y-4">
-                    {/* Success banner */}
-                    <div className="bg-emerald-50 border border-emerald-200/60 rounded-xl p-3 flex items-center gap-2">
-                      <span className="text-emerald-600 text-sm">✓</span>
-                      <span className="text-xs font-bold text-emerald-700">
-                        {bulkQrCodes.length} QR codes generated successfully!
-                      </span>
-                    </div>
+                </div>
+              )}
 
-                    {/* Action buttons */}
-                    <div className="flex gap-2">
+              {/* CHECKIN QR MODE */}
+              {qrMode === "checkin" && (
+                <div className="space-y-5 flex flex-col items-center py-2 animate-[fade-in_0.2s_ease-out]">
+                  {dynamicQrDataUrl ? (
+                    <div className="relative space-y-4 flex flex-col items-center">
+                      <div className="bg-white border-2 border-red-50/80 p-5 rounded-3xl w-fit shadow-md ring-8 ring-red-50/50 transition-all hover:scale-[1.02] duration-300">
+                        <img
+                          src={dynamicQrDataUrl}
+                          alt="Check-in QR Code"
+                          className="w-52 h-52 select-none pointer-events-none"
+                        />
+                      </div>
+                      {/* Refresh status */}
+                      <div className="mt-4 flex items-center justify-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span className="text-xs font-bold text-slate-500">
+                          Secure Single-use QR. Reloads automatically.
+                        </span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="w-52 h-52 bg-red-50 border-2 border-red-200/60 rounded-2xl flex items-center justify-center">
+                      <div className="text-center space-y-2">
+                        <div className="w-8 h-8 border-4 border-red-200 border-t-red-600 rounded-full animate-spin mx-auto"></div>
+                        <p className="text-[10px] text-slate-500">
+                          Generating secure QR...
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  <button
+                    onClick={() => generateDynamicQr(selectedCampaign._id)}
+                    className="w-full py-3 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-red-500/10 transition-all uppercase tracking-wider"
+                  >
+                    🔄 Generate New QR Now
+                  </button>
+                </div>
+              )}
+
+              {/* BULK QR MODE */}
+              {qrMode === "bulk" && (
+                <div className="space-y-4 text-left py-2 animate-[fade-in_0.2s_ease-out]">
+                  {!bulkGenerated ? (
+                    <div className="space-y-5">
+                      <div className="bg-amber-50/50 border border-amber-200/60 rounded-2xl p-5 space-y-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white text-lg shadow-md">
+                            📦
+                          </div>
+                          <div>
+                            <div className="text-sm font-bold text-slate-900">
+                              Bulk QR Generator
+                            </div>
+                            <div className="text-[10px] text-slate-500">
+                              Generate multiple single-use check-in codes at once
+                            </div>
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <label className="block text-slate-500 text-[10px] font-bold uppercase tracking-wider">
+                            How many QR codes?
+                          </label>
+                          <div className="flex gap-2">
+                            {[10, 20, 50, 100].map((n) => (
+                              <button
+                                key={n}
+                                onClick={() => setBulkCount(n)}
+                                className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all border ${
+                                  bulkCount === n
+                                    ? "bg-amber-600 text-white border-amber-600 shadow-md shadow-amber-500/20"
+                                    : "bg-white text-slate-600 border-slate-200 hover:border-amber-300 hover:text-amber-700"
+                                }`}
+                              >
+                                {n}
+                              </button>
+                            ))}
+                          </div>
+                          <div className="flex items-center gap-2 mt-2">
+                            <span className="text-[10px] text-slate-500 font-bold">
+                              Custom:
+                            </span>
+                            <input
+                              type="number"
+                              min={1}
+                              max={100}
+                              value={bulkCount}
+                              onChange={(e) =>
+                                setBulkCount(
+                                  Math.min(
+                                    100,
+                                    Math.max(1, parseInt(e.target.value) || 1),
+                                  ),
+                                )
+                              }
+                              className="w-20 bg-white border border-slate-200 rounded-lg py-2 px-3 text-sm text-center text-slate-800 font-bold focus:outline-none focus:border-amber-500"
+                            />
+                            <span className="text-[10px] text-slate-400">
+                              (max 100)
+                            </span>
+                          </div>
+                        </div>
+                      </div>
                       <button
-                        onClick={downloadAllQr}
-                        className="flex-1 py-3 bg-red-600 hover:bg-red-500 text-white font-bold text-[10px] rounded-xl shadow-lg shadow-red-500/10 transition-all uppercase tracking-wider flex items-center justify-center gap-1.5"
+                        onClick={generateBulkQr}
+                        disabled={bulkLoading}
+                        className="w-full py-3.5 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-lg shadow-amber-500/15 transition-all uppercase tracking-wider flex items-center justify-center gap-2"
                       >
-                        💾 Download All
-                      </button>
-                      <button
-                        onClick={printBulkQr}
-                        className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-bold text-[10px] rounded-xl transition-all uppercase tracking-wider flex items-center justify-center gap-1.5"
-                      >
-                        🖨️ Print All
-                      </button>
-                      <button
-                        onClick={() => {
-                          setBulkGenerated(false);
-                          setBulkQrCodes([]);
-                        }}
-                        className="py-3 px-4 bg-amber-50 hover:bg-amber-100 border border-amber-200/50 text-amber-700 font-bold text-[10px] rounded-xl transition-all uppercase tracking-wider"
-                      >
-                        🔄
+                        {bulkLoading ? (
+                          <>
+                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                            Generating {bulkCount} QR Codes...
+                          </>
+                        ) : (
+                          <>⚡ Generate {bulkCount} QR Codes</>
+                        )}
                       </button>
                     </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {/* Success banner */}
+                      <div className="bg-emerald-50 border border-emerald-250/60 rounded-xl p-3 flex items-center gap-2">
+                        <span className="text-emerald-600 text-sm font-bold">✓</span>
+                        <span className="text-[11px] font-bold text-emerald-700">
+                          {bulkQrCodes.length} QR codes generated successfully!
+                        </span>
+                      </div>
 
-                    {/* QR Grid */}
-                    <div className="max-h-[50vh] overflow-y-auto pr-1 space-y-0">
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {/* Action buttons */}
+                      <div className="flex gap-2">
+                        <button
+                          onClick={downloadAllQr}
+                          className="flex-1 py-3 bg-red-650 hover:bg-red-600 text-white font-bold text-[10px] rounded-xl shadow-lg shadow-red-500/10 transition-all uppercase tracking-wider flex items-center justify-center gap-1.5"
+                        >
+                          💾 Download All
+                        </button>
+                        <button
+                          onClick={printBulkQr}
+                          className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-bold text-[10px] rounded-xl transition-all uppercase tracking-wider flex items-center justify-center gap-1.5"
+                        >
+                          🖨️ Print All
+                        </button>
+                        <button
+                          onClick={() => {
+                            setBulkGenerated(false);
+                            setBulkQrCodes([]);
+                          }}
+                          className="py-3 px-4 bg-amber-50 hover:bg-amber-100 border border-amber-200/50 text-amber-700 font-bold text-[10px] rounded-xl transition-all uppercase tracking-wider flex items-center justify-center gap-1"
+                          title="Reset Generator"
+                        >
+                          🔄 Reset
+                        </button>
+                      </div>
+
+                      {/* QR Grid */}
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
                         {bulkQrCodes.map((qr) => (
                           <div
                             key={qr.index}
                             onClick={() => setSelectedZoomQr(qr)}
-                            className="bg-white border border-slate-200/80 rounded-2xl p-3 text-center hover:shadow-md hover:scale-[1.02] transition-all duration-200 group cursor-pointer"
+                            className="bg-white border border-slate-200/80 rounded-2xl p-3 text-center hover:shadow-md hover:scale-[1.02] hover:border-amber-350/80 transition-all duration-200 group cursor-pointer flex flex-col justify-between items-center min-h-[175px] shadow-sm"
                           >
-                            <img
-                              src={qr.dataUrl}
-                              alt={`QR #${qr.index}`}
-                              className="w-full aspect-square rounded-lg"
-                            />
-                            <div className="mt-2 text-[10px] font-bold text-slate-600">
-                              QR #{qr.index}
+                            <div className="w-24 h-24 flex items-center justify-center overflow-hidden bg-slate-50 rounded-xl p-1 border border-slate-100">
+                              <img
+                                src={qr.dataUrl}
+                                alt={`QR #${qr.index}`}
+                                className="w-full h-full object-contain rounded-lg"
+                              />
                             </div>
-                            <div className="text-[8px] text-slate-400 font-semibold mb-1">
-                              Single Use
+                            <div className="w-full mt-2">
+                              <div className="text-[10px] font-extrabold text-slate-800">
+                                QR #{qr.index}
+                              </div>
+                              <div className="text-[8px] text-slate-400 font-bold uppercase tracking-wider mb-1.5">
+                                Single Use
+                              </div>
+                              <span className="text-[9px] bg-amber-50 text-amber-700 font-bold py-1 px-2.5 rounded-full inline-block group-hover:bg-amber-100 transition-colors">
+                                🔍 Click to Scan
+                              </span>
+                              <a
+                                href={qr.dataUrl}
+                                download={`checkin-qr-${qr.index}.png`}
+                                onClick={(e) => e.stopPropagation()}
+                                className="mt-2 block text-[9px] font-bold text-red-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                ↓ Download PNG
+                              </a>
                             </div>
-                            <span className="text-[9px] text-amber-600 font-bold block mb-1 group-hover:underline">
-                              🔍 Scan Code
-                            </span>
-                            <a
-                              href={qr.dataUrl}
-                              download={`checkin-qr-${qr.index}.png`}
-                              onClick={(e) => e.stopPropagation()}
-                              className="mt-1.5 inline-block text-[9px] font-bold text-red-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                            >
-                              ↓ Download
-                            </a>
                           </div>
                         ))}
                       </div>
                     </div>
-                  </div>
-                )}
-              </>
-            )}
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
