@@ -151,7 +151,7 @@ export const validateCheckin = async (req, res) => {
         $set: { isExpired: true },
         $push: { usedBy: customer._id }
       },
-      { new: true } // Return updated doc to ensure we have the correct campaignId
+      { returnDocument: 'after' } // Return updated doc to ensure we have the correct campaignId
     );
 
     if (!qrSession) {
