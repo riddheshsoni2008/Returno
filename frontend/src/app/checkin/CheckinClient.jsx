@@ -15,37 +15,47 @@ export default function CheckinClient() {
   const [processing, setProcessing] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
-
-  // Auth state
-  const [isSignup, setIsSignup] = useState(true);
-  const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
-  const [otpSent, setOtpSent] = useState(false);
-  const [otpCode, setOtpCode] = useState('');
   const [feedbackMsg, setFeedbackMsg] = useState({ type: '', text: '' });
 
-  // Store JWT auth token directly — avoids unreliable cookie round-trip
+  // Store JWT auth token directly if available
   const authTokenRef = useRef(null);
 
   // Check session on mount
   useEffect(() => {
     const checkSession = async () => {
       try {
+        console.log(`[Check-in Flow] Checking current user session on mount. Token in URL: ${token}`);
         const res = await apiFetch('/auth/me');
+        console.log(`[Check-in Flow] /auth/me session response status: ${res.status}`);
         if (res.ok) {
           const data = await res.json();
           if (data.success && data.user) {
+            console.log(`[Check-in Flow] Session check succeeded. User: ${data.user.email} (ID: ${data.user._id})`);
             setUser(data.user);
+            return;
           }
         }
+        console.log(`[Check-in Flow] Session check returned not logged in.`);
       } catch (err) {
-        console.error('Session check error:', err);
+        console.error('[Check-in Flow] Session check error:', err);
       } finally {
         setLoading(false);
       }
     };
     checkSession();
-  }, []);
+  }, [token]);
+
+  // Handle redirect if unauthenticated
+  useEffect(() => {
+    if (!loading && !user && token) {
+      const fullPath = window.location.pathname + window.location.search;
+      console.log(`[Check-in Flow] Redirect Event: Redirecting unauthenticated user to login.`);
+      console.log(`- Current Path: ${window.location.href}`);
+      console.log(`- Destination: /auth?redirect=${fullPath}`);
+      const redirectPath = encodeURIComponent(fullPath);
+      router.push(`/auth?redirect=${redirectPath}`);
+    }
+  }, [loading, user, token, router]);
 
   // Auto-validate when user is available and token exists
   useEffect(() => {
@@ -56,9 +66,22 @@ export default function CheckinClient() {
   }, [user]);
 
   const handleValidate = async () => {
-    if (!token) return;
+    if (!token) {
+      console.error('[Check-in Flow] Aborted validation: No token in URL.');
+      return;
+    }
+    if (!user) {
+      console.error('[Check-in Flow] Aborted validation: User not loaded.');
+      return;
+    }
     setProcessing(true);
     setError('');
+
+    console.log(`[Check-in Flow] Initiating validation of check-in token.`);
+    console.log(`- QR Token: ${token}`);
+    console.log(`- User ID: ${user._id}`);
+    console.log(`- User Email: ${user.email}`);
+
     try {
       // Build request options with explicit auth header if we have a fresh token
       const fetchOptions = {
@@ -67,76 +90,35 @@ export default function CheckinClient() {
       };
 
       // If we just got a fresh JWT from OTP verify, pass it directly
-      // This bypasses the cookie round-trip which fails on cross-origin mobile
       if (authTokenRef.current) {
+        console.log(`- Passing fresh token in headers: Bearer ${authTokenRef.current.substring(0, 15)}...`);
         fetchOptions.headers = {
           'Authorization': `Bearer ${authTokenRef.current}`,
         };
+      } else {
+        console.log(`- No inline token ref. Falling back to cookies/localStorage.`);
       }
 
       const res = await apiFetch('/checkin/validate', fetchOptions);
+      console.log(`[Check-in Flow] Validate response status: ${res.status}`);
       const data = await res.json();
+      
       if (!res.ok) {
+        console.error(`[Check-in Flow] Validation failed:`, data.error);
         if (data.notEnrolled) {
           setError(`not_enrolled:${data.campaignId}`);
         } else {
           setError(data.error || 'Check-in failed');
         }
       } else {
+        console.log(`[Check-in Flow] Validation succeeded! Result:`, data);
         setResult(data);
       }
     } catch (err) {
+      console.error('[Check-in Flow] Validation request error:', err);
       setError(err.message || 'Network error');
     } finally {
       setProcessing(false);
-    }
-  };
-
-  const handleSendOtp = async (e) => {
-    e.preventDefault();
-    setFeedbackMsg({ type: '', text: '' });
-    try {
-      const res = await apiFetch('/auth/otp/send', {
-        method: 'POST',
-        body: JSON.stringify({ email, name: isSignup ? name : undefined }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      setOtpSent(true);
-      setFeedbackMsg({ type: 'success', text: 'OTP sent to your email!' });
-    } catch (err) {
-      setFeedbackMsg({ type: 'error', text: err.message });
-    }
-  };
-
-  const handleVerifyOtp = async (e) => {
-    e.preventDefault();
-    setFeedbackMsg({ type: '', text: '' });
-    try {
-      const res = await apiFetch('/auth/otp/verify', {
-        method: 'POST',
-        body: JSON.stringify({ email, code: otpCode }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      
-      if (data.token) {
-        // Save to ref for immediate use in the next API call
-        authTokenRef.current = data.token;
-        // Also save to cookie for future page loads
-        document.cookie = `token=${data.token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
-        // Save to localStorage as a robust cross-origin fallback
-        try {
-          localStorage.setItem('token', data.token);
-        } catch (err) {
-          console.error('Error writing token to localStorage:', err);
-        }
-      }
-      
-      setUser(data.user);
-      setFeedbackMsg({ type: 'success', text: 'Verified!' });
-    } catch (err) {
-      setFeedbackMsg({ type: 'error', text: err.message });
     }
   };
 
@@ -192,50 +174,12 @@ export default function CheckinClient() {
           </div>
         )}
 
-        {/* Not logged in */}
+        {/* Not logged in / Redirecting */}
         {!user && (
-          <div className="space-y-5">
-            <div className="text-center border-t border-slate-100 pt-4">
-              <div className="flex justify-center gap-4 mb-4">
-                <button 
-                  onClick={() => setIsSignup(false)}
-                  className={`text-sm font-bold pb-2 border-b-2 transition-colors ${!isSignup ? 'border-red-600 text-red-600' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
-                >
-                  Log In
-                </button>
-                <button 
-                  onClick={() => setIsSignup(true)}
-                  className={`text-sm font-bold pb-2 border-b-2 transition-colors ${isSignup ? 'border-red-600 text-red-600' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
-                >
-                  Sign Up
-                </button>
-              </div>
-              <h3 className="font-bold text-sm text-slate-800">
-                {isSignup ? 'Create an account to join' : 'Welcome back, log in to check in'}
-              </h3>
-              <p className="text-xs text-slate-500 mt-1">Quick OTP — no password needed</p>
-            </div>
-            {!otpSent ? (
-              <form onSubmit={handleSendOtp} className="space-y-3">
-                {isSignup && (
-                  <input type="text" required placeholder="Your name" value={name} onChange={(e) => setName(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 text-sm focus:outline-none focus:border-red-500 transition-colors" />
-                )}
-                <input type="email" required placeholder="Email address" value={email} onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 text-sm focus:outline-none focus:border-red-500 transition-colors" />
-                <button type="submit" className="w-full py-3 bg-red-600 hover:bg-red-500 rounded-xl text-xs font-bold uppercase tracking-wider text-white shadow-lg shadow-red-500/10 transition-colors">
-                  Send OTP
-                </button>
-              </form>
-            ) : (
-              <form onSubmit={handleVerifyOtp} className="space-y-3">
-                <input type="text" required maxLength={6} placeholder="Enter 6-digit OTP" value={otpCode} onChange={(e) => setOtpCode(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-center tracking-[0.5em] text-lg font-bold focus:outline-none focus:border-red-500 transition-colors text-slate-800" />
-                <button type="submit" className="w-full py-3 bg-red-600 hover:bg-red-500 rounded-xl text-xs font-bold uppercase tracking-wider text-white shadow-lg shadow-red-500/10 transition-colors">
-                  Verify & Check In
-                </button>
-              </form>
-            )}
+          <div className="text-center space-y-4 py-6">
+            <div className="w-12 h-12 border-4 border-red-200 border-t-red-600 rounded-full animate-spin mx-auto"></div>
+            <p className="text-sm text-slate-600 font-bold">Authenticating...</p>
+            <p className="text-xs text-slate-400">Redirecting you to login to complete check-in.</p>
           </div>
         )}
 

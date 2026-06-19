@@ -33,13 +33,13 @@ export const generateQrSession = async (req, res) => {
     // Without the type filter, this would wipe out bulk QRs that customers are actively trying to scan
     await QrSession.deleteMany({
       campaignId: campaign._id,
-      type: 'dynamic',
+      type: "dynamic",
       usedBy: { $size: 0 },
     });
 
     // Expire any still-active dynamic tokens for this campaign
     await QrSession.updateMany(
-      { campaignId: campaign._id, type: 'dynamic', isExpired: false },
+      { campaignId: campaign._id, type: "dynamic", isExpired: false },
       { $set: { isExpired: true } },
     );
 
@@ -52,7 +52,7 @@ export const generateQrSession = async (req, res) => {
       businessId: business._id,
       token,
       expiresAt,
-      type: 'dynamic',
+      type: "dynamic",
     });
 
     return res.json({
@@ -67,10 +67,6 @@ export const generateQrSession = async (req, res) => {
   }
 };
 
-// =============================================
-// POST /api/qr/generate-bulk
-// Generate multiple single-use QR session tokens at once
-// =============================================
 export const generateBulkQrSessions = async (req, res) => {
   try {
     const { campaignId, count } = req.body;
@@ -108,7 +104,7 @@ export const generateBulkQrSessions = async (req, res) => {
         expiresAt,
         usedBy: [],
         isExpired: false,
-        type: 'bulk',
+        type: "bulk",
       });
     }
 

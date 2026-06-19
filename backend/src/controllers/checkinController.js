@@ -123,12 +123,19 @@ export const validateCheckin = async (req, res) => {
   try {
     const { token, lat, lng } = req.body;
 
+    console.log(`[Check-in Controller] validateCheckin called.`);
+    console.log(`- Token parameter: ${token}`);
+    console.log(`- User ID from JWT: ${req.user.id}`);
+    console.log(`- Location coordinates: lat=${lat}, lng=${lng}`);
+
     if (!token) {
+      console.warn(`- Validation failed: Missing token.`);
       return res.status(400).json({ error: 'Check-in token is required' });
     }
 
     const customer = await Customer.findById(req.user.id);
     if (!customer) {
+      console.warn(`- Validation failed: Customer not found in database for ID ${req.user.id}`);
       return res.status(401).json({ error: 'Customer not found' });
     }
 
@@ -148,9 +155,27 @@ export const validateCheckin = async (req, res) => {
     );
 
     if (!qrSession) {
+      console.warn(`- Validation failed: QR Session was either already used, expired, or invalid.`);
+      console.log(`- Current time: ${now.toISOString()}`);
+      // Let's do a debug check to print why it was invalid
+      const debugSession = await QrSession.findOne({ token });
+      if (debugSession) {
+        console.log(`- Debug QR session found in DB:`, {
+          id: debugSession._id,
+          isExpired: debugSession.isExpired,
+          expiresAt: debugSession.expiresAt.toISOString(),
+          usedCount: debugSession.usedBy.length,
+          type: debugSession.type
+        });
+      } else {
+        console.log(`- Debug QR session: No document with token found in DB.`);
+      }
+
       // It was either already used, expired, or invalid.
       return res.status(400).json({ error: 'This QR code is invalid, expired, or has already been scanned. Please ask the shop for a fresh one.' });
     }
+
+    console.log(`- QR session successfully claimed: Session ID=${qrSession._id}, Campaign ID=${qrSession.campaignId}, Type=${qrSession.type}`);
 
     // 4. Find the business and campaign
     const business = await Business.findOne({ "campaigns._id": qrSession.campaignId });
