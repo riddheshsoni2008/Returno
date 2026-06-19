@@ -41,7 +41,7 @@ export default function MerchantDashboardHub({
 
   // QR Modal State
   const [selectedCampaign, setSelectedCampaign] = useState(null);
-  const [qrMode, setQrMode] = useState("join"); // 'join' or 'checkin'
+  const [qrMode, setQrMode] = useState("join"); // 'join', 'checkin', or 'bulk'
 
   // Join QR state
   const [joinQrDataUrl, setJoinQrDataUrl] = useState("");
@@ -50,6 +50,12 @@ export default function MerchantDashboardHub({
   const [dynamicToken, setDynamicToken] = useState(null);
   const [dynamicExpiresAt, setDynamicExpiresAt] = useState(null);
   const [dynamicQrDataUrl, setDynamicQrDataUrl] = useState("");
+
+  // Bulk QR state
+  const [bulkCount, setBulkCount] = useState(10);
+  const [bulkLoading, setBulkLoading] = useState(false);
+  const [bulkQrCodes, setBulkQrCodes] = useState([]); // array of { token, dataUrl, index }
+  const [bulkGenerated, setBulkGenerated] = useState(false);
 
   // Generate Join QR when selectedCampaign changes
   useEffect(() => {
@@ -220,6 +226,8 @@ export default function MerchantDashboardHub({
     setQrMode(mode);
     setDynamicToken(null);
     setDynamicQrDataUrl("");
+    setBulkQrCodes([]);
+    setBulkGenerated(false);
     if (mode === "checkin") {
       generateDynamicQr(camp._id);
     }
@@ -229,6 +237,97 @@ export default function MerchantDashboardHub({
     setSelectedCampaign(null);
     setDynamicToken(null);
     setDynamicQrDataUrl("");
+    setBulkQrCodes([]);
+    setBulkGenerated(false);
+  };
+
+  const generateBulkQr = async () => {
+    if (!selectedCampaign) return;
+    setBulkLoading(true);
+    setBulkQrCodes([]);
+    setBulkGenerated(false);
+    try {
+      const res = await apiFetch("/qr/generate-bulk", {
+        method: "POST",
+        body: JSON.stringify({ campaignId: selectedCampaign._id, count: bulkCount }),
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error);
+
+      // Generate QR data URLs for each token
+      const qrPromises = data.tokens.map(async (t, i) => {
+        const url = `${appUrl}/checkin?token=${t.token}`;
+        const dataUrl = await QRCode.toDataURL(url, {
+          width: 280,
+          margin: 2,
+          color: { dark: "#991b1b", light: "#ffffff" },
+        });
+        return { token: t.token, dataUrl, index: i + 1 };
+      });
+
+      const results = await Promise.all(qrPromises);
+      setBulkQrCodes(results);
+      setBulkGenerated(true);
+    } catch (err) {
+      setAlertModal({
+        isOpen: true,
+        title: "Bulk QR Failed",
+        message: err.message || "Failed to generate bulk QR codes",
+        type: "error",
+      });
+    } finally {
+      setBulkLoading(false);
+    }
+  };
+
+  const downloadAllQr = async () => {
+    for (const qr of bulkQrCodes) {
+      const link = document.createElement("a");
+      link.href = qr.dataUrl;
+      link.download = `checkin-qr-${selectedCampaign.title.replace(/\s+/g, "-").toLowerCase()}-${qr.index}.png`;
+      link.click();
+      // Small delay to prevent browser throttling
+      await new Promise(r => setTimeout(r, 100));
+    }
+  };
+
+  const printBulkQr = () => {
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) return;
+    const gridItems = bulkQrCodes.map((qr) =>
+      `<div style="text-align:center;page-break-inside:avoid;padding:12px;border:1px solid #e2e8f0;border-radius:12px;">
+        <img src="${qr.dataUrl}" style="width:160px;height:160px;" />
+        <div style="margin-top:6px;font-size:11px;font-weight:700;color:#334155;">${selectedCampaign.title}</div>
+        <div style="font-size:9px;color:#94a3b8;margin-top:2px;">QR #${qr.index} • Single Use</div>
+      </div>`
+    ).join("");
+
+    printWindow.document.write(`
+      <html>
+      <head>
+        <title>Bulk QR Codes - ${selectedCampaign.title}</title>
+        <style>
+          @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+          body { font-family: 'Inter', sans-serif; margin: 20px; }
+          h1 { text-align: center; font-size: 20px; color: #0f172a; margin-bottom: 4px; }
+          h2 { text-align: center; font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 20px; }
+          .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
+          @media print {
+            body { margin: 10px; }
+            .grid { gap: 10px; }
+            .no-print { display: none; }
+          }
+        </style>
+      </head>
+      <body>
+        <h1>${selectedCampaign.title}</h1>
+        <h2>${bulkQrCodes.length} Check-in QR Codes • Each code is single-use</h2>
+        <div class="grid">${gridItems}</div>
+        <script>setTimeout(() => { window.print(); }, 500);</script>
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
   };
 
   const { totalStamps, uniqueCustomers, openRewardsCount, recentStamps } =
@@ -410,6 +509,12 @@ export default function MerchantDashboardHub({
                     className="flex-1 text-center py-2.5 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 font-bold text-[10px] transition-colors border border-red-200/50 uppercase tracking-wider"
                   >
                     ⚡ Check-In QR
+                  </button>
+                  <button
+                    onClick={() => openQrModal(camp, "bulk")}
+                    className="flex-1 text-center py-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold text-[10px] transition-colors border border-amber-200/50 uppercase tracking-wider"
+                  >
+                    📦 Bulk QR
                   </button>
                 </div>
               </div>
@@ -632,26 +737,36 @@ export default function MerchantDashboardHub({
             <div className="flex bg-slate-100 rounded-xl p-1 shadow-inner border border-slate-200/40">
               <button
                 onClick={() => setQrMode("join")}
-                className={`flex-1 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1.5 ${
+                className={`flex-1 py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1 ${
                   qrMode === "join"
                     ? "bg-white text-slate-900 shadow-sm ring-1 ring-black/5"
                     : "text-slate-500 hover:text-slate-800"
                 }`}
               >
-                <span>🔗</span> Join QR
+                <span>🔗</span> Join
               </button>
               <button
                 onClick={() => {
                   setQrMode("checkin");
                   if (!dynamicToken) generateDynamicQr(selectedCampaign._id);
                 }}
-                className={`flex-1 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1.5 ${
+                className={`flex-1 py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1 ${
                   qrMode === "checkin"
                     ? "bg-white text-red-600 shadow-sm ring-1 ring-black/5"
                     : "text-slate-500 hover:text-slate-800"
                 }`}
               >
-                <span>⚡</span> Check-In QR
+                <span>⚡</span> Check-In
+              </button>
+              <button
+                onClick={() => setQrMode("bulk")}
+                className={`flex-1 py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1 ${
+                  qrMode === "bulk"
+                    ? "bg-white text-amber-700 shadow-sm ring-1 ring-black/5"
+                    : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                <span>📦</span> Bulk
               </button>
             </div>
 
@@ -743,6 +858,119 @@ export default function MerchantDashboardHub({
                 >
                   🔄 Generate New QR Now
                 </button>
+              </>
+            )}
+
+            {/* BULK QR MODE */}
+            {qrMode === "bulk" && (
+              <>
+                {!bulkGenerated ? (
+                  <div className="space-y-5">
+                    <div className="bg-amber-50 border border-amber-200/60 rounded-2xl p-5 space-y-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white text-lg shadow-md">📦</div>
+                        <div className="text-left">
+                          <div className="text-sm font-bold text-slate-900">Bulk QR Generator</div>
+                          <div className="text-[10px] text-slate-500">Generate multiple single-use check-in codes at once</div>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <label className="block text-slate-500 text-[10px] font-bold uppercase tracking-wider">How many QR codes?</label>
+                        <div className="flex gap-2">
+                          {[10, 20, 50, 100].map((n) => (
+                            <button
+                              key={n}
+                              onClick={() => setBulkCount(n)}
+                              className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all border ${
+                                bulkCount === n
+                                  ? "bg-amber-600 text-white border-amber-600 shadow-md shadow-amber-500/20"
+                                  : "bg-white text-slate-600 border-slate-200 hover:border-amber-300 hover:text-amber-700"
+                              }`}
+                            >
+                              {n}
+                            </button>
+                          ))}
+                        </div>
+                        <div className="flex items-center gap-2 mt-2">
+                          <span className="text-[10px] text-slate-500 font-semibold">Custom:</span>
+                          <input
+                            type="number"
+                            min={1}
+                            max={100}
+                            value={bulkCount}
+                            onChange={(e) => setBulkCount(Math.min(100, Math.max(1, parseInt(e.target.value) || 1)))}
+                            className="w-20 bg-white border border-slate-200 rounded-lg py-2 px-3 text-sm text-center text-slate-800 font-bold focus:outline-none focus:border-amber-500"
+                          />
+                          <span className="text-[10px] text-slate-400">(max 100)</span>
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      onClick={generateBulkQr}
+                      disabled={bulkLoading}
+                      className="w-full py-3.5 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-lg shadow-amber-500/15 transition-all uppercase tracking-wider flex items-center justify-center gap-2"
+                    >
+                      {bulkLoading ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                          Generating {bulkCount} QR Codes...
+                        </>
+                      ) : (
+                        <>⚡ Generate {bulkCount} QR Codes</>
+                      )}
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {/* Success banner */}
+                    <div className="bg-emerald-50 border border-emerald-200/60 rounded-xl p-3 flex items-center gap-2">
+                      <span className="text-emerald-600 text-sm">✓</span>
+                      <span className="text-xs font-bold text-emerald-700">{bulkQrCodes.length} QR codes generated successfully!</span>
+                    </div>
+
+                    {/* Action buttons */}
+                    <div className="flex gap-2">
+                      <button
+                        onClick={downloadAllQr}
+                        className="flex-1 py-3 bg-red-600 hover:bg-red-500 text-white font-bold text-[10px] rounded-xl shadow-lg shadow-red-500/10 transition-all uppercase tracking-wider flex items-center justify-center gap-1.5"
+                      >
+                        💾 Download All
+                      </button>
+                      <button
+                        onClick={printBulkQr}
+                        className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-bold text-[10px] rounded-xl transition-all uppercase tracking-wider flex items-center justify-center gap-1.5"
+                      >
+                        🖨️ Print All
+                      </button>
+                      <button
+                        onClick={() => { setBulkGenerated(false); setBulkQrCodes([]); }}
+                        className="py-3 px-4 bg-amber-50 hover:bg-amber-100 border border-amber-200/50 text-amber-700 font-bold text-[10px] rounded-xl transition-all uppercase tracking-wider"
+                      >
+                        🔄
+                      </button>
+                    </div>
+
+                    {/* QR Grid */}
+                    <div className="max-h-[50vh] overflow-y-auto pr-1 space-y-0">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        {bulkQrCodes.map((qr) => (
+                          <div key={qr.index} className="bg-white border border-slate-200/80 rounded-2xl p-3 text-center hover:shadow-md hover:scale-[1.02] transition-all duration-200 group">
+                            <img src={qr.dataUrl} alt={`QR #${qr.index}`} className="w-full aspect-square rounded-lg" />
+                            <div className="mt-2 text-[10px] font-bold text-slate-600">QR #{qr.index}</div>
+                            <div className="text-[8px] text-slate-400 font-semibold">Single Use</div>
+                            <a
+                              href={qr.dataUrl}
+                              download={`checkin-qr-${qr.index}.png`}
+                              className="mt-1.5 inline-block text-[9px] font-bold text-red-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              ↓ Download
+                            </a>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </>
             )}
           </div>
