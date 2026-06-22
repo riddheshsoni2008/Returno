@@ -14,8 +14,6 @@ const MONGODB_URI =
 
 async function test() {
   await mongoose.connect(MONGODB_URI);
-  console.log("Connected to MongoDB");
-
   const customerSchema = new mongoose.Schema(
     {
       email: String,
@@ -47,17 +45,12 @@ async function test() {
     { expiresIn: "7d" },
   );
 
-  console.log("Generated Valid Token:", token);
-  console.log("Token Length:", token.length);
-
-  console.log("Fetching Next.js /wallet using valid token...");
   try {
     const res = await fetch("http://localhost:3000/wallet", {
       headers: {
         Cookie: `token=${token}`,
       },
     });
-    console.log("Next.js Response Status:", res.status);
 
     // Read response text/headers to see if it redirects or renders
     const text = await res.text();
@@ -69,7 +62,7 @@ async function test() {
       console.log("Redirect match:", match ? match[0] : "Not found");
     } else {
       console.log("Next.js returned HTML successfully! (No redirect)");
-    } 
+    }
   } catch (err) {
     console.error("Fetch to Next.js failed:", err);
   }
