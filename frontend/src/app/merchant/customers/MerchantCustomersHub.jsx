@@ -197,7 +197,7 @@ export default function MerchantCustomersHub({
                                 <button
                                   onClick={() => handleApproveRedeem(reward._id)}
                                   disabled={loadingId !== null}
-                                  className="px-3.5 py-1.5 bg-primary text-on-primary hover:bg-opacity-95 disabled:opacity-50 font-bold text-[10px] rounded-lg shadow-sm transition-all uppercase tracking-wider whitespace-nowrap"
+                                  className="px-3.5 py-1.5 bg-primary text-on-primary hover:bg-opacity-95 disabled:opacity-80 font-bold text-[10px] rounded-lg shadow-sm transition-all uppercase tracking-wider whitespace-nowrap"
                                 >
                                   {loadingId === reward._id ? "Claiming..." : "Collect Item"}
                                 </button>

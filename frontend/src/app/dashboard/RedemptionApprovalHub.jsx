@@ -71,7 +71,7 @@ export default function RedemptionApprovalHub({ initialClaims, verificationCode 
             <button
               onClick={() => handleApprove(claim._id)}
               disabled={loadingId !== null}
-              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 disabled:opacity-50 text-white text-xs font-bold shadow-lg hover:-translate-y-0.5 transition-all w-full sm:w-auto"
+              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 disabled:opacity-80 text-white text-xs font-bold shadow-lg hover:-translate-y-0.5 transition-all w-full sm:w-auto"
             >
               {loadingId === claim._id ? 'Approving...' : 'Confirm Redemption'}
             </button>

@@ -310,7 +310,7 @@ export default function ScanClientResolver({ campaign, business, initialUser }) 
             <button
               type="submit"
               disabled={claiming}
-              className="w-full py-3.5 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-bold text-sm rounded-xl shadow-lg shadow-red-500/10 transition-all uppercase tracking-wider"
+              className="w-full py-3.5 bg-red-600 hover:bg-red-500 disabled:opacity-80 text-white font-bold text-sm rounded-xl shadow-lg shadow-red-500/10 transition-all uppercase tracking-wider"
             >
               {claiming ? 'Processing Check-in...' : 'Claim Loyalty Stamp'}
             </button>

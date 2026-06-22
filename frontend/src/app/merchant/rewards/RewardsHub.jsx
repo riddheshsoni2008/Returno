@@ -90,7 +90,7 @@ export default function RewardsHub({ initialClaims, verificationCode }) {
                 <button
                   onClick={() => handleApproveClaim(claim._id)}
                   disabled={loadingApprovalId !== null}
-                  className="px-5 py-3 rounded-lg bg-primary text-on-primary hover:bg-opacity-95 disabled:opacity-50 text-xs font-semibold shadow-sm hover:scale-[1.01] transition-all w-full sm:w-auto text-center"
+                  className="px-5 py-3 rounded-lg bg-primary text-on-primary hover:bg-opacity-95 disabled:opacity-80 text-xs font-semibold shadow-sm hover:scale-[1.01] transition-all w-full sm:w-auto text-center"
                 >
                   {loadingApprovalId === claim._id ? 'Approving...' : 'Confirm Redemption'}
                 </button>

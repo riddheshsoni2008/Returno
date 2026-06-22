@@ -248,7 +248,7 @@ function CustomerAuthContent() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-brand-600 to-rose-600 hover:from-brand-500 hover:to-rose-500 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-brand-500/10 transition-all text-xs uppercase tracking-wider"
+                className="w-full bg-gradient-to-r from-brand-600 to-rose-600 hover:from-brand-500 hover:to-rose-500 disabled:opacity-80 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-brand-500/10 transition-all text-xs uppercase tracking-wider"
               >
                 {loading ? "Sending Code..." : "Send Verification OTP"}
               </button>
@@ -283,7 +283,7 @@ function CustomerAuthContent() {
                       type="button"
                       onClick={() => handleSendOtp(null)}
                       disabled={loading}
-                      className="text-brand-600 hover:text-brand-500 font-semibold transition-colors disabled:opacity-50"
+                      className="text-brand-600 hover:text-brand-500 font-semibold transition-colors disabled:opacity-80"
                     >
                       Resend Code
                     </button>
@@ -293,7 +293,7 @@ function CustomerAuthContent() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-brand-600 to-rose-600 hover:from-brand-500 hover:to-rose-500 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-brand-500/10 transition-all text-xs uppercase tracking-wider"
+                className="w-full bg-gradient-to-r from-brand-600 to-rose-600 hover:from-brand-500 hover:to-rose-500 disabled:opacity-80 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-brand-500/10 transition-all text-xs uppercase tracking-wider"
               >
                 {loading ? "Verifying..." : "Verify & Log In"}
               </button>

@@ -195,7 +195,7 @@ export default function SettingsHub({ initialBusiness }) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl transition-all text-xs uppercase tracking-wider"
+            className="w-full bg-purple-600 hover:bg-purple-500 disabled:opacity-80 text-white font-bold py-3.5 rounded-xl transition-all text-xs uppercase tracking-wider"
           >
             {loading ? 'Saving Settings...' : 'Save Settings Details'}
           </button>

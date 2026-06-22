@@ -116,7 +116,7 @@ export default function JoinClient({ campaign, business, user }) {
             <button
               onClick={handleJoin}
               disabled={joining}
-              className="w-full py-3.5 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-lg shadow-red-500/10 hover:-translate-y-0.5 transition-all uppercase tracking-wider"
+              className="w-full py-3.5 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 disabled:opacity-80 text-white font-bold text-xs rounded-xl shadow-lg shadow-red-500/10 hover:-translate-y-0.5 transition-all uppercase tracking-wider"
             >
               {joining ? 'Adding Card to Wallet...' : '🎯 Join Campaign'}
             </button>

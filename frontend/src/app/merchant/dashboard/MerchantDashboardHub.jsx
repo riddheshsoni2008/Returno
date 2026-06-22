@@ -1129,7 +1129,7 @@ export default function MerchantDashboardHub({
                       <button
                         onClick={generateBulkQr}
                         disabled={bulkLoading}
-                        className="w-full py-3.5 bg-primary text-on-primary font-bold text-xs rounded-lg shadow-sm hover:bg-opacity-95 disabled:opacity-50 transition-all uppercase tracking-wider flex items-center justify-center gap-2"
+                        className="w-full py-3.5 bg-primary text-on-primary font-bold text-xs rounded-lg shadow-sm hover:bg-opacity-95 disabled:opacity-80 transition-all uppercase tracking-wider flex items-center justify-center gap-2"
                       >
                         {bulkLoading ? (
                           <>

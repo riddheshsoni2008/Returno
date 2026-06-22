@@ -140,7 +140,7 @@ export default function CampaignsHub({ initialCampaigns }) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl shadow-lg transition-all text-xs uppercase tracking-wider font-semibold"
+            className="w-full bg-purple-600 hover:bg-purple-500 disabled:opacity-80 text-white font-bold py-3.5 rounded-xl shadow-lg transition-all text-xs uppercase tracking-wider font-semibold"
           >
             {loading ? 'Creating...' : 'Launch Loyalty Campaign'}
           </button>

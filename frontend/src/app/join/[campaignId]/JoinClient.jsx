@@ -192,7 +192,7 @@ export default function JoinClient({ campaign, business, initialUser }) {
             <button
               onClick={handleJoin}
               disabled={joining}
-              className="w-full py-3.5 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 disabled:opacity-50 text-white font-bold text-sm rounded-xl shadow-lg shadow-red-500/10 transition-all uppercase tracking-wider"
+              className="w-full py-3.5 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 disabled:opacity-80 text-white font-bold text-sm rounded-xl shadow-lg shadow-red-500/10 transition-all uppercase tracking-wider"
             >
               {joining ? 'Joining...' : '🎯 Join This Campaign'}
             </button>
