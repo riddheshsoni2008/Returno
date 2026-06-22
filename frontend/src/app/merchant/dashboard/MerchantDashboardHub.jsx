@@ -376,87 +376,308 @@ export default function MerchantDashboardHub({
     printWindow.document.close();
   };
 
-  const { totalStamps, uniqueCustomers, openRewardsCount, recentStamps } =
-    metrics;
+  const {
+    totalStamps,
+    uniqueCustomers,
+    openRewardsCount,
+    redeemedRewardsCount = 0,
+    totalRevenue = 0,
+    scanTrend = [],
+    joinedCustomers = [],
+    recentStamps,
+  } = metrics;
 
   return (
-    <div className="space-y-8 text-slate-800">
+    <div className="space-y-8 text-slate-900 pb-10">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-150 pb-6">
         <div>
-          <h1 className="text-2xl md:text-3xl font-black tracking-tight text-slate-900">
-            Merchant Dashboard
+          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-slate-900">
+            Welcome back, {business.name}
           </h1>
           <p className="text-sm text-slate-500 mt-1">
-            Real-time loyalty management for {business.name}
+            Here is a summary of your loyalty programs and stamp check-ins.
           </p>
         </div>
-        <button
-          onClick={() => {
-            setShowForm(true);
-            setError("");
-            setSuccess("");
-          }}
-          className="group inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white text-xs font-bold uppercase tracking-wider shadow-md shadow-red-500/10 hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5"
-        >
-          <span className="flex items-center justify-center w-5 h-5 rounded-full bg-white/20 text-sm font-black transition-transform duration-300 group-hover:rotate-90">
-            +
-          </span>
-          Add New Campaign
-        </button>
+        <div className="flex flex-wrap gap-2.5">
+          <button
+            onClick={() => {
+              setShowForm(true);
+              setError("");
+              setSuccess("");
+            }}
+            className="group inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold uppercase tracking-wider shadow-sm shadow-purple-500/10 hover:shadow-md transition-all duration-300 hover:-translate-y-0.5"
+          >
+            <span className="flex items-center justify-center w-5 h-5 rounded-full bg-white/20 text-sm font-black transition-transform duration-300 group-hover:rotate-90">
+              +
+            </span>
+            Add New Campaign
+          </button>
+        </div>
       </div>
 
-      {/* Analytics Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      {/* Metrics Row */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         {[
           {
-            label: "Total Stamps",
-            value: totalStamps,
-            color: "text-red-600",
-            desc: "Check-ins logged",
-          },
-          {
-            label: "Active Customers",
+            label: "Total Customers",
             value: uniqueCustomers,
-            color: "text-slate-800",
+            color: "text-purple-600 font-extrabold",
             desc: "Unique enrollments",
-          },
-          {
-            label: "Unlocked Rewards",
-            value: openRewardsCount,
-            color: "text-amber-600",
-            desc: "Milestones completed",
+            icon: (
+              <svg
+                className="w-4 h-4 text-purple-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                />
+              </svg>
+            ),
           },
           {
             label: "Active Campaigns",
             value: campaigns.length,
-            color: "text-emerald-600",
+            color: "text-slate-800",
             desc: "Running now",
+            icon: (
+              <svg
+                className="w-4 h-4 text-slate-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                />
+              </svg>
+            ),
+          },
+          {
+            label: "Total QR Scans",
+            value: totalStamps,
+            color: "text-indigo-600",
+            desc: "Check-ins logged",
+            icon: (
+              <svg
+                className="w-4 h-4 text-indigo-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"
+                />
+              </svg>
+            ),
+          },
+          {
+            label: "Rewards Redeemed",
+            value: redeemedRewardsCount,
+            color: "text-emerald-600",
+            desc: "Milestones completed",
+            icon: (
+              <svg
+                className="w-4 h-4 text-emerald-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
+                />
+              </svg>
+            ),
+          },
+          {
+            label: "Estimated Revenue",
+            value: `₹${totalRevenue.toLocaleString("en-IN")}`,
+            color: "text-violet-700 font-extrabold",
+            desc: "From loyalty visits",
+            icon: (
+              <svg
+                className="w-4 h-4 text-violet-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            ),
           },
         ].map((stat, i) => (
           <div
             key={i}
-            className="bg-white border border-slate-200/80 p-5 rounded-2xl shadow-sm hover:shadow-md hover:scale-[1.015] transition-all duration-300"
+            className="bg-white border border-slate-150 p-4.5 rounded-2xl shadow-sm hover:shadow-md hover:scale-[1.01] transition-all duration-300 flex flex-col justify-between"
           >
-            <div className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2">
-              {stat.label}
+            <div className="flex justify-between items-center mb-2.5">
+              <span className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">
+                {stat.label}
+              </span>
+              {stat.icon}
             </div>
-            <div className={`text-3xl font-extrabold ${stat.color}`}>
-              {stat.value}
+            <div>
+              <div
+                className={`text-2xl font-extrabold text-slate-900 tracking-tight ${stat.color}`}
+              >
+                {stat.value}
+              </div>
+              <p className="text-[10px] text-slate-400 mt-1 font-medium">
+                {stat.desc}
+              </p>
             </div>
-            <p className="text-[10px] text-slate-400 mt-2">{stat.desc}</p>
           </div>
         ))}
       </div>
 
+      {/* Analytics & Scan Trend Section */}
+      <div id="analytics" className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Scan Trend Chart */}
+        <div className="bg-white border border-slate-150 p-6 rounded-3xl shadow-sm col-span-1 lg:col-span-2">
+          <h4 className="text-sm font-bold text-slate-900 mb-5 flex items-center gap-2">
+            <svg
+              className="w-4 h-4 text-purple-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+              />
+            </svg>
+            7-Day Check-in & Stamp Scan Trend
+          </h4>
+          <div className="flex items-end justify-between h-44 pt-4 border-b border-slate-100 px-2">
+            {scanTrend.length === 0 ? (
+              <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs">
+                No scans recorded in the last 7 days.
+              </div>
+            ) : (
+              scanTrend.map((t, idx) => {
+                const maxScans = Math.max(...scanTrend.map((s) => s.scans), 1);
+                const heightPercent = Math.min(
+                  100,
+                  Math.max(8, (t.scans / maxScans) * 100),
+                );
+                return (
+                  <div
+                    key={idx}
+                    className="flex flex-col items-center flex-1 group relative"
+                  >
+                    {/* Tooltip */}
+                    <div className="absolute bottom-full mb-2 bg-slate-900 text-white text-[10px] font-bold py-1.5 px-2.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-md pointer-events-none z-10">
+                      {t.scans} scan{t.scans !== 1 ? "s" : ""} • ₹{t.revenue}
+                    </div>
+                    {/* Bar */}
+                    <div
+                      style={{ height: `${heightPercent}%` }}
+                      className="w-8 md:w-10 bg-purple-500/80 group-hover:bg-purple-600 rounded-t-md transition-all duration-300 shadow-sm"
+                    ></div>
+                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-2.5">
+                      {t.day}
+                    </span>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+
+        {/* Campaign Metrics Overview */}
+        <div className="bg-white border border-slate-150 p-6 rounded-3xl shadow-sm flex flex-col justify-between">
+          <div>
+            <h4 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
+              <svg
+                className="w-4 h-4 text-purple-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
+              </svg>
+              Campaign Performance
+            </h4>
+            <div className="space-y-4 max-h-[12rem] overflow-y-auto pr-1">
+              {campaigns.length === 0 ? (
+                <div className="text-center py-6 text-xs text-slate-400">
+                  No active campaigns to show metrics for.
+                </div>
+              ) : (
+                campaigns.slice(0, 3).map((camp) => {
+                  const enrollCount = camp.enrollmentCount || 0;
+                  const maxEnrolled = Math.max(
+                    ...campaigns.map((c) => c.enrollmentCount || 0),
+                    1,
+                  );
+                  const progressPct = Math.min(
+                    100,
+                    Math.max(5, (enrollCount / maxEnrolled) * 100),
+                  );
+                  return (
+                    <div key={camp._id} className="space-y-1.5">
+                      <div className="flex justify-between text-xs font-semibold text-slate-700">
+                        <span className="truncate pr-2">{camp.title}</span>
+                        <span className="text-purple-600 font-bold">
+                          {enrollCount} joined
+                        </span>
+                      </div>
+                      <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                        <div
+                          style={{ width: `${progressPct}%` }}
+                          className="bg-purple-600 h-full rounded-full"
+                        ></div>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+          <div className="border-t border-slate-100 pt-4 mt-4 flex justify-between items-center text-xs">
+            <span className="text-slate-450 font-semibold">
+              Total Campaigns Run
+            </span>
+            <span className="font-extrabold text-slate-900 bg-purple-550/10 text-purple-650 border border-purple-200/50 py-1 px-2.5 rounded-lg">
+              {campaigns.length} Active
+            </span>
+          </div>
+        </div>
+      </div>
       {/* Campaigns Section */}
-      <div className="space-y-4">
+      <div id="campaigns" className="space-y-4">
         <h3 className="text-lg font-black text-slate-900">
-          Active Loyalty Campaigns
+          Active Loyalty Programs
         </h3>
 
         {campaigns.length === 0 ? (
-          <div className="text-center py-12 bg-white border border-slate-200/80 rounded-2xl text-slate-400 text-sm shadow-sm">
+          <div className="text-center py-12 bg-white border border-slate-150 rounded-3xl text-slate-450 text-sm shadow-sm">
             No active loyalty campaigns. Click &quot;Add New Campaign&quot;
             above to create your first stamp card!
           </div>
@@ -465,28 +686,27 @@ export default function MerchantDashboardHub({
             {campaigns.map((camp) => (
               <div
                 key={camp._id}
-                className="bg-white border border-slate-200/80 rounded-2xl p-5 md:p-6 hover:shadow-md hover:scale-[1.015] transition-all duration-300 flex flex-col justify-between space-y-4 shadow-sm"
+                className="bg-white border border-slate-150 rounded-3xl p-5 md:p-6 hover:shadow-md hover:scale-[1.01] transition-all duration-300 flex flex-col justify-between space-y-4 shadow-sm"
               >
-                <div className="space-y-3">
+                <div className="space-y-3.5">
                   <div className="flex justify-between items-start">
                     <span className="text-[9px] uppercase tracking-widest font-extrabold px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-600">
                       {camp.isActive ? "Active" : "Draft"}
                     </span>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] text-slate-500 font-semibold bg-slate-100 px-2 py-0.5 rounded">
+                      <span className="text-[10px] text-slate-500 font-bold bg-slate-100 px-2.5 py-1 rounded-lg">
                         {camp.enrollmentCount || 0} enrolled
                       </span>
                       <button
                         onClick={() => handleDeleteCampaign(camp._id)}
-                        className="p-1 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all duration-200"
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-red-650 hover:bg-red-50 transition-all duration-200"
                         title="Delete Campaign"
                       >
                         <svg
-                          className="w-4 h-4"
+                          className="w-4.5 h-4.5"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
-                          xmlns="http://www.w3.org/2000/svg"
                         >
                           <path
                             strokeLinecap="round"
@@ -501,66 +721,66 @@ export default function MerchantDashboardHub({
                   <h4 className="text-md font-bold text-slate-900">
                     {camp.title}
                   </h4>
-                  <p className="text-slate-600 text-xs leading-normal">
+                  <p className="text-slate-500 text-xs leading-normal font-medium">
                     {camp.description}
                   </p>
 
                   <div className="grid grid-cols-3 gap-2">
-                    <div className="bg-slate-50 border border-slate-100 p-2 rounded-lg text-center">
-                      <div className="text-xs font-black text-red-600">
+                    <div className="bg-slate-50 border border-slate-100 p-2.5 rounded-xl text-center">
+                      <div className="text-sm font-extrabold text-purple-650">
                         {camp.requiredStamps}
                       </div>
-                      <div className="text-[8px] text-slate-400 font-bold uppercase">
+                      <div className="text-[8px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">
                         Stamps
                       </div>
                     </div>
-                    <div className="bg-slate-50 border border-slate-100 p-2 rounded-lg text-center">
-                      <div className="text-xs font-black text-slate-800">
+                    <div className="bg-slate-50 border border-slate-100 p-2.5 rounded-xl text-center">
+                      <div className="text-sm font-extrabold text-slate-800">
                         {camp.pointsPerCheckin || 10}
                       </div>
-                      <div className="text-[8px] text-slate-400 font-bold uppercase">
+                      <div className="text-[8px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">
                         Pts/Day
                       </div>
                     </div>
-                    <div className="bg-slate-50 border border-slate-100 p-2 rounded-lg text-center">
-                      <div className="text-xs font-black text-amber-700">
-                        🎁
+                    <div className="bg-slate-50 border border-slate-100 p-2.5 rounded-xl text-center">
+                      <div className="text-sm font-extrabold text-amber-700">
+                        ✨
                       </div>
-                      <div className="text-[8px] text-slate-400 font-bold uppercase">
+                      <div className="text-[8px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">
                         Reward
                       </div>
                     </div>
                   </div>
 
-                  <div className="bg-slate-50 border border-slate-100 p-3 rounded-xl">
-                    <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider block mb-0.5">
-                      Reward
+                  <div className="bg-purple-50/50 border border-purple-100/50 p-3 rounded-xl">
+                    <span className="text-[9px] text-purple-500 font-bold uppercase tracking-wider block mb-0.5">
+                      Reward Unlocked Milestone
                     </span>
-                    <span className="text-xs font-bold text-amber-700">
+                    <span className="text-xs font-bold text-slate-900">
                       🎁 {camp.rewardTitle}
                     </span>
                   </div>
                 </div>
 
                 {/* QR Buttons */}
-                <div className="flex gap-2">
+                <div className="flex gap-2 pt-2 border-t border-slate-100">
                   <button
                     onClick={() => openQrModal(camp, "join")}
                     className="flex-1 text-center py-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-[10px] transition-colors border border-slate-200/50 uppercase tracking-wider"
                   >
-                    📎 Join QR
+                     Join QR
                   </button>
                   <button
                     onClick={() => openQrModal(camp, "checkin")}
-                    className="flex-1 text-center py-2.5 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 font-bold text-[10px] transition-colors border border-red-200/50 uppercase tracking-wider"
+                    className="flex-1 text-center py-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-600 font-bold text-[10px] transition-colors border border-purple-100/50 uppercase tracking-wider"
                   >
-                    ⚡ Check-In QR
+                     Live QR
                   </button>
                   <button
                     onClick={() => openQrModal(camp, "bulk")}
-                    className="flex-1 text-center py-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold text-[10px] transition-colors border border-amber-200/50 uppercase tracking-wider"
+                    className="flex-1 text-center py-2.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-750 font-bold text-[10px] transition-colors border border-indigo-200/50 uppercase tracking-wider"
                   >
-                    📦 Bulk QR
+                     Bulk QRs
                   </button>
                 </div>
               </div>
@@ -570,13 +790,16 @@ export default function MerchantDashboardHub({
       </div>
 
       {/* Recent Visits Logs */}
-      <div className="bg-white border border-slate-200/80 p-5 md:p-6 rounded-2xl shadow-sm">
-        <h3 className="text-lg font-black text-slate-900 mb-4">
+      <div className="bg-white border border-slate-150 p-5 md:p-6 rounded-3xl shadow-sm">
+        <h3 className="text-lg font-black text-slate-900 mb-4 flex items-center gap-2">
+          <svg className="w-5 h-5 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
           Recent Stamp Scan History
         </h3>
 
         {recentStamps.length === 0 ? (
-          <div className="text-center py-8 text-slate-400 text-sm">
+          <div className="text-center py-8 text-slate-450 text-sm">
             No stamps awarded yet. Share your QR Code to start collecting!
           </div>
         ) : (
@@ -584,39 +807,33 @@ export default function MerchantDashboardHub({
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-slate-100 text-[10px] uppercase tracking-wider text-slate-400 font-bold">
-                  <th className="py-3 px-4">Customer</th>
-                  <th className="py-3 px-4">Bill Number</th>
-                  <th className="py-3 px-4">Bill Amount</th>
-                  <th className="py-3 px-4">Scanned At</th>
+                  <th className="py-3.5 px-4">Customer</th>
+                  <th className="py-3.5 px-4">Bill Number</th>
+                  <th className="py-3.5 px-4">Bill Amount</th>
+                  <th className="py-3.5 px-4">Scanned At</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-sm text-slate-700">
+              <tbody className="divide-y divide-slate-100 text-xs text-slate-705">
                 {recentStamps.map((stamp) => (
                   <tr
                     key={stamp._id}
                     className="hover:bg-slate-50/50 transition-colors"
                   >
-                    <td className="py-3 px-4">
-                      <div className="font-semibold text-xs text-slate-900">
+                    <td className="py-3.5 px-4">
+                      <div className="font-semibold text-slate-900">
                         {stamp.customerId?.name || "Anonymous"}
                       </div>
-                      <div className="text-[10px] text-slate-400">
+                      <div className="text-[10px] text-slate-400 font-medium">
                         {stamp.customerId?.email}
                       </div>
                     </td>
-                    <td className="py-3 px-4 font-mono text-xs">
-                      {stamp.billNumber}
+                    <td className="py-3.5 px-4 font-mono text-slate-600">
+                      {stamp.billNumber || "—"}
                     </td>
-                    <td className="py-3 px-4 text-xs font-semibold">
-                      ₹{stamp.amount}
+                    <td className="py-3.5 px-4 font-semibold text-slate-900">
+                      {stamp.amount ? `₹${stamp.amount}` : "—"}
                     </td>
-                    <td className="py-3 px-4 font-mono text-xs">
-                      {stamp.billNumber}
-                    </td>
-                    <td className="py-3 px-4 text-xs font-semibold">
-                      ₹{stamp.amount}
-                    </td>
-                    <td className="py-3 px-4 text-[10px] text-slate-400">
+                    <td className="py-3.5 px-4 text-slate-400 font-medium">
                       {new Date(stamp.createdAt).toLocaleString("en-IN", {
                         timeZone: "Asia/Kolkata",
                       })}
@@ -631,7 +848,7 @@ export default function MerchantDashboardHub({
 
       {/* CREATE CAMPAIGN MODAL */}
       {showForm && (
-        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-[fade-in_0.2s_ease-out]">
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-[fade-in_0.2s_ease-out]">
           <div className="bg-white border border-slate-200 rounded-3xl max-w-lg w-full p-6 space-y-6 relative max-h-[90vh] overflow-y-auto shadow-2xl">
             <button
               onClick={() => setShowForm(false)}
@@ -662,7 +879,7 @@ export default function MerchantDashboardHub({
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <label className="block text-slate-500 text-xs font-semibold uppercase tracking-wider">
+                <label className="block text-slate-500 text-[10px] font-bold uppercase tracking-wider">
                   Campaign Title
                 </label>
                 <input
@@ -671,12 +888,12 @@ export default function MerchantDashboardHub({
                   placeholder="e.g. Cafe Premium Stamp Card"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 text-sm focus:outline-none focus:border-red-500 transition-colors"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-950 text-sm focus:outline-none focus:border-purple-500 focus:bg-white transition-all"
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="block text-slate-500 text-xs font-semibold uppercase tracking-wider">
+                <label className="block text-slate-500 text-[10px] font-bold uppercase tracking-wider">
                   Reward Title
                 </label>
                 <input
@@ -685,13 +902,13 @@ export default function MerchantDashboardHub({
                   placeholder="e.g. Free Hot Beverage & Donut"
                   value={rewardTitle}
                   onChange={(e) => setRewardTitle(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 text-sm focus:outline-none focus:border-red-500 transition-colors"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-955 text-sm focus:outline-none focus:border-purple-500 focus:bg-white transition-all"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <label className="block text-slate-500 text-xs font-semibold uppercase tracking-wider">
+                  <label className="block text-slate-500 text-[10px] font-bold uppercase tracking-wider">
                     Required Stamps
                   </label>
                   <input
@@ -701,11 +918,11 @@ export default function MerchantDashboardHub({
                     max={25}
                     value={requiredStamps}
                     onChange={(e) => setRequiredStamps(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 text-sm focus:outline-none focus:border-red-500 transition-colors"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-955 text-sm focus:outline-none focus:border-purple-500 focus:bg-white transition-all"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="block text-slate-500 text-xs font-semibold uppercase tracking-wider">
+                  <label className="block text-slate-500 text-[10px] font-bold uppercase tracking-wider">
                     Points / Check-in
                   </label>
                   <input
@@ -715,11 +932,11 @@ export default function MerchantDashboardHub({
                     max={100}
                     value={pointsPerCheckin}
                     onChange={(e) => setPointsPerCheckin(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 text-sm focus:outline-none focus:border-red-500 transition-colors"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-955 text-sm focus:outline-none focus:border-purple-500 focus:bg-white transition-all"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="block text-slate-500 text-xs font-semibold uppercase tracking-wider">
+                  <label className="block text-slate-500 text-[10px] font-bold uppercase tracking-wider">
                     Description
                   </label>
                   <input
@@ -728,7 +945,7 @@ export default function MerchantDashboardHub({
                     placeholder="e.g. Daily check-in"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 text-sm focus:outline-none focus:border-red-500 transition-colors"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-955 text-sm focus:outline-none focus:border-purple-500 focus:bg-white transition-all"
                   />
                 </div>
               </div>
@@ -744,7 +961,7 @@ export default function MerchantDashboardHub({
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex-1 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-red-500/10 transition-all text-xs uppercase tracking-wider"
+                  className="flex-1 bg-purple-600 hover:bg-purple-550 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl shadow-md shadow-purple-500/10 transition-all text-xs uppercase tracking-wider"
                 >
                   {loading ? "Creating..." : "Launch Campaign"}
                 </button>

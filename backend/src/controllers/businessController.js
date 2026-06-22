@@ -107,6 +107,59 @@ export const getMetrics = async (req, res) => {
     ]);
     const openRewardsCount = openRewardsAgg[0]?.count || 0;
 
+    // 3b. Redeemed rewards count
+    const redeemedRewardsAgg = await Customer.aggregate([
+      { $unwind: "$joinedCampaigns" },
+      { $match: { "joinedCampaigns.campaignId": { $in: campaignIds } } },
+      { $unwind: "$joinedCampaigns.rewards" },
+      { $match: { "joinedCampaigns.rewards.status": "redeemed" } },
+      { $count: "count" },
+    ]);
+    const redeemedRewardsCount = redeemedRewardsAgg[0]?.count || 0;
+
+    // 3c. Total Revenue (sum of all checkin amounts)
+    const revenueAgg = await Checkin.aggregate([
+      { $match: { campaignId: { $in: campaignIds } } },
+      { $group: { _id: null, total: { $sum: "$amount" } } }
+    ]);
+    const totalRevenue = revenueAgg[0]?.total || 0;
+
+    // 3d. Scan Trend & Revenue Trend for last 7 days
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const scanTrendAgg = await Checkin.aggregate([
+      { $match: { campaignId: { $in: campaignIds }, createdAt: { $gte: sevenDaysAgo } } },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt", timezone: "Asia/Kolkata" } },
+          count: { $sum: 1 },
+          revenue: { $sum: { $ifNull: ["$amount", 0] } }
+        }
+      },
+      { $sort: { _id: 1 } }
+    ]);
+
+    // Fill in gaps for 7 days trend if some days have 0 scans
+    const scanTrendMap = {};
+    scanTrendAgg.forEach(t => {
+      scanTrendMap[t._id] = { count: t.count, revenue: t.revenue };
+    });
+
+    const scanTrend = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toLocaleDateString("en-CA"); // YYYY-MM-DD
+      const dayName = d.toLocaleDateString("en-US", { weekday: 'short' });
+      const stats = scanTrendMap[dateStr] || { count: 0, revenue: 0 };
+      scanTrend.push({
+        date: dateStr,
+        day: dayName,
+        scans: stats.count,
+        revenue: stats.revenue
+      });
+    }
+
     // 4. Pending redemptions & Joined customers list
     const customers = await Customer.find({
       "joinedCampaigns.campaignId": { $in: campaignIds },
@@ -177,6 +230,9 @@ export const getMetrics = async (req, res) => {
         totalStamps,
         uniqueCustomers: uniqueCustomers.length,
         openRewardsCount,
+        redeemedRewardsCount,
+        totalRevenue,
+        scanTrend,
         pendingRedemptions,
         joinedCustomers,
         recentStamps,
