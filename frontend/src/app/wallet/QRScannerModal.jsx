@@ -66,7 +66,7 @@ export default function QRScannerModal({ onClose }) {
             {error}
           </div>
         ) : (
-          <p className="text-xs text-slate-500 font-medium">Point your camera at the shop's QR code</p>
+          <p className="text-xs text-slate-500 font-medium">Point your camera at the shop&apos;s QR code</p>
         )}
 
         <div className="mx-auto overflow-hidden rounded-2xl border-4 border-slate-100 shadow-inner" style={{ width: '100%', maxWidth: '300px' }}>

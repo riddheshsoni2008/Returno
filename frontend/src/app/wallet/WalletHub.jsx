@@ -996,7 +996,7 @@ export default function WalletHub({
             )}
 
             <p className="text-[10px] text-center text-slate-400 leading-normal font-medium">
-              Scan the shop's QR code in-store to join the campaign and start
+              Scan the shop&apos;s QR code in-store to join the campaign and start
               earning rewards!
             </p>
 
