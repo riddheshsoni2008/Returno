@@ -101,7 +101,7 @@ export default function SettingsHub({ initialBusiness }) {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 text-on-surface pb-10">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 text-text-primary pb-10">
       {/* Settings Form */}
       <div className="lg:col-span-2 space-y-6">
         {error && (
@@ -115,29 +115,29 @@ export default function SettingsHub({ initialBusiness }) {
           </div>
         )}
 
-        <form onSubmit={handleSaveSettings} className="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 md:p-8 space-y-6 shadow-sm">
-          <div className="border-b border-outline-variant pb-4">
-            <h3 className="font-bold text-on-surface text-lg">Shop Profile</h3>
-            <p className="text-xs text-on-surface-variant mt-1.5 font-medium">Configure metadata shown to customers on QR scans.</p>
+        <form onSubmit={handleSaveSettings} className="bg-bg-card border border-border-standard rounded-xl p-6 md:p-8 space-y-6 shadow-sm">
+          <div className="border-b border-border-standard pb-4">
+            <h3 className="font-bold text-text-primary text-lg">Shop Profile</h3>
+            <p className="text-xs text-text-secondary mt-1.5 font-medium">Configure metadata shown to customers on QR scans.</p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="block text-outline text-[10px] font-bold uppercase tracking-wider">Shop Name</label>
+              <label className="block text-text-muted text-[10px] font-bold uppercase tracking-wider">Shop Name</label>
               <input
                 type="text"
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full bg-surface border border-outline-variant rounded-lg py-3 px-4 text-on-surface text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                className="w-full bg-bg-card border border-border-standard rounded-lg py-3 px-4 text-text-primary text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
               />
             </div>
             <div className="space-y-2">
-              <label className="block text-outline text-[10px] font-bold uppercase tracking-wider">Category</label>
+              <label className="block text-text-muted text-[10px] font-bold uppercase tracking-wider">Category</label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full bg-surface border border-outline-variant rounded-lg py-3 px-4 text-on-surface text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                className="w-full bg-bg-card border border-border-standard rounded-lg py-3 px-4 text-text-primary text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
               >
                 <option value="Cafe">☕ Cafe</option>
                 <option value="Restaurant">🍔 Restaurant</option>
@@ -150,21 +150,21 @@ export default function SettingsHub({ initialBusiness }) {
           </div>
 
           <div className="space-y-2">
-            <label className="block text-outline text-[10px] font-bold uppercase tracking-wider">Physical Address</label>
+            <label className="block text-text-muted text-[10px] font-bold uppercase tracking-wider">Physical Address</label>
             <input
               type="text"
               required
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              className="w-full bg-surface border border-outline-variant rounded-lg py-3 px-4 text-on-surface text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+              className="w-full bg-bg-card border border-border-standard rounded-lg py-3 px-4 text-text-primary text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
             />
           </div>
 
-          <div className="border-t border-outline-variant pt-6">
+          <div className="border-t border-border-standard pt-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
               <div>
-                <h3 className="font-bold text-on-surface text-base">Geofencing & Regional Location</h3>
-                <p className="text-xs text-on-surface-variant mt-1 font-medium">Stamps claims check location coordinates to prevent fraud.</p>
+                <h3 className="font-bold text-text-primary text-base">Geofencing & Regional Location</h3>
+                <p className="text-xs text-text-secondary mt-1 font-medium">Stamps claims check location coordinates to prevent fraud.</p>
               </div>
               <button
                 type="button"
@@ -178,58 +178,58 @@ export default function SettingsHub({ initialBusiness }) {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="block text-outline text-[10px] font-bold uppercase tracking-wider">City</label>
+              <label className="block text-text-muted text-[10px] font-bold uppercase tracking-wider">City</label>
               <input
                 type="text"
                 required
                 placeholder="e.g. Mumbai"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
-                className="w-full bg-surface border border-outline-variant rounded-lg py-3 px-4 text-on-surface text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                className="w-full bg-bg-card border border-border-standard rounded-lg py-3 px-4 text-text-primary text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
               />
             </div>
             <div className="space-y-2">
-              <label className="block text-outline text-[10px] font-bold uppercase tracking-wider">State / Region</label>
+              <label className="block text-text-muted text-[10px] font-bold uppercase tracking-wider">State / Region</label>
               <input
                 type="text"
                 required
                 placeholder="e.g. Maharashtra"
                 value={state}
                 onChange={(e) => setState(e.target.value)}
-                className="w-full bg-surface border border-outline-variant rounded-lg py-3 px-4 text-on-surface text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                className="w-full bg-bg-card border border-border-standard rounded-lg py-3 px-4 text-text-primary text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="space-y-2">
-              <label className="block text-outline text-[10px] font-bold uppercase tracking-wider">Longitude</label>
+              <label className="block text-text-muted text-[10px] font-bold uppercase tracking-wider">Longitude</label>
               <input
                 type="number"
                 step="any"
                 required
                 value={longitude}
                 onChange={(e) => setLongitude(parseFloat(e.target.value) || 0)}
-                className="w-full bg-surface border border-outline-variant rounded-lg py-3 px-4 text-on-surface text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                className="w-full bg-bg-card border border-border-standard rounded-lg py-3 px-4 text-text-primary text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
               />
             </div>
             <div className="space-y-2">
-              <label className="block text-outline text-[10px] font-bold uppercase tracking-wider">Latitude</label>
+              <label className="block text-text-muted text-[10px] font-bold uppercase tracking-wider">Latitude</label>
               <input
                 type="number"
                 step="any"
                 required
                 value={latitude}
                 onChange={(e) => setLatitude(parseFloat(e.target.value) || 0)}
-                className="w-full bg-surface border border-outline-variant rounded-lg py-3 px-4 text-on-surface text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                className="w-full bg-bg-card border border-border-standard rounded-lg py-3 px-4 text-text-primary text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
               />
             </div>
             <div className="space-y-2">
-              <label className="block text-outline text-[10px] font-bold uppercase tracking-wider">Geofence Radius</label>
+              <label className="block text-text-muted text-[10px] font-bold uppercase tracking-wider">Geofence Radius</label>
               <select
                 value={geofenceRadius}
                 onChange={(e) => setGeofenceRadius(parseInt(e.target.value) || 100)}
-                className="w-full bg-surface border border-outline-variant rounded-lg py-3.5 px-4 text-on-surface text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                className="w-full bg-bg-card border border-border-standard rounded-lg py-3.5 px-4 text-text-primary text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
               >
                 <option value="50">50 Meters (Tight)</option>
                 <option value="100">100 Meters (Standard)</option>
@@ -250,33 +250,33 @@ export default function SettingsHub({ initialBusiness }) {
       </div>
 
       {/* Subscription Column */}
-      <div className="lg:col-span-1 bg-surface-container-lowest border border-outline-variant rounded-xl p-6 h-fit space-y-6 shadow-sm">
+      <div className="lg:col-span-1 bg-bg-card border border-border-standard rounded-xl p-6 h-fit space-y-6 shadow-sm">
         <div>
-          <h3 className="font-bold text-on-surface text-lg">Billing & Subscriptions</h3>
-          <p className="text-xs text-on-surface-variant mt-1.5 font-medium">Select plan, subscribe, and get your free QR Stand.</p>
+          <h3 className="font-bold text-text-primary text-lg">Billing & Subscriptions</h3>
+          <p className="text-xs text-text-secondary mt-1.5 font-medium">Select plan, subscribe, and get your free QR Stand.</p>
         </div>
 
-        <div className="bg-surface border border-outline-variant rounded-lg p-4 space-y-3">
+        <div className="bg-bg-card border border-border-standard rounded-lg p-4 space-y-3">
           <div className="flex justify-between items-center text-xs">
-            <span className="text-on-surface-variant font-medium">Current Plan</span>
-            <span className="text-on-surface font-bold">{billingPlan}</span>
+            <span className="text-text-secondary font-medium">Current Plan</span>
+            <span className="text-text-primary font-bold">{billingPlan}</span>
           </div>
           <div className="flex justify-between items-center text-xs">
-            <span className="text-on-surface-variant font-medium">Cycle Status</span>
+            <span className="text-text-secondary font-medium">Cycle Status</span>
             <span className={`font-bold uppercase ${isSandboxUpgrade ? 'text-secondary' : 'text-amber-600'}`}>
               {isSandboxUpgrade ? 'Paid Active' : 'Trial Period'}
             </span>
           </div>
           <div className="flex justify-between items-center text-xs">
-            <span className="text-on-surface-variant font-medium">Free QR Stand</span>
-            <span className={`font-bold ${isSandboxUpgrade ? 'text-secondary' : 'text-outline'}`}>
+            <span className="text-text-secondary font-medium">Free QR Stand</span>
+            <span className={`font-bold ${isSandboxUpgrade ? 'text-secondary' : 'text-text-muted'}`}>
               {isSandboxUpgrade ? 'Dispatched 📦' : 'Upgrade to Claim'}
             </span>
           </div>
         </div>
 
-        <div className="border-t border-outline-variant pt-4 space-y-3">
-          <label className="block text-outline text-[10px] font-bold uppercase tracking-wider">Choose a Plan to Upgrade</label>
+        <div className="border-t border-border-standard pt-4 space-y-3">
+          <label className="block text-text-muted text-[10px] font-bold uppercase tracking-wider">Choose a Plan to Upgrade</label>
           <div className="space-y-2.5">
             {[
               { code: 'basic', label: 'Basic Plan', desc: '1 Location, Free QR Stand', price: '₹999/year' },
@@ -287,7 +287,7 @@ export default function SettingsHub({ initialBusiness }) {
                 key={p.code}
                 className={`flex justify-between items-center p-3 rounded-lg border-2 cursor-pointer transition-all ${selectedPlan === p.code
                   ? 'border-primary bg-primary/5 ring-1 ring-primary/20'
-                  : 'border-outline-variant hover:border-outline'
+                  : 'border-border-standard hover:border-outline'
                   }`}
               >
                 <div className="flex items-start gap-2.5">
@@ -299,11 +299,11 @@ export default function SettingsHub({ initialBusiness }) {
                     className="mt-1 accent-primary"
                   />
                   <div>
-                    <span className="text-xs font-bold text-on-surface block">{p.label}</span>
-                    <span className="text-[10px] text-on-surface-variant font-medium block">{p.desc}</span>
+                    <span className="text-xs font-bold text-text-primary block">{p.label}</span>
+                    <span className="text-[10px] text-text-secondary font-medium block">{p.desc}</span>
                   </div>
                 </div>
-                <span className="text-xs font-bold text-on-surface whitespace-nowrap">{p.price}</span>
+                <span className="text-xs font-bold text-text-primary whitespace-nowrap">{p.price}</span>
               </label>
             ))}
           </div>

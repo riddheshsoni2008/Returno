@@ -65,9 +65,9 @@ export default async function MerchantDashboardPage() {
 
   if (!business) {
     return (
-      <div className="text-center py-20 bg-surface border border-outline-variant rounded-xl">
-        <h2 className="text-2xl font-bold mb-4 text-on-surface">No Business Profile Found</h2>
-        <p className="text-on-surface-variant">Please contact support or register again.</p>
+      <div className="text-center py-20 bg-bg-card border border-border-standard rounded-xl">
+        <h2 className="text-2xl font-bold mb-4 text-text-primary">No Business Profile Found</h2>
+        <p className="text-text-secondary">Please contact support or register again.</p>
       </div>
     );
   }

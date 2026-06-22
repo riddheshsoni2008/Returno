@@ -50,9 +50,9 @@ export default async function MerchantRewardsPage() {
   }
 
   return (
-    <div className="space-y-8 text-slate-800 animate-fade-in-up">
+    <div className="space-y-8 text-text-primary animate-fade-in-up">
       <div>
-        <h1 className="text-2xl md:text-3xl font-black tracking-tight text-slate-900">Loyalty & Rewards</h1>
+        <h1 className="text-2xl md:text-3xl font-black tracking-tight text-text-primary">Loyalty & Rewards</h1>
         <p className="text-sm text-slate-550 mt-1">Review pending customer reward redemptions and claims.</p>
       </div>
 

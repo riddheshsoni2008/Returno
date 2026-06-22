@@ -59,17 +59,17 @@ export default function QRScannerModal({ onClose }) {
   return (
     <div className="fixed inset-0 bg-slate-900/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
       <div className="bg-white w-full max-w-sm rounded-[2rem] p-6 shadow-2xl relative overflow-hidden text-center space-y-4">
-        <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">Scan QR Code</h3>
+        <h3 className="text-lg font-black text-text-primary uppercase tracking-tight">Scan QR Code</h3>
 
         {error ? (
           <div className="p-3 bg-red-50 border border-red-100 rounded-xl text-xs text-red-600 font-bold">
             {error}
           </div>
         ) : (
-          <p className="text-xs text-slate-500 font-medium">Point your camera at the shop&apos;s QR code</p>
+          <p className="text-xs text-text-secondary font-medium">Point your camera at the shop&apos;s QR code</p>
         )}
 
-        <div className="mx-auto overflow-hidden rounded-2xl border-4 border-slate-100 shadow-inner" style={{ width: '100%', maxWidth: '300px' }}>
+        <div className="mx-auto overflow-hidden rounded-2xl border-4 border-border-standard shadow-inner" style={{ width: '100%', maxWidth: '300px' }}>
           <div id="qr-reader" className="w-full"></div>
         </div>
 

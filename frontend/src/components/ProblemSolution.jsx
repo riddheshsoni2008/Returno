@@ -46,7 +46,7 @@ export default function ProblemSolution() {
   ];
 
   return (
-    <section className="py-24 relative overflow-hidden border-t border-slate-200 bg-slate-50">
+    <section className="py-24 relative overflow-hidden border-t border-border-standard bg-slate-50">
       <div className="container mx-auto px-6 relative z-10">
 
         {/* Problems Grid */}
@@ -55,7 +55,7 @@ export default function ProblemSolution() {
             <span className="px-4 py-1.5 rounded-full bg-red-50 border border-red-100 text-red-600 text-xs font-semibold uppercase tracking-wider">
               The Problem
             </span>
-            <h2 className="text-3xl md:text-5xl font-bold mt-4 mb-6 text-slate-900">Why Traditional Loyalty Fails</h2>
+            <h2 className="text-3xl md:text-5xl font-bold mt-4 mb-6 text-text-primary">Why Traditional Loyalty Fails</h2>
             <p className="text-slate-600 max-w-2xl mx-auto">
               Paper loyalty programs and generic marketing campaigns are draining local business budgets while yielding zero insights.
             </p>
@@ -65,15 +65,15 @@ export default function ProblemSolution() {
             {problems.map((prob, idx) => (
               <div
                 key={idx}
-                className="bg-white border border-slate-200 rounded-2xl p-6 hover:border-red-200 hover:shadow-md transition-all duration-300 relative group"
+                className="bg-white border border-border-standard rounded-2xl p-6 hover:border-red-200 hover:shadow-md transition-all duration-300 relative group"
               >
                 <div className="absolute top-4 right-4 text-[10px] font-semibold text-red-600 bg-red-50 px-2 py-0.5 rounded-full border border-red-100">
                   {prob.badge}
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 mt-4 mb-3 group-hover:text-red-600 transition-colors">
+                <h3 className="text-lg font-bold text-text-primary mt-4 mb-3 group-hover:text-red-600 transition-colors">
                   {prob.title}
                 </h3>
-                <p className="text-slate-500 text-sm leading-relaxed">
+                <p className="text-text-secondary text-sm leading-relaxed">
                   {prob.desc}
                 </p>
               </div>
@@ -87,7 +87,7 @@ export default function ProblemSolution() {
             <span className="px-4 py-1.5 rounded-full bg-brand-50 border border-brand-100 text-brand-600 text-xs font-semibold uppercase tracking-wider">
               The Solution
             </span>
-            <h2 className="text-3xl md:text-5xl font-bold mt-4 mb-6 text-slate-900">Introducing Returno</h2>
+            <h2 className="text-3xl md:text-5xl font-bold mt-4 mb-6 text-text-primary">Introducing Returno</h2>
             <p className="text-slate-600 max-w-2xl mx-auto">
               A premium, frictionless digital loyalty system designed to double repeat customer visits with zero integration friction.
             </p>
@@ -97,16 +97,16 @@ export default function ProblemSolution() {
             {solutions.map((sol, idx) => (
               <div
                 key={idx}
-                className="bg-white border border-slate-200 rounded-2xl p-6 hover:border-brand-300 hover:shadow-lg transition-all duration-300 relative group"
+                className="bg-white border border-border-standard rounded-2xl p-6 hover:border-brand-300 hover:shadow-lg transition-all duration-300 relative group"
               >
 
-                <div className="absolute top-6 right-6 text-2xl font-black text-slate-500 group-hover:text-brand-100 transition-colors">
+                <div className="absolute top-6 right-6 text-2xl font-black text-text-secondary group-hover:text-brand-100 transition-colors">
                   {sol.step}
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-brand-600 transition-colors relative z-10">
+                <h3 className="text-lg font-bold text-text-primary mb-2 group-hover:text-brand-600 transition-colors relative z-10">
                   {sol.title}
                 </h3>
-                <p className="text-slate-500 text-sm leading-relaxed relative z-10">
+                <p className="text-text-secondary text-sm leading-relaxed relative z-10">
                   {sol.desc}
                 </p>
               </div>

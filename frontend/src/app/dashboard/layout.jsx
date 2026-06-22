@@ -62,7 +62,7 @@ export default async function DashboardLayout({ children }) {
               </div>
               <div className="overflow-hidden">
                 <div className="font-bold text-xs truncate">{business.name}</div>
-                <div className="text-[10px] text-slate-400 capitalize">{business.category}</div>
+                <div className="text-[10px] text-text-muted capitalize">{business.category}</div>
               </div>
             </div>
           )}
@@ -70,31 +70,31 @@ export default async function DashboardLayout({ children }) {
           <nav className="space-y-1.5">
             <Link 
               href="/dashboard" 
-              className="flex items-center gap-3 px-4 py-2.5 rounded-xl hover:bg-white/5 text-sm font-medium text-slate-300 hover:text-white transition-all"
+              className="flex items-center gap-3 px-4 py-2.5 rounded-xl hover:bg-white/5 text-sm font-medium text-text-muted hover:text-white transition-all"
             >
               📊 Overview
             </Link>
             <Link 
               href="/dashboard/campaigns" 
-              className="flex items-center gap-3 px-4 py-2.5 rounded-xl hover:bg-white/5 text-sm font-medium text-slate-300 hover:text-white transition-all"
+              className="flex items-center gap-3 px-4 py-2.5 rounded-xl hover:bg-white/5 text-sm font-medium text-text-muted hover:text-white transition-all"
             >
               ⚡ Campaigns
             </Link>
             <Link 
               href="/dashboard/qrcodes" 
-              className="flex items-center gap-3 px-4 py-2.5 rounded-xl hover:bg-white/5 text-sm font-medium text-slate-300 hover:text-white transition-all"
+              className="flex items-center gap-3 px-4 py-2.5 rounded-xl hover:bg-white/5 text-sm font-medium text-text-muted hover:text-white transition-all"
             >
               🖨️ QR Codes
             </Link>
             <Link 
               href="/dashboard/rewards" 
-              className="flex items-center gap-3 px-4 py-2.5 rounded-xl hover:bg-white/5 text-sm font-medium text-slate-300 hover:text-white transition-all"
+              className="flex items-center gap-3 px-4 py-2.5 rounded-xl hover:bg-white/5 text-sm font-medium text-text-muted hover:text-white transition-all"
             >
               🎁 Rewards
             </Link>
             <Link 
               href="/dashboard/settings" 
-              className="flex items-center gap-3 px-4 py-2.5 rounded-xl hover:bg-white/5 text-sm font-medium text-slate-300 hover:text-white transition-all"
+              className="flex items-center gap-3 px-4 py-2.5 rounded-xl hover:bg-white/5 text-sm font-medium text-text-muted hover:text-white transition-all"
             >
               ⚙️ Settings
             </Link>

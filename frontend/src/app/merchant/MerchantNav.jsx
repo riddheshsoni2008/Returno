@@ -61,10 +61,10 @@ export default function MerchantNav() {
             className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 text-xs md:text-sm font-semibold tracking-tight whitespace-nowrap ${
               active
                 ? "bg-surface-container text-primary font-bold"
-                : "text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface"
+                : "text-text-secondary hover:bg-surface-container-low hover:text-on-surface"
             }`}
           >
-            <span className={`transition-colors duration-200 ${active ? "text-primary" : "text-outline"}`}>
+            <span className={`transition-colors duration-200 ${active ? "text-primary" : "text-text-muted"}`}>
               {link.icon}
             </span>
             {link.name}

@@ -200,14 +200,14 @@ export default function WalletHub({
   });
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-800">
+    <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-text-primary">
       {/* DESKTOP HEADER NAVBAR */}
       <header className="hidden md:block bg-white border-b border-slate-200/80 sticky top-0 z-30 w-full shadow-sm">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-8">
             <Link
               href="/"
-              className="flex items-center gap-2 text-xl font-black tracking-tight text-slate-900"
+              className="flex items-center gap-2 text-xl font-black tracking-tight text-text-primary"
             >
               <span className="w-8 h-8 rounded-xl bg-gradient-to-tr from-red-600 to-rose-600 flex items-center justify-center text-sm text-white shadow-md">
                 🏢
@@ -250,16 +250,16 @@ export default function WalletHub({
                 {user.name[0].toUpperCase()}
               </div>
               <div className="text-left hidden lg:block">
-                <div className="text-xs font-bold text-slate-800 leading-none">
+                <div className="text-xs font-bold text-text-primary leading-none">
                   {user.name}
                 </div>
-                <div className="text-[10px] text-slate-400 mt-0.5">
+                <div className="text-[10px] text-text-muted mt-0.5">
                   {user.email}
                 </div>
               </div>
               <button
                 onClick={handleLogout}
-                className="text-xs font-bold text-slate-500 hover:text-red-600 transition-colors ml-2"
+                className="text-xs font-bold text-text-secondary hover:text-red-600 transition-colors ml-2"
               >
                 Sign Out
               </button>
@@ -283,7 +283,7 @@ export default function WalletHub({
                   Discover rewards, collect stamps, and save on your favorites
                 </p>
               </div>
-              <div className="bg-white text-slate-800 rounded-2xl p-4 shadow-xl border border-slate-100 flex gap-3 min-w-[420px] items-center">
+              <div className="bg-white text-text-primary rounded-2xl p-4 shadow-xl border border-border-standard flex gap-3 min-w-[420px] items-center">
                 <button
                   type="button"
                   className="flex items-center justify-center gap-1.5 text-[10px] font-bold text-red-600 hover:text-red-700 transition-colors uppercase tracking-wider bg-red-50 py-2.5 px-4 rounded-xl border border-red-100/50 whitespace-nowrap"
@@ -291,7 +291,7 @@ export default function WalletHub({
                   <span>📍</span> Use my location
                 </button>
                 <div className="relative flex-grow">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs">
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted text-xs">
                     🔍
                   </span>
                   <input
@@ -299,7 +299,7 @@ export default function WalletHub({
                     placeholder="Find businesses near you"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 pl-9 pr-4 text-xs focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 font-medium placeholder-slate-400"
+                    className="w-full bg-slate-50 border border-border-standard rounded-xl py-2 pl-9 pr-4 text-xs focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 font-medium placeholder-slate-400"
                   />
                 </div>
               </div>
@@ -323,7 +323,7 @@ export default function WalletHub({
 
               {/* Overlapping search box */}
               <div className="absolute bottom-0 left-6 right-6 translate-y-1/2 z-10">
-                <div className="bg-white text-slate-800 rounded-2xl p-3 shadow-xl border border-slate-100 flex flex-col gap-2">
+                <div className="bg-white text-text-primary rounded-2xl p-3 shadow-xl border border-border-standard flex flex-col gap-2">
                   <button
                     type="button"
                     className="flex items-center justify-center gap-1.5 text-[9px] font-bold text-red-600 hover:text-red-700 transition-colors uppercase tracking-wider bg-red-50 py-1.5 px-3 rounded-xl border border-red-100/50"
@@ -331,7 +331,7 @@ export default function WalletHub({
                     <span>📍</span> Use my current location
                   </button>
                   <div className="relative">
-                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs">
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted text-xs">
                       🔍
                     </span>
                     <input
@@ -339,7 +339,7 @@ export default function WalletHub({
                       placeholder="Find businesses near you"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-9 pr-4 text-xs focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 font-medium placeholder-slate-400"
+                      className="w-full bg-slate-50 border border-border-standard rounded-xl py-2.5 pl-9 pr-4 text-xs focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 font-medium placeholder-slate-400"
                     />
                   </div>
                 </div>
@@ -401,7 +401,7 @@ export default function WalletHub({
                   className={`flex items-center gap-1.5 px-4 py-2 rounded-full border text-xs font-bold transition-all whitespace-nowrap ${
                     activeCategory === cat.name
                       ? "bg-slate-900 border-slate-900 text-white shadow-sm"
-                      : "bg-white border-slate-200 text-slate-500 hover:bg-slate-50"
+                      : "bg-white border-border-standard text-text-secondary hover:bg-slate-50"
                   }`}
                 >
                   <span>{cat.emoji}</span>
@@ -412,7 +412,7 @@ export default function WalletHub({
 
             {/* Section Header */}
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider">
+              <h3 className="text-sm font-black text-text-primary uppercase tracking-wider">
                 Trending Near You
               </h3>
               <button
@@ -438,14 +438,14 @@ export default function WalletHub({
                       className="flex items-center gap-3 cursor-pointer"
                       onClick={() => setSelectedCampaign(item)}
                     >
-                      <div className="w-10 h-10 rounded-full bg-red-600 flex items-center justify-center text-white font-black text-sm shadow-md shadow-red-500/20 border border-slate-100 flex-shrink-0">
+                      <div className="w-10 h-10 rounded-full bg-red-600 flex items-center justify-center text-white font-black text-sm shadow-md shadow-red-500/20 border border-border-standard flex-shrink-0">
                         {item.businessId?.name
                           ? item.businessId.name[0].toUpperCase()
                           : "B"}
                       </div>
                       <div>
                         <div className="flex items-center gap-1">
-                          <span className="text-xs font-black text-slate-900 uppercase tracking-wide">
+                          <span className="text-xs font-black text-text-primary uppercase tracking-wide">
                             {item.businessId?.name}
                           </span>
                           <span className="text-[10px] text-red-600">✔</span>
@@ -457,7 +457,7 @@ export default function WalletHub({
                           🎁 Win: {item.rewardTitle}
                         </div>
                         {item.businessId?.address && (
-                          <div className="text-[9px] text-slate-400 mt-0.5 max-w-[190px] truncate">
+                          <div className="text-[9px] text-text-muted mt-0.5 max-w-[190px] truncate">
                             📍{" "}
                             {item.businessId.city
                               ? `${item.businessId.city}, ${item.businessId.state}`
@@ -500,7 +500,7 @@ export default function WalletHub({
               ))}
 
               {filteredExplore.length === 0 && (
-                <div className="col-span-full text-center py-16 bg-white border border-slate-200/50 rounded-2xl text-slate-400 text-xs shadow-sm">
+                <div className="col-span-full text-center py-16 bg-white border border-slate-200/50 rounded-2xl text-text-muted text-xs shadow-sm">
                   No active loyalty campaigns found for your query.
                 </div>
               )}
@@ -514,7 +514,7 @@ export default function WalletHub({
             {/* ACTIVE REWARDS SECTION */}
             {activeRewards.length > 0 && (
               <div className="space-y-4">
-                <h2 className="text-xl font-black text-slate-900 flex items-center gap-2">
+                <h2 className="text-xl font-black text-text-primary flex items-center gap-2">
                   <span>🎁</span> Unlocked Rewards
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -527,10 +527,10 @@ export default function WalletHub({
                         <div className="text-[9px] font-bold text-amber-700 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-full inline-block uppercase tracking-wider">
                           Milestone Unlocked
                         </div>
-                        <h3 className="text-md font-bold text-slate-900 mt-2">
+                        <h3 className="text-md font-bold text-text-primary mt-2">
                           {reward.rewardTitle}
                         </h3>
-                        <p className="text-[10px] text-slate-505 mt-0.5">
+                        <p className="text-[10px] text-text-secondary mt-0.5">
                           Unlocked on{" "}
                           {new Date(reward.unlockedAt).toLocaleDateString()}
                         </p>
@@ -556,12 +556,12 @@ export default function WalletHub({
               </div>
             )}
 
-            <h2 className="text-xl font-black text-slate-900 flex items-center gap-2">
+            <h2 className="text-xl font-black text-text-primary flex items-center gap-2">
               <span>⭐</span> Stamped Loyalty Cards
             </h2>
 
             {cards.length === 0 ? (
-              <div className="text-center py-16 bg-white border border-slate-200/80 rounded-2xl text-slate-400 text-xs shadow-sm">
+              <div className="text-center py-16 bg-white border border-slate-200/80 rounded-2xl text-text-muted text-xs shadow-sm">
                 You haven&apos;t visited any partner shops yet. Go to explore
                 tab to discover active campaigns!
               </div>
@@ -577,10 +577,10 @@ export default function WalletHub({
                         {card.campaign.businessId.name[0]}
                       </div>
 
-                      <h3 className="text-md font-bold text-slate-900 mb-1">
+                      <h3 className="text-md font-bold text-text-primary mb-1">
                         {card.campaign.businessId.name}
                       </h3>
-                      <p className="text-xs text-slate-500 mb-2">
+                      <p className="text-xs text-text-secondary mb-2">
                         {card.campaign.title}
                       </p>
 
@@ -593,7 +593,7 @@ export default function WalletHub({
                       )}
 
                       {/* Stamps stars grid */}
-                      <div className="grid grid-cols-5 gap-2 bg-slate-50 border border-slate-100 p-3 rounded-xl mb-4">
+                      <div className="grid grid-cols-5 gap-2 bg-slate-50 border border-border-standard p-3 rounded-xl mb-4">
                         {Array.from({
                           length: card.campaign.requiredStamps,
                         }).map((_, idx) => {
@@ -604,7 +604,7 @@ export default function WalletHub({
                               className={`aspect-square rounded-lg flex items-center justify-center border transition-all ${
                                 isStamped
                                   ? "border-amber-200 bg-amber-50"
-                                  : "border-slate-200 bg-white"
+                                  : "border-border-standard bg-white"
                               }`}
                             >
                               <ThreeDStar
@@ -617,7 +617,7 @@ export default function WalletHub({
                       </div>
                     </div>
 
-                    <div className="flex justify-between items-center text-[10px] text-slate-500 font-bold border-t border-slate-100 pt-3 mt-1">
+                    <div className="flex justify-between items-center text-[10px] text-text-secondary font-bold border-t border-border-standard pt-3 mt-1">
                       <span>
                         Progress: {card.currentStamps} /{" "}
                         {card.campaign.requiredStamps}
@@ -637,11 +637,11 @@ export default function WalletHub({
             {/* CHECK-IN HISTORY TIMELINE */}
             {checkins && checkins.length > 0 && (
               <div className="space-y-4 pt-6 border-t border-slate-200/80">
-                <h3 className="text-sm font-black text-slate-900 uppercase tracking-wide">
+                <h3 className="text-sm font-black text-text-primary uppercase tracking-wide">
                   Recent Check-Ins
                 </h3>
                 <div className="bg-white border border-slate-200/80 rounded-2xl p-5 md:p-6 shadow-sm max-w-2xl">
-                  <div className="relative border-l-2 border-slate-100 pl-4 md:pl-6 space-y-6">
+                  <div className="relative border-l-2 border-border-standard pl-4 md:pl-6 space-y-6">
                     {checkins.map((checkin) => (
                       <div key={checkin._id} className="relative">
                         <div className="absolute -left-[25px] md:-left-[33px] top-1 w-4 h-4 rounded-full bg-red-100 border-2 border-white flex items-center justify-center shadow-sm">
@@ -649,10 +649,10 @@ export default function WalletHub({
                         </div>
                         <div className="flex justify-between items-start gap-4">
                           <div>
-                            <div className="font-bold text-slate-900 text-sm">
+                            <div className="font-bold text-text-primary text-sm">
                               {checkin.campaignId?.title || "Loyalty Campaign"}
                             </div>
-                            <div className="text-slate-500 text-xs mt-1 leading-relaxed">
+                            <div className="text-text-secondary text-xs mt-1 leading-relaxed">
                               Earned{" "}
                               <span className="font-bold text-red-600">
                                 +{checkin.pointsAwarded}
@@ -665,7 +665,7 @@ export default function WalletHub({
                               )}
                             </div>
                           </div>
-                          <div className="text-[10px] text-slate-400 font-medium whitespace-nowrap text-right">
+                          <div className="text-[10px] text-text-muted font-medium whitespace-nowrap text-right">
                             {new Date(checkin.createdAt).toLocaleDateString(
                               "en-US",
                               { month: "short", day: "numeric" },
@@ -689,12 +689,12 @@ export default function WalletHub({
         {/* TAB 3: REWARDS VIEW */}
         {activeTab === "rewards" && (
           <div className="space-y-6 animate-fade-in-up">
-            <h2 className="text-xl font-black text-slate-900 flex items-center gap-2">
+            <h2 className="text-xl font-black text-text-primary flex items-center gap-2">
               <span>🎁</span> Unlocked Rewards
             </h2>
 
             {activeRewards.length === 0 ? (
-              <div className="text-center py-16 bg-white border border-slate-200/80 rounded-2xl text-slate-400 text-xs shadow-sm">
+              <div className="text-center py-16 bg-white border border-slate-200/80 rounded-2xl text-text-muted text-xs shadow-sm">
                 Complete a stamp card to unlock rewards and freebies!
               </div>
             ) : (
@@ -708,10 +708,10 @@ export default function WalletHub({
                       <div className="text-[9px] font-bold text-amber-700 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-full inline-block uppercase tracking-wider">
                         Milestone Unlocked
                       </div>
-                      <h3 className="text-md font-bold text-slate-900 mt-2">
+                      <h3 className="text-md font-bold text-text-primary mt-2">
                         {reward.rewardTitle}
                       </h3>
-                      <p className="text-[10px] text-slate-500 mt-0.5">
+                      <p className="text-[10px] text-text-secondary mt-0.5">
                         Unlocked on{" "}
                         {new Date(reward.unlockedAt).toLocaleDateString()}
                       </p>
@@ -738,8 +738,8 @@ export default function WalletHub({
 
             {/* HISTORICAL LOGS */}
             {claimedRewards.length > 0 && (
-              <div className="space-y-3 pt-6 border-t border-slate-200">
-                <h3 className="text-sm font-black text-slate-900 uppercase tracking-wide">
+              <div className="space-y-3 pt-6 border-t border-border-standard">
+                <h3 className="text-sm font-black text-text-primary uppercase tracking-wide">
                   Redeemed History
                 </h3>
                 <div className="bg-white border border-slate-200/80 rounded-2xl p-5 divide-y divide-slate-100 shadow-sm max-w-2xl">
@@ -749,14 +749,14 @@ export default function WalletHub({
                       className="py-3 first:pt-0 last:pb-0 flex justify-between items-center text-xs"
                     >
                       <div>
-                        <div className="font-bold text-slate-900">
+                        <div className="font-bold text-text-primary">
                           🎁 {reward.rewardTitle}
                         </div>
-                        <div className="text-slate-500 text-[10px] mt-0.5">
+                        <div className="text-text-secondary text-[10px] mt-0.5">
                           Redeemed & Verified
                         </div>
                       </div>
-                      <div className="text-right text-[10px] text-slate-500">
+                      <div className="text-right text-[10px] text-text-secondary">
                         <div className="font-bold text-emerald-600">
                           Verified
                         </div>
@@ -781,16 +781,16 @@ export default function WalletHub({
                   {user.name[0].toUpperCase()}
                 </div>
                 <div>
-                  <h3 className="font-black text-slate-900 text-base">
+                  <h3 className="font-black text-text-primary text-base">
                     {user.name}
                   </h3>
-                  <p className="text-xs text-slate-500">{user.email}</p>
+                  <p className="text-xs text-text-secondary">{user.email}</p>
                 </div>
               </div>
 
-              <div className="border-t border-slate-100 pt-4 space-y-2.5 text-xs">
+              <div className="border-t border-border-standard pt-4 space-y-2.5 text-xs">
                 <div className="flex justify-between">
-                  <span className="text-slate-400 font-bold uppercase tracking-wider text-[9px]">
+                  <span className="text-text-muted font-bold uppercase tracking-wider text-[9px]">
                     Account Tier
                   </span>
                   <span className="font-bold text-red-600">
@@ -798,10 +798,10 @@ export default function WalletHub({
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-400 font-bold uppercase tracking-wider text-[9px]">
+                  <span className="text-text-muted font-bold uppercase tracking-wider text-[9px]">
                     Active Cards
                   </span>
-                  <span className="font-bold text-slate-900">
+                  <span className="font-bold text-text-primary">
                     {cards.length} cards
                   </span>
                 </div>
@@ -822,7 +822,7 @@ export default function WalletHub({
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200/80 px-4 py-2.5 flex justify-between items-center z-40 rounded-t-3xl shadow-[0_-8px_30px_rgba(0,0,0,0.06)]">
         <button
           onClick={() => setActiveTab("home")}
-          className={`flex flex-col items-center gap-1 flex-1 transition-all ${activeTab === "home" ? "text-red-600 scale-105" : "text-slate-400 hover:text-slate-600"}`}
+          className={`flex flex-col items-center gap-1 flex-1 transition-all ${activeTab === "home" ? "text-red-600 scale-105" : "text-text-muted hover:text-slate-600"}`}
         >
           <svg
             className="w-5 h-5"
@@ -842,7 +842,7 @@ export default function WalletHub({
 
         <button
           onClick={() => setActiveTab("explore")}
-          className={`flex flex-col items-center gap-1 flex-1 transition-all ${activeTab === "explore" ? "text-red-600 scale-105" : "text-slate-400 hover:text-slate-600"}`}
+          className={`flex flex-col items-center gap-1 flex-1 transition-all ${activeTab === "explore" ? "text-red-600 scale-105" : "text-text-muted hover:text-slate-600"}`}
         >
           <svg
             className="w-5 h-5"
@@ -889,7 +889,7 @@ export default function WalletHub({
 
         <button
           onClick={() => setActiveTab("profile")}
-          className={`flex flex-col items-center gap-1 flex-1 transition-all ${activeTab === "profile" ? "text-red-600 scale-105" : "text-slate-400 hover:text-slate-600"}`}
+          className={`flex flex-col items-center gap-1 flex-1 transition-all ${activeTab === "profile" ? "text-red-600 scale-105" : "text-text-muted hover:text-slate-600"}`}
         >
           <svg
             className="w-5 h-5"
@@ -911,30 +911,30 @@ export default function WalletHub({
       {/* DETAIL MODAL (First Picture UI style) */}
       {selectedCampaign && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white w-full max-w-sm rounded-[2rem] p-6 shadow-2xl relative overflow-hidden border border-slate-100 animate-scale-in space-y-4">
+          <div className="bg-white w-full max-w-sm rounded-[2rem] p-6 shadow-2xl relative overflow-hidden border border-border-standard animate-scale-in space-y-4">
             {/* Header info */}
             <div className="flex justify-between items-start">
               <span className="text-[9px] uppercase tracking-widest font-extrabold px-2.5 py-1 rounded-full bg-red-50 border border-red-100 text-red-600">
                 {selectedCampaign.businessId?.category || "Retail"}
               </span>
-              <span className="text-[10px] text-slate-500 font-semibold bg-slate-100 px-2.5 py-1 rounded-full">
+              <span className="text-[10px] text-text-secondary font-semibold bg-slate-100 px-2.5 py-1 rounded-full">
                 Goal: {selectedCampaign.requiredStamps} stamps
               </span>
             </div>
 
             {/* Shop avatar & location */}
             <div className="flex items-center gap-3 mt-1">
-              <div className="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center text-white font-extrabold text-lg shadow-md shadow-red-500/20 border border-slate-100">
+              <div className="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center text-white font-extrabold text-lg shadow-md shadow-red-500/20 border border-border-standard">
                 {selectedCampaign.businessId?.name
                   ? selectedCampaign.businessId.name[0].toUpperCase()
                   : "B"}
               </div>
               <div>
-                <h3 className="text-md font-black text-slate-900">
+                <h3 className="text-md font-black text-text-primary">
                   {selectedCampaign.businessId?.name}
                 </h3>
                 {selectedCampaign.businessId?.address && (
-                  <p className="text-xs text-slate-500 mt-0.5">
+                  <p className="text-xs text-text-secondary mt-0.5">
                     📍 {selectedCampaign.businessId.address}
                   </p>
                 )}
@@ -943,7 +943,7 @@ export default function WalletHub({
 
             {/* Campaign text */}
             <div className="space-y-1">
-              <h4 className="text-sm font-black text-slate-900 uppercase tracking-tight">
+              <h4 className="text-sm font-black text-text-primary uppercase tracking-tight">
                 {selectedCampaign.title}
               </h4>
               <p className="text-slate-600 text-xs leading-relaxed">
@@ -952,13 +952,13 @@ export default function WalletHub({
             </div>
 
             {/* Reward Box */}
-            <div className="bg-slate-50 border border-slate-100 p-4 rounded-2xl flex items-center gap-3">
+            <div className="bg-slate-50 border border-border-standard p-4 rounded-2xl flex items-center gap-3">
               <span className="text-2xl">🎁</span>
               <div>
-                <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider block">
+                <span className="text-[9px] text-text-muted font-bold uppercase tracking-wider block">
                   Reward Details
                 </span>
-                <span className="text-xs font-bold text-slate-900">
+                <span className="text-xs font-bold text-text-primary">
                   {selectedCampaign.rewardTitle}
                 </span>
               </div>
@@ -967,10 +967,10 @@ export default function WalletHub({
             {/* Stamps stars grid (Only if they have visited at least once) */}
             {selectedCampaign.hasCard && selectedCampaign.currentStamps > 0 && (
               <div className="space-y-2">
-                <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider block">
+                <span className="text-[9px] text-text-muted font-bold uppercase tracking-wider block">
                   Your Stamps Progress
                 </span>
-                <div className="grid grid-cols-5 gap-2 bg-slate-50 border border-slate-100 p-3 rounded-xl">
+                <div className="grid grid-cols-5 gap-2 bg-slate-50 border border-border-standard p-3 rounded-xl">
                   {Array.from({ length: selectedCampaign.requiredStamps }).map(
                     (_, idx) => {
                       const isStamped = idx < selectedCampaign.currentStamps;
@@ -980,7 +980,7 @@ export default function WalletHub({
                           className={`aspect-square rounded-lg flex items-center justify-center border transition-all ${
                             isStamped
                               ? "border-amber-200 bg-amber-50"
-                              : "border-slate-200 bg-white"
+                              : "border-border-standard bg-white"
                           }`}
                         >
                           <ThreeDStar
@@ -995,7 +995,7 @@ export default function WalletHub({
               </div>
             )}
 
-            <p className="text-[10px] text-center text-slate-400 leading-normal font-medium">
+            <p className="text-[10px] text-center text-text-muted leading-normal font-medium">
               Scan the shop&apos;s QR code in-store to join the campaign and start
               earning rewards!
             </p>

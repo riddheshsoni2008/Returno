@@ -53,7 +53,7 @@ export default async function AdminDashboardPage() {
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-black tracking-tight">Super Admin Hub</h1>
-            <p className="text-slate-400 mt-1">Platform management and security log auditing</p>
+            <p className="text-text-muted mt-1">Platform management and security log auditing</p>
           </div>
           <Link
             href="/dashboard"
@@ -66,19 +66,19 @@ export default async function AdminDashboardPage() {
         {/* Global Statistics */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="bg-dark-900 border border-white/10 p-6 rounded-2xl">
-            <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Total Partner Shops</div>
+            <div className="text-text-muted text-xs font-semibold uppercase tracking-wider mb-2">Total Partner Shops</div>
             <div className="text-4xl font-extrabold text-brand-400">{totalShops}</div>
           </div>
           <div className="bg-dark-900 border border-white/10 p-6 rounded-2xl">
-            <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Registered Customers</div>
+            <div className="text-text-muted text-xs font-semibold uppercase tracking-wider mb-2">Registered Customers</div>
             <div className="text-4xl font-extrabold text-purple-400">{totalCustomers}</div>
           </div>
           <div className="bg-dark-900 border border-white/10 p-6 rounded-2xl">
-            <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Total Stamps Claimed</div>
+            <div className="text-text-muted text-xs font-semibold uppercase tracking-wider mb-2">Total Stamps Claimed</div>
             <div className="text-4xl font-extrabold text-blue-400">{totalStamps}</div>
           </div>
           <div className="bg-dark-900 border border-white/10 p-6 rounded-2xl">
-            <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Total Redeemed Rewards</div>
+            <div className="text-text-muted text-xs font-semibold uppercase tracking-wider mb-2">Total Redeemed Rewards</div>
             <div className="text-4xl font-extrabold text-yellow-400">{totalRedeemed}</div>
           </div>
         </div>
@@ -89,15 +89,15 @@ export default async function AdminDashboardPage() {
             <h3 className="font-bold text-slate-200 text-md">Onboarded Businesses</h3>
 
             {recentShops.length === 0 ? (
-              <p className="text-slate-500 text-xs">No shops registered yet.</p>
+              <p className="text-text-secondary text-xs">No shops registered yet.</p>
             ) : (
               <div className="space-y-3">
                 {recentShops.map((shop) => (
                   <div key={shop._id} className="bg-white/5 border border-white/5 p-4 rounded-xl space-y-1">
                     <div className="font-bold text-xs text-slate-200">{shop.name}</div>
-                    <div className="text-[10px] text-slate-500 capitalize">{shop.category} • {shop.address}</div>
+                    <div className="text-[10px] text-text-secondary capitalize">{shop.category} • {shop.address}</div>
                     {shop.ownerId && (
-                      <div className="text-[9px] text-slate-400 font-medium mt-1">Owner: {shop.ownerId.name} ({shop.ownerId.email})</div>
+                      <div className="text-[9px] text-text-muted font-medium mt-1">Owner: {shop.ownerId.name} ({shop.ownerId.email})</div>
                     )}
                   </div>
                 ))}
@@ -112,19 +112,19 @@ export default async function AdminDashboardPage() {
             </h3>
 
             {securityLogs.length === 0 ? (
-              <p className="text-slate-500 text-xs">No system alerts recorded.</p>
+              <p className="text-text-secondary text-xs">No system alerts recorded.</p>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse text-xs">
                   <thead>
-                    <tr className="border-b border-white/10 text-[10px] uppercase tracking-wider text-slate-400">
+                    <tr className="border-b border-white/10 text-[10px] uppercase tracking-wider text-text-muted">
                       <th className="py-2.5 px-3">Severity</th>
                       <th className="py-2.5 px-3">Action</th>
                       <th className="py-2.5 px-3">Details</th>
                       <th className="py-2.5 px-3">Time</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/5 text-slate-300">
+                  <tbody className="divide-y divide-white/5 text-text-muted">
                     {securityLogs.map((log) => (
                       <tr key={log._id} className="hover:bg-white/5 transition-colors">
                         <td className="py-2.5 px-3">
@@ -132,14 +132,14 @@ export default async function AdminDashboardPage() {
                             ? 'bg-red-500/10 text-red-400 border border-red-500/20 animate-pulse'
                             : log.severity === 'warning'
                               ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20'
-                              : 'bg-slate-500/10 text-slate-400'
+                              : 'bg-slate-500/10 text-text-muted'
                             }`}>
                             {log.severity}
                           </span>
                         </td>
                         <td className="py-2.5 px-3 font-semibold font-mono text-[10px]">{log.action}</td>
                         <td className="py-2.5 px-3 max-w-xs truncate" title={log.details}>{log.details}</td>
-                        <td className="py-2.5 px-3 text-slate-500">
+                        <td className="py-2.5 px-3 text-text-secondary">
                           {new Date(log.createdAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', timeStyle: 'short', dateStyle: 'short' })}
                         </td>
                       </tr>

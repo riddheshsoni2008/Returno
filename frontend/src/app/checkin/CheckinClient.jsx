@@ -174,16 +174,16 @@ export default function CheckinClient() {
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
         <div className="w-full max-w-md bg-white border border-slate-200/80 rounded-3xl p-8 text-center space-y-5 shadow-xl">
           <div className="text-5xl">⚠️</div>
-          <h1 className="text-xl font-black text-slate-900">
+          <h1 className="text-xl font-black text-text-primary">
             Missing QR Token
           </h1>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-text-secondary">
             No check-in token found. Please scan the QR code at the shop
             counter.
           </p>
           <Link
             href="/"
-            className="inline-block px-6 py-3 bg-slate-100 border border-slate-200 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors"
+            className="inline-block px-6 py-3 bg-slate-100 border border-border-standard hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors"
           >
             Go Home
           </Link>
@@ -197,7 +197,7 @@ export default function CheckinClient() {
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center space-y-3">
           <div className="w-12 h-12 border-4 border-red-200 border-t-red-600 rounded-full animate-spin mx-auto"></div>
-          <p className="text-xs text-slate-500 font-medium">
+          <p className="text-xs text-text-secondary font-medium">
             Verifying session...
           </p>
         </div>
@@ -206,7 +206,7 @@ export default function CheckinClient() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 flex items-center justify-center py-12 px-4 relative overflow-hidden">
+    <div className="min-h-screen bg-slate-50 text-text-primary flex items-center justify-center py-12 px-4 relative overflow-hidden">
       <div className="absolute top-1/4 left-1/4 w-80 h-80 bg-red-500/5 rounded-full blur-[100px] pointer-events-none"></div>
       <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-amber-500/5 rounded-full blur-[80px] pointer-events-none"></div>
 
@@ -216,11 +216,11 @@ export default function CheckinClient() {
       >
         {/* Header */}
         <div className="text-center">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-red-600 to-rose-600 flex items-center justify-center text-2xl mx-auto shadow-lg shadow-red-500/10 border border-slate-100 mb-3 text-white">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-red-600 to-rose-600 flex items-center justify-center text-2xl mx-auto shadow-lg shadow-red-500/10 border border-border-standard mb-3 text-white">
             📱
           </div>
-          <h1 className="text-lg font-black text-slate-900">Daily Check-In</h1>
-          <p className="text-xs text-slate-500 mt-1">
+          <h1 className="text-lg font-black text-text-primary">Daily Check-In</h1>
+          <p className="text-xs text-text-secondary mt-1">
             Scan completed — processing your visit
           </p>
         </div>
@@ -244,7 +244,7 @@ export default function CheckinClient() {
             <p className="text-sm text-slate-600 font-bold">
               Authenticating...
             </p>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-text-muted">
               Redirecting you to login to complete check-in.
             </p>
           </div>
@@ -266,10 +266,10 @@ export default function CheckinClient() {
             {error.startsWith("not_enrolled:") ? (
               <>
                 <div className="text-4xl">🔒</div>
-                <h3 className="text-lg font-black text-slate-900">
+                <h3 className="text-lg font-black text-text-primary">
                   Not Enrolled
                 </h3>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-text-secondary">
                   You need to join this campaign first before checking in.
                 </p>
                 <Link
@@ -282,7 +282,7 @@ export default function CheckinClient() {
             ) : (
               <>
                 <div className="text-4xl">❌</div>
-                <h3 className="text-lg font-black text-slate-900">
+                <h3 className="text-lg font-black text-text-primary">
                   Check-in Failed
                 </h3>
                 <p className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-xl p-3">
@@ -290,7 +290,7 @@ export default function CheckinClient() {
                 </p>
                 <Link
                   href="/wallet"
-                  className="inline-block px-6 py-3 bg-slate-100 border border-slate-200 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors"
+                  className="inline-block px-6 py-3 bg-slate-100 border border-border-standard hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors"
                 >
                   Go to Wallet
                 </Link>
@@ -311,7 +311,7 @@ export default function CheckinClient() {
             >
               🏆
             </div>
-            <h3 className="text-2xl font-black text-slate-900">
+            <h3 className="text-2xl font-black text-text-primary">
               Campaign Completed!
             </h3>
             <p className="text-sm text-slate-600 bg-emerald-50 border border-emerald-100 rounded-xl p-4 font-bold">
@@ -341,10 +341,10 @@ export default function CheckinClient() {
             style={{ animation: "fade-in-up 0.4s ease-out" }}
           >
             <div className="text-4xl">✅</div>
-            <h3 className="text-lg font-black text-slate-900">
+            <h3 className="text-lg font-black text-text-primary">
               Already Checked In Today!
             </h3>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-text-secondary">
               Come back tomorrow to keep your streak alive.
             </p>
             <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200/60 rounded-2xl p-5 space-y-3">
@@ -394,7 +394,7 @@ export default function CheckinClient() {
                 <h3 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-rose-600">
                   Reward Unlocked!
                 </h3>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-text-secondary">
                   You earned:{" "}
                   <span className="font-bold text-red-600">
                     {result.rewardTitle}
@@ -404,7 +404,7 @@ export default function CheckinClient() {
             ) : (
               <div className="space-y-2">
                 <div className="text-4xl">✨</div>
-                <h3 className="text-xl font-black text-slate-900">
+                <h3 className="text-xl font-black text-text-primary">
                   Check-in Complete!
                 </h3>
               </div>
@@ -436,7 +436,7 @@ export default function CheckinClient() {
                   ),
                 )}
                 {result.currentStreak > 7 && (
-                  <div className="w-6 h-6 bg-slate-200 rounded-full flex items-center justify-center text-slate-500 text-[8px] font-bold">
+                  <div className="w-6 h-6 bg-slate-200 rounded-full flex items-center justify-center text-text-secondary text-[8px] font-bold">
                     +{result.currentStreak - 7}
                   </div>
                 )}
@@ -446,15 +446,15 @@ export default function CheckinClient() {
                   <div className="text-sm font-black text-red-600">
                     +{result.pointsAwarded}
                   </div>
-                  <div className="text-[8px] text-slate-400 font-bold uppercase">
+                  <div className="text-[8px] text-text-muted font-bold uppercase">
                     Points
                   </div>
                 </div>
                 <div className="bg-white rounded-xl p-2 border border-amber-100">
-                  <div className="text-sm font-black text-slate-800">
+                  <div className="text-sm font-black text-text-primary">
                     {result.totalPoints}
                   </div>
-                  <div className="text-[8px] text-slate-400 font-bold uppercase">
+                  <div className="text-[8px] text-text-muted font-bold uppercase">
                     Total Pts
                   </div>
                 </div>
@@ -462,7 +462,7 @@ export default function CheckinClient() {
                   <div className="text-sm font-black text-amber-700">
                     {result.longestStreak}
                   </div>
-                  <div className="text-[8px] text-slate-400 font-bold uppercase">
+                  <div className="text-[8px] text-text-muted font-bold uppercase">
                     Best
                   </div>
                 </div>
@@ -471,7 +471,7 @@ export default function CheckinClient() {
 
             {/* Stamp Progress */}
             <div className="bg-slate-50 border border-slate-200/60 rounded-2xl p-4 space-y-3">
-              <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+              <div className="text-[10px] text-text-muted font-bold uppercase tracking-wider">
                 Stamp Progress
               </div>
               <div className="flex justify-center gap-1.5 flex-wrap">
@@ -483,7 +483,7 @@ export default function CheckinClient() {
                       className={`w-7 h-7 rounded-lg flex items-center justify-center border text-xs font-bold transition-all ${
                         isStamped
                           ? "border-amber-300 bg-amber-100 text-amber-700 shadow-sm"
-                          : "border-slate-200 bg-white text-slate-300"
+                          : "border-border-standard bg-white text-text-muted"
                       }`}
                     >
                       {isStamped ? "⭐" : idx + 1}
@@ -491,7 +491,7 @@ export default function CheckinClient() {
                   );
                 })}
               </div>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-text-secondary">
                 {result.currentStamps}/{result.requiredStamps} stamps collected
               </p>
             </div>

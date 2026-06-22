@@ -44,13 +44,13 @@ export default function Features() {
   ];
 
   return (
-    <section id="features" className="py-24 bg-slate-50 relative border-y border-slate-200">
+    <section id="features" className="py-24 bg-slate-50 relative border-y border-border-standard">
       <div className="container mx-auto px-6">
 
         {/* Core Features */}
         <div className="mb-24">
           <div className="text-center mb-16 scroll-reveal">
-            <h2 className="text-3xl md:text-5xl font-bold mb-4 text-slate-900">Core Platform Features</h2>
+            <h2 className="text-3xl md:text-5xl font-bold mb-4 text-text-primary">Core Platform Features</h2>
             <p className="text-slate-600 max-w-2xl mx-auto">
               Everything local businesses need to turn one-time visitors into brand advocates, with no complex setup.
             </p>
@@ -60,15 +60,15 @@ export default function Features() {
             {features.map((feat, i) => (
               <div
                 key={i}
-                className="bg-white border border-slate-200 rounded-2xl p-6 hover:border-brand-300 hover:shadow-md transition-all duration-300 group"
+                className="bg-white border border-border-standard rounded-2xl p-6 hover:border-brand-300 hover:shadow-md transition-all duration-300 group"
               >
                 <div className="text-3xl mb-4 bg-brand-50 w-12 h-12 flex items-center justify-center rounded-xl border border-brand-100 group-hover:scale-110 group-hover:bg-brand-100 transition-all duration-300">
                   {feat.icon}
                 </div>
-                <h4 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-brand-600 transition-colors">
+                <h4 className="text-xl font-bold text-text-primary mb-2 group-hover:text-brand-600 transition-colors">
                   {feat.title}
                 </h4>
-                <p className="text-slate-500 text-sm leading-relaxed">
+                <p className="text-text-secondary text-sm leading-relaxed">
                   {feat.desc}
                 </p>
               </div>
@@ -79,7 +79,7 @@ export default function Features() {
         {/* Targeted Industries */}
         <div>
           <div className="text-center mb-16 scroll-reveal">
-            <h2 className="text-3xl md:text-5xl font-bold mb-4 text-slate-900">Tailored for Any Industry</h2>
+            <h2 className="text-3xl md:text-5xl font-bold mb-4 text-text-primary">Tailored for Any Industry</h2>
             <p className="text-slate-600 max-w-2xl mx-auto">
               Returno fits seamlessly into any local shop footprint. Choose your setup and launch immediately.
             </p>
@@ -89,11 +89,11 @@ export default function Features() {
             {industries.map((ind, i) => (
               <div
                 key={i}
-                className="bg-white border border-slate-200 rounded-xl p-5 hover:bg-slate-50 hover:border-brand-200 hover:-translate-y-1 hover:shadow-sm transition-all text-center"
+                className="bg-white border border-border-standard rounded-xl p-5 hover:bg-slate-50 hover:border-brand-200 hover:-translate-y-1 hover:shadow-sm transition-all text-center"
               >
                 <div className="text-4xl mb-3">{ind.icon}</div>
-                <h5 className="font-bold text-slate-900 mb-1">{ind.name}</h5>
-                <p className="text-[11px] text-slate-500 leading-normal">{ind.desc}</p>
+                <h5 className="font-bold text-text-primary mb-1">{ind.name}</h5>
+                <p className="text-[11px] text-text-secondary leading-normal">{ind.desc}</p>
               </div>
             ))}
           </div>

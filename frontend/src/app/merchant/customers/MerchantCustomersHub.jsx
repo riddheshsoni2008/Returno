@@ -66,31 +66,31 @@ export default function MerchantCustomersHub({
   return (
     <div className="space-y-8 pb-10">
       {/* Header & Stats Banner */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-surface border border-outline-variant p-6 md:p-8 rounded-xl shadow-sm">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-bg-card border border-border-standard p-6 md:p-8 rounded-xl shadow-sm">
         <div>
           <span className="px-2.5 py-1 bg-primary/10 text-primary font-bold text-[10px] uppercase tracking-wider rounded-md border border-primary/20">
             Members Directory
           </span>
-          <h1 className="text-2xl md:text-3xl font-bold text-on-surface mt-3">Customer Database</h1>
-          <p className="text-on-surface-variant text-xs mt-1.5 font-medium">
+          <h1 className="text-2xl md:text-3xl font-bold text-text-primary mt-3">Customer Database</h1>
+          <p className="text-text-secondary text-xs mt-1.5 font-medium">
             Monitor active customer enrollments, streaks, and stamp collections.
           </p>
         </div>
-        <div className="bg-surface-container-low px-6 py-4 rounded-xl border border-outline-variant flex flex-col items-center min-w-[140px] shadow-sm">
+        <div className="bg-bg-page px-6 py-4 rounded-xl border border-border-standard flex flex-col items-center min-w-[140px] shadow-sm">
           <span className="text-3xl font-bold text-primary tracking-tight">{joinedCustomers.length}</span>
-          <span className="text-[10px] text-outline uppercase font-semibold tracking-wider mt-1">Total Members</span>
+          <span className="text-[10px] text-text-muted uppercase font-semibold tracking-wider mt-1">Total Members</span>
         </div>
       </div>
 
       {/* Search Bar */}
       <div className="relative max-w-md">
-        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-outline text-sm">🔍</span>
+        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted text-sm">🔍</span>
         <input
           type="text"
           placeholder="Search by name, email, or campaign..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full bg-surface border border-outline-variant rounded-lg py-3 pl-10 pr-4 text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-medium placeholder-outline shadow-sm transition-all"
+          className="w-full bg-bg-card border border-border-standard rounded-lg py-3 pl-10 pr-4 text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-medium placeholder-outline shadow-sm transition-all"
         />
       </div>
 
@@ -108,22 +108,22 @@ export default function MerchantCustomersHub({
       )}
 
       {/* Main Customers List */}
-      <div className="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm overflow-hidden">
-        <div className="px-6 py-4 border-b border-outline-variant bg-surface-container-low flex items-center gap-2">
+      <div className="bg-bg-card border border-border-standard rounded-xl shadow-sm overflow-hidden">
+        <div className="px-6 py-4 border-b border-border-standard bg-bg-page flex items-center gap-2">
           <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <h3 className="text-xs font-bold text-on-surface uppercase tracking-wider">
+          <h3 className="text-xs font-bold text-text-primary uppercase tracking-wider">
             Enrolled Loyalty Customers
           </h3>
         </div>
 
         {filteredCustomers.length === 0 ? (
-          <div className="text-center py-16 text-on-surface-variant text-sm bg-surface">
+          <div className="text-center py-16 text-text-secondary text-sm bg-bg-card">
             No enrolled customers found matching your search.
           </div>
         ) : (
-          <div className="divide-y divide-outline-variant bg-surface">
+          <div className="divide-y divide-outline-variant bg-bg-card">
             {filteredCustomers.map((cust) => {
               // Only display unredeemed or pending rewards
               const activeRewards = cust.rewards.filter(
@@ -135,7 +135,7 @@ export default function MerchantCustomersHub({
                   {/* Customer details & campaign */}
                   <div className="space-y-3 max-w-md">
                     <div>
-                      <div className="font-bold text-on-surface text-base flex items-center gap-2">
+                      <div className="font-bold text-text-primary text-base flex items-center gap-2">
                         {cust.name}
                         {cust.currentStreak > 0 && (
                           <span className="inline-flex items-center gap-0.5 bg-gradient-to-r from-amber-50 to-orange-50 text-amber-700 px-2.5 py-0.5 rounded-md text-[10px] font-bold border border-amber-250/50 shadow-sm">
@@ -143,14 +143,14 @@ export default function MerchantCustomersHub({
                           </span>
                         )}
                       </div>
-                      <div className="text-xs text-on-surface-variant mt-0.5 font-medium">{cust.email}</div>
+                      <div className="text-xs text-text-secondary mt-0.5 font-medium">{cust.email}</div>
                     </div>
                     
-                    <div className="flex flex-wrap gap-2 text-[10px] text-outline font-semibold">
-                      <span className="bg-surface-container-low px-2.5 py-1 rounded border border-outline-variant">
+                    <div className="flex flex-wrap gap-2 text-[10px] text-text-muted font-semibold">
+                      <span className="bg-bg-page px-2.5 py-1 rounded border border-border-standard">
                         📋 {cust.campaignName || "Campaign"}
                       </span>
-                      <span className="bg-surface-container-low px-2.5 py-1 rounded border border-outline-variant">
+                      <span className="bg-bg-page px-2.5 py-1 rounded border border-border-standard">
                         ⚡ Scans: {cust.totalCheckins}
                       </span>
                       <span className="bg-primary/5 text-primary px-2.5 py-1 rounded border border-primary/10">
@@ -163,7 +163,7 @@ export default function MerchantCustomersHub({
                   <div className="flex-1 max-w-lg lg:text-right">
                     <div className="flex flex-col lg:items-end gap-3">
                       {activeRewards.length === 0 ? (
-                        <div className="text-xs text-outline font-semibold italic">
+                        <div className="text-xs text-text-muted font-semibold italic">
                           No active rewards won yet
                         </div>
                       ) : (
@@ -171,13 +171,13 @@ export default function MerchantCustomersHub({
                           {activeRewards.map((reward) => (
                             <div
                               key={reward._id}
-                              className="flex items-center justify-between lg:justify-end gap-4 bg-surface-container-low border border-outline-variant p-3.5 rounded-xl shadow-sm"
+                              className="flex items-center justify-between lg:justify-end gap-4 bg-bg-page border border-border-standard p-3.5 rounded-xl shadow-sm"
                             >
                               <div className="text-left">
-                                <div className="text-xs font-bold text-on-surface flex items-center gap-1.5">
+                                <div className="text-xs font-bold text-text-primary flex items-center gap-1.5">
                                   <span>🎁</span> {reward.rewardTitle}
                                 </div>
-                                <div className="text-[10px] text-outline mt-0.5 font-medium">
+                                <div className="text-[10px] text-text-muted mt-0.5 font-medium">
                                   Unlocked on {new Date(reward.unlockedAt).toLocaleDateString()}
                                 </div>
                               </div>
@@ -189,7 +189,7 @@ export default function MerchantCustomersHub({
                                     Pending
                                   </span>
                                 ) : (
-                                  <span className="px-2.5 py-1 bg-surface-container border border-outline-variant text-on-surface-variant text-[9px] font-bold rounded uppercase tracking-wider">
+                                  <span className="px-2.5 py-1 bg-surface-container border border-border-standard text-text-secondary text-[9px] font-bold rounded uppercase tracking-wider">
                                     Ready
                                   </span>
                                 )}
@@ -216,8 +216,8 @@ export default function MerchantCustomersHub({
       </div>
 
       {/* Customer Visits Table */}
-      <div className="bg-surface border border-outline-variant p-5 md:p-6 rounded-xl shadow-sm">
-        <h3 className="text-lg font-bold text-on-surface mb-4 flex items-center gap-2">
+      <div className="bg-bg-card border border-border-standard p-5 md:p-6 rounded-xl shadow-sm">
+        <h3 className="text-lg font-bold text-text-primary mb-4 flex items-center gap-2">
           <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
@@ -225,34 +225,34 @@ export default function MerchantCustomersHub({
         </h3>
 
         {recentStamps.length === 0 ? (
-          <div className="text-center py-12 text-on-surface-variant text-sm bg-surface">
+          <div className="text-center py-12 text-text-secondary text-sm bg-bg-card">
             No customer visits logged yet.
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-surface-container-low border-b border-outline-variant text-xs font-semibold text-outline uppercase tracking-wider">
+                <tr className="bg-bg-page border-b border-border-standard text-xs font-semibold text-text-muted uppercase tracking-wider">
                   <th className="py-3.5 px-4">Customer Info</th>
                   <th className="py-3.5 px-4">Bill Details</th>
                   <th className="py-3.5 px-4">Transaction Amount</th>
                   <th className="py-3.5 px-4">Scanned At</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-outline-variant text-xs text-on-surface bg-surface">
+              <tbody className="divide-y divide-outline-variant text-xs text-text-primary bg-bg-card">
                 {recentStamps.map((stamp) => (
                   <tr key={stamp._id} className="hover:bg-surface-container-low/50 transition-colors">
                     <td className="py-3.5 px-4">
-                      <div className="font-semibold text-on-surface">
+                      <div className="font-semibold text-text-primary">
                         {stamp.customerId?.name || "Anonymous Customer"}
                       </div>
-                      <div className="text-[10px] text-on-surface-variant mt-0.5 font-medium">
+                      <div className="text-[10px] text-text-secondary mt-0.5 font-medium">
                         {stamp.customerId?.email}
                       </div>
                     </td>
-                    <td className="py-3.5 px-4 font-mono text-on-surface-variant">{stamp.billNumber || "—"}</td>
-                    <td className="py-3.5 px-4 font-semibold text-on-surface">{stamp.amount ? `₹${stamp.amount}` : "—"}</td>
-                    <td className="py-3.5 px-4 text-on-surface-variant font-medium">
+                    <td className="py-3.5 px-4 font-mono text-text-secondary">{stamp.billNumber || "—"}</td>
+                    <td className="py-3.5 px-4 font-semibold text-text-primary">{stamp.amount ? `₹${stamp.amount}` : "—"}</td>
+                    <td className="py-3.5 px-4 text-text-secondary font-medium">
                       {new Date(stamp.createdAt).toLocaleString("en-IN", {
                         timeZone: "Asia/Kolkata",
                       })}

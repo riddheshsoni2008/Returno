@@ -37,23 +37,23 @@ export default function FAQ() {
   ];
 
   return (
-    <section id="faq" className="py-24 bg-slate-50 border-t border-slate-200">
+    <section id="faq" className="py-24 bg-slate-50 border-t border-border-standard">
       <div className="container mx-auto px-6 max-w-3xl">
         <div className="text-center mb-16 scroll-reveal">
-          <h2 className="text-3xl md:text-5xl font-bold mb-4 text-slate-900">Frequently Asked Questions</h2>
+          <h2 className="text-3xl md:text-5xl font-bold mb-4 text-text-primary">Frequently Asked Questions</h2>
         </div>
 
         <div className="space-y-4 scroll-reveal">
           {faqs.map((faq, i) => (
             <div 
               key={i} 
-              className={`border border-slate-200 rounded-2xl overflow-hidden transition-all duration-300 ${open === i ? 'bg-white shadow-sm' : 'bg-transparent hover:bg-white/50'}`}
+              className={`border border-border-standard rounded-2xl overflow-hidden transition-all duration-300 ${open === i ? 'bg-white shadow-sm' : 'bg-transparent hover:bg-white/50'}`}
             >
               <button 
                 onClick={() => setOpen(open === i ? -1 : i)}
                 className="w-full px-6 py-5 text-left flex justify-between items-center focus:outline-none"
               >
-                <span className="font-semibold text-lg text-slate-900">{faq.q}</span>
+                <span className="font-semibold text-lg text-text-primary">{faq.q}</span>
                 <span className={`text-brand-600 font-bold text-2xl transition-transform duration-300 ${open === i ? 'rotate-45' : ''}`}>+</span>
               </button>
               

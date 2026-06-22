@@ -32,7 +32,7 @@ export default function Pricing() {
     <section id="pricing" className="py-24 relative bg-white">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16 scroll-reveal">
-          <h2 className="text-3xl md:text-5xl font-bold mb-4 text-slate-900">Pricing Plans for Shops</h2>
+          <h2 className="text-3xl md:text-5xl font-bold mb-4 text-text-primary">Pricing Plans for Shops</h2>
           <p className="text-slate-600 max-w-2xl mx-auto">100% Free for customers. Simple, transparent pricing for local businesses to drive growth. Currently free in development!</p>
         </div>
 
@@ -42,7 +42,7 @@ export default function Pricing() {
               key={i}
               className={`relative rounded-3xl p-8 scroll-reveal flex flex-col justify-between ${plan.popular
                 ? 'bg-white border-2 border-brand-500 shadow-xl md:-translate-y-4'
-                : 'bg-white border border-slate-200 shadow-sm'
+                : 'bg-white border border-border-standard shadow-sm'
                 }`}
               style={{ animationDelay: `${i * 0.2}s` }}
             >
@@ -53,16 +53,16 @@ export default function Pricing() {
                   </div>
                 )}
 
-                <h3 className="text-2xl font-bold text-slate-900 mb-2">{plan.name}</h3>
-                <p className="text-sm text-slate-500 mb-6 h-10">{plan.description}</p>
+                <h3 className="text-2xl font-bold text-text-primary mb-2">{plan.name}</h3>
+                <p className="text-sm text-text-secondary mb-6 h-10">{plan.description}</p>
                 <div className="mb-8">
-                  <span className="text-5xl font-black text-slate-900">{plan.price}</span>
-                  <span className="text-slate-500">{plan.period}</span>
+                  <span className="text-5xl font-black text-text-primary">{plan.price}</span>
+                  <span className="text-text-secondary">{plan.period}</span>
                 </div>
 
                 <Link
                   href="/auth?tab=register"
-                  className={`block text-center w-full py-3 rounded-full font-bold mb-8 transition-colors text-gray-500 ${plan.popular ? 'bg-brand-600 hover:bg-brand-700 text-white' : 'bg-slate-50 hover:bg-slate-100 text-brand-700 border border-slate-200 hover:border-slate-300'
+                  className={`block text-center w-full py-3 rounded-full font-bold mb-8 transition-colors text-text-secondary ${plan.popular ? 'bg-brand-600 hover:bg-brand-700 text-white' : 'bg-slate-50 hover:bg-slate-100 text-brand-700 border border-border-standard hover:border-slate-300'
                     }`}
                 >
                   Start 3-Day Free Trial

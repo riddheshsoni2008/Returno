@@ -15,6 +15,15 @@
   --color-error: #ba1a1a;
   --color-outline: #737686;
 
+  /* Strict WCAG AA Text Contrast & Element Tokens */
+  --color-text-primary: #111827;
+  --color-text-secondary: #4b5563;
+  --color-text-muted: #6b7280;
+  --color-text-disabled: #9ca3af;
+  --color-bg-card: #ffffff;
+  --color-bg-page: #f9fafb;
+  --color-border-standard: #e5e7eb;
+
   --color-brand-50: #fff1f2;
   --color-brand-100: #ffe4e6;
   --color-brand-500: #f43f5e;

@@ -52,9 +52,9 @@ export default async function MerchantLayout({ children }) {
   const business = data.user;
 
   return (
-    <div className="min-h-screen bg-surface-container-low text-on-background flex flex-col md:flex-row font-sans">
+    <div className="min-h-screen bg-bg-page text-on-background flex flex-col md:flex-row font-sans">
       {/* Sidebar - Desktop */}
-      <aside className="w-full md:w-64 bg-surface border-b md:border-b-0 md:border-r border-outline-variant flex flex-col justify-between p-5 md:p-6 flex-shrink-0">
+      <aside className="w-full md:w-64 bg-bg-card border-b md:border-b-0 md:border-r border-border-standard flex flex-col justify-between p-5 md:p-6 flex-shrink-0">
         <div>
           {/* Logo Brand Header */}
           <div className="flex items-center gap-3 px-2 mb-8 md:mb-10">
@@ -64,20 +64,20 @@ export default async function MerchantLayout({ children }) {
               </div>
               <div>
                 <h1 className="text-base font-bold text-primary leading-none">Returno</h1>
-                <p className="text-[9px] text-outline uppercase tracking-wider mt-0.5">Enterprise Retention</p>
+                <p className="text-[9px] text-text-muted uppercase tracking-wider mt-0.5">Enterprise Retention</p>
               </div>
             </Link>
           </div>
 
           {/* Profile Card */}
           {business && (
-            <div className="bg-surface-container-low border border-outline-variant p-3.5 rounded-xl mb-6 flex items-center gap-3">
+            <div className="bg-bg-page border border-border-standard p-3.5 rounded-xl mb-6 flex items-center gap-3">
               <div className="w-9 h-9 rounded-lg bg-primary text-on-primary flex items-center justify-center font-bold text-sm flex-shrink-0">
                 {business.businessName ? business.businessName[0].toUpperCase() : 'B'}
               </div>
               <div className="overflow-hidden">
-                <div className="font-bold text-xs truncate text-on-surface">{business.businessName}</div>
-                <div className="text-[9px] text-outline font-bold uppercase tracking-wider truncate">
+                <div className="font-bold text-xs truncate text-text-primary">{business.businessName}</div>
+                <div className="text-[9px] text-text-muted font-bold uppercase tracking-wider truncate">
                   {business.loyaltyConfiguration?.category || 'Cafe'}
                 </div>
               </div>
@@ -88,7 +88,7 @@ export default async function MerchantLayout({ children }) {
           <MerchantNav />
         </div>
 
-        <div className="hidden md:block mt-8 border-t border-outline-variant pt-6">
+        <div className="hidden md:block mt-8 border-t border-border-standard pt-6">
           <SignOutButton />
         </div>
       </aside>

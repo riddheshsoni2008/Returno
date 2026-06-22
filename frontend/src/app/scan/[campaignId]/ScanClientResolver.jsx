@@ -9,7 +9,7 @@ import { apiFetch } from '@/lib/api';
 const ThreeDStar = ({ filled, className = "" }) => {
   if (!filled) {
     return (
-      <svg viewBox="0 0 24 24" fill="none" className={`text-slate-300 ${className}`}>
+      <svg viewBox="0 0 24 24" fill="none" className={`text-text-muted ${className}`}>
         <path
           d="M12 2L14.2 8.9L21.5 8.9L15.6 13.2L17.9 20.1L12 15.8L6.1 20.1L8.4 13.2L2.5 8.9L9.8 8.9Z"
           fill="rgba(0,0,0,0.02)"
@@ -179,18 +179,18 @@ export default function ScanClientResolver({ campaign, business, initialUser }) 
 
   // RENDER MOCKUP SCREEN IN AUTH WINDOW
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 flex items-center justify-center py-12 px-4 relative overflow-hidden">
+    <div className="min-h-screen bg-slate-50 text-text-primary flex items-center justify-center py-12 px-4 relative overflow-hidden">
       <div className="absolute top-1/4 left-1/4 w-80 h-80 bg-red-500/5 rounded-full blur-[100px] pointer-events-none"></div>
 
       <div className="w-full max-w-md bg-white border border-slate-200/80 rounded-3xl p-6 md:p-8 shadow-xl relative z-10 space-y-6 animate-fade-in-up">
         
         {/* Shop Header Banner */}
         <div className="text-center">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-red-600 to-rose-600 flex items-center justify-center font-bold text-2xl mx-auto shadow-lg shadow-red-500/10 border border-slate-100 mb-4 text-white">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-red-600 to-rose-600 flex items-center justify-center font-bold text-2xl mx-auto shadow-lg shadow-red-500/10 border border-border-standard mb-4 text-white">
             {business.name[0]}
           </div>
-          <h1 className="text-xl font-black text-slate-900">{business.name}</h1>
-          <p className="text-xs text-slate-500 mt-1 capitalize">📍 {business.address}</p>
+          <h1 className="text-xl font-black text-text-primary">{business.name}</h1>
+          <p className="text-xs text-text-secondary mt-1 capitalize">📍 {business.address}</p>
         </div>
 
         {feedbackMsg.text && (
@@ -206,8 +206,8 @@ export default function ScanClientResolver({ campaign, business, initialUser }) 
         {/* 1. LOGIN MODE */}
         {!user && (
           <div className="space-y-6">
-            <div className="text-center border-t border-slate-100 pt-4">
-              <h3 className="font-bold text-sm text-slate-800">Customer verification</h3>
+            <div className="text-center border-t border-border-standard pt-4">
+              <h3 className="font-bold text-sm text-text-primary">Customer verification</h3>
               <p className="text-xs text-slate-550 mt-1">Authenticate instantly to track stamps card.</p>
             </div>
 
@@ -219,7 +219,7 @@ export default function ScanClientResolver({ campaign, business, initialUser }) 
                   placeholder="Enter email address"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 text-sm focus:outline-none focus:border-red-500 transition-colors"
+                  className="w-full bg-slate-50 border border-border-standard rounded-xl py-3 px-4 text-text-primary text-sm focus:outline-none focus:border-red-500 transition-colors"
                 />
                 <button 
                   type="submit"
@@ -237,7 +237,7 @@ export default function ScanClientResolver({ campaign, business, initialUser }) 
                   placeholder="Enter 6-digit OTP"
                   value={otpCode}
                   onChange={(e) => setOtpCode(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-center tracking-[0.5em] text-lg font-bold focus:outline-none focus:border-red-500 transition-colors text-slate-800"
+                  className="w-full bg-slate-50 border border-border-standard rounded-xl py-3 px-4 text-center tracking-[0.5em] text-lg font-bold focus:outline-none focus:border-red-500 transition-colors text-text-primary"
                 />
                 <button 
                   type="submit"
@@ -252,9 +252,9 @@ export default function ScanClientResolver({ campaign, business, initialUser }) 
 
         {/* 2. GEOLOCATION WARNING */}
         {user && !coords && (
-          <div className="text-center space-y-4 border-t border-slate-100 pt-6">
+          <div className="text-center space-y-4 border-t border-border-standard pt-6">
             <div className="text-3xl animate-bounce">📍</div>
-            <h3 className="font-bold text-slate-900 text-md">Requesting Location Access</h3>
+            <h3 className="font-bold text-text-primary text-md">Requesting Location Access</h3>
             <p className="text-xs text-slate-550 leading-relaxed max-w-xs mx-auto">
               Returno matches your location to verify you are currently at the merchant branch counter to prevent fraud.
             </p>
@@ -272,28 +272,28 @@ export default function ScanClientResolver({ campaign, business, initialUser }) 
 
         {/* 3. CLAIM FORM MODE */}
         {user && coords && !claimResult && (
-          <form onSubmit={handleClaimStamp} className="space-y-5 border-t border-slate-100 pt-6">
-            <div className="bg-slate-50 border border-slate-150 rounded-xl p-4">
-              <div className="text-[10px] text-slate-400 uppercase font-bold tracking-wider mb-1">Active Loyalty Reward</div>
+          <form onSubmit={handleClaimStamp} className="space-y-5 border-t border-border-standard pt-6">
+            <div className="bg-slate-50 border border-border-standard rounded-xl p-4">
+              <div className="text-[10px] text-text-muted uppercase font-bold tracking-wider mb-1">Active Loyalty Reward</div>
               <div className="text-sm font-bold text-amber-700">🎁 {campaign.rewardTitle}</div>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-slate-500 text-xs font-semibold uppercase tracking-wider mb-2">Unique Bill Number</label>
+                <label className="block text-text-secondary text-xs font-semibold uppercase tracking-wider mb-2">Unique Bill Number</label>
                 <input 
                   type="text"
                   required
                   placeholder="e.g. BILL-99218"
                   value={billNumber}
                   onChange={(e) => setBillNumber(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 text-sm focus:outline-none focus:border-red-500 transition-colors"
+                  className="w-full bg-slate-50 border border-border-standard rounded-xl py-3 px-4 text-text-primary text-sm focus:outline-none focus:border-red-500 transition-colors"
                 />
               </div>
               <div>
-                <label className="block text-slate-500 text-xs font-semibold uppercase tracking-wider mb-2">Total Amount Paid</label>
+                <label className="block text-text-secondary text-xs font-semibold uppercase tracking-wider mb-2">Total Amount Paid</label>
                 <div className="relative">
-                  <span className="absolute left-4 top-3 text-slate-400 text-sm font-medium">₹</span>
+                  <span className="absolute left-4 top-3 text-text-muted text-sm font-medium">₹</span>
                   <input 
                     type="number"
                     required
@@ -301,7 +301,7 @@ export default function ScanClientResolver({ campaign, business, initialUser }) 
                     placeholder="250"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-8 pr-4 text-slate-800 text-sm focus:outline-none focus:border-red-500 transition-colors"
+                    className="w-full bg-slate-50 border border-border-standard rounded-xl py-3 pl-8 pr-4 text-text-primary text-sm focus:outline-none focus:border-red-500 transition-colors"
                   />
                 </div>
               </div>
@@ -319,7 +319,7 @@ export default function ScanClientResolver({ campaign, business, initialUser }) 
 
         {/* 4. SUCCESS CELEBRATION STAMPS ANIMATION */}
         {claimResult && (
-          <div className="space-y-6 text-center border-t border-slate-100 pt-6 animate-[fade-in_0.4s_ease-out]">
+          <div className="space-y-6 text-center border-t border-border-standard pt-6 animate-[fade-in_0.4s_ease-out]">
             {claimResult.rewardUnlocked ? (
               <div className="space-y-2 animate-bounce">
                 <div className="text-5xl">🎉🏆</div>
@@ -329,13 +329,13 @@ export default function ScanClientResolver({ campaign, business, initialUser }) 
             ) : (
               <div className="space-y-1">
                 <div className="text-4xl">✨⭐</div>
-                <h3 className="text-xl font-black text-slate-900">Stamp Collected!</h3>
-                <p className="text-xs text-slate-500">Your loyalty card has been stamped.</p>
+                <h3 className="text-xl font-black text-text-primary">Stamp Collected!</h3>
+                <p className="text-xs text-text-secondary">Your loyalty card has been stamped.</p>
               </div>
             )}
 
             {/* Stamp Slots Progress card */}
-            <div className="bg-slate-50 border border-slate-150 p-6 rounded-2xl shadow-inner">
+            <div className="bg-slate-50 border border-border-standard p-6 rounded-2xl shadow-inner">
               <div className="grid grid-cols-5 gap-3">
                 {Array.from({ length: claimResult.requiredStamps }).map((_, idx) => {
                   const stampNum = idx + 1;
@@ -348,7 +348,7 @@ export default function ScanClientResolver({ campaign, business, initialUser }) 
                       className={`aspect-square rounded-xl flex items-center justify-center border transition-all duration-300 ${
                         isStamped 
                           ? 'border-amber-200 bg-amber-50 shadow-sm' 
-                          : 'border-slate-200 bg-white'
+                          : 'border-border-standard bg-white'
                       }`}
                     >
                       <ThreeDStar 
@@ -360,7 +360,7 @@ export default function ScanClientResolver({ campaign, business, initialUser }) 
                 })}
               </div>
               
-              <div className="text-xs text-slate-500 font-medium mt-4">
+              <div className="text-xs text-text-secondary font-medium mt-4">
                 Card progress: <span className="text-red-600 font-bold">{claimResult.currentStamps}</span> / {claimResult.requiredStamps} stamps
               </div>
             </div>
@@ -374,7 +374,7 @@ export default function ScanClientResolver({ campaign, business, initialUser }) 
               </Link>
               <button 
                 onClick={() => setClaimResult(null)}
-                className="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 font-bold text-xs rounded-xl transition-all border border-slate-200"
+                className="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 font-bold text-xs rounded-xl transition-all border border-border-standard"
               >
                 Scan Another Bill
               </button>

@@ -34,10 +34,10 @@ export default async function MerchantSettingsPage() {
   }
 
   return (
-    <div className="space-y-8 text-slate-800 animate-fade-in-up">
+    <div className="space-y-8 text-text-primary animate-fade-in-up">
       <div>
-        <h1 className="text-2xl md:text-3xl font-black tracking-tight text-slate-900">Configuration Hub</h1>
-        <p className="text-sm text-slate-500 mt-1">Configure shop metadata, address, and regional location parameters.</p>
+        <h1 className="text-2xl md:text-3xl font-black tracking-tight text-text-primary">Configuration Hub</h1>
+        <p className="text-sm text-text-secondary mt-1">Configure shop metadata, address, and regional location parameters.</p>
       </div>
 
       <SettingsHub initialBusiness={business} />

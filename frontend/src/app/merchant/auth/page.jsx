@@ -10,7 +10,7 @@ export default function MerchantAuthPage() {
     <Suspense
       fallback={
         <main className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-855">
-          <div className="text-sm font-semibold tracking-wider text-slate-400 animate-pulse">
+          <div className="text-sm font-semibold tracking-wider text-text-muted animate-pulse">
             Initializing Merchant Session...
           </div>
         </main>
@@ -127,7 +127,7 @@ function MerchantAuthContent() {
   };
 
   return (
-    <main className="min-h-screen flex flex-col justify-between bg-slate-50 text-slate-800 font-sans relative overflow-hidden px-6 py-8">
+    <main className="min-h-screen flex flex-col justify-between bg-slate-50 text-text-primary font-sans relative overflow-hidden px-6 py-8">
       {/* Background radial glow */}
       <div className="absolute top-[-10%] right-[-10%] w-[120%] h-[50%] bg-gradient-to-b from-red-500/5 via-transparent to-transparent blur-[120px] pointer-events-none"></div>
 
@@ -135,7 +135,7 @@ function MerchantAuthContent() {
       <header className="w-full max-w-md mx-auto flex justify-between items-center z-10 pt-4">
         <Link
           href="/"
-          className="text-2xl font-black tracking-tight text-slate-900 flex items-center gap-2"
+          className="text-2xl font-black tracking-tight text-text-primary flex items-center gap-2"
         >
           <span className="w-8 h-8 rounded-xl bg-gradient-to-tr from-red-600 to-rose-600 flex items-center justify-center text-sm shadow-lg shadow-red-500/20 text-white">
             🏢
@@ -157,14 +157,14 @@ function MerchantAuthContent() {
             <span className="inline-block text-[10px] font-bold tracking-widest text-red-600 uppercase bg-red-50 border border-red-100 px-2.5 py-1 rounded-full">
               Merchant Hub
             </span>
-            <h2 className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">
+            <h2 className="text-2xl font-black tracking-tight text-text-primary sm:text-3xl">
               {otpSent
                 ? "Verify email"
                 : mode === "login"
                   ? "Sign In"
                   : "Register Business"}
             </h2>
-            <p className="text-sm text-slate-500 font-medium">
+            <p className="text-sm text-text-secondary font-medium">
               {otpSent
                 ? `Enter the 6-digit code sent to ${email}`
                 : "Verify your identity using passwordless email OTP"}
@@ -181,7 +181,7 @@ function MerchantAuthContent() {
                   setError("");
                   setSuccess("");
                 }}
-                className={`py-2.5 rounded-lg text-xs font-bold tracking-wide uppercase transition-all ${mode === "login" ? "bg-red-600 text-white shadow shadow-red-500/10" : "text-slate-400 hover:text-slate-700"}`}
+                className={`py-2.5 rounded-lg text-xs font-bold tracking-wide uppercase transition-all ${mode === "login" ? "bg-red-600 text-white shadow shadow-red-500/10" : "text-text-muted hover:text-slate-700"}`}
               >
                 Sign In
               </button>
@@ -192,7 +192,7 @@ function MerchantAuthContent() {
                   setError("");
                   setSuccess("");
                 }}
-                className={`py-2.5 rounded-lg text-xs font-bold tracking-wide uppercase transition-all ${mode === "signup" ? "bg-red-600 text-white shadow shadow-red-500/10" : "text-slate-400 hover:text-slate-700"}`}
+                className={`py-2.5 rounded-lg text-xs font-bold tracking-wide uppercase transition-all ${mode === "signup" ? "bg-red-600 text-white shadow shadow-red-500/10" : "text-text-muted hover:text-slate-700"}`}
               >
                 Register
               </button>
@@ -219,7 +219,7 @@ function MerchantAuthContent() {
               {mode === "signup" && (
                 <>
                   <div className="space-y-2">
-                    <label className="block text-slate-500 text-xs font-semibold uppercase tracking-wider">
+                    <label className="block text-text-secondary text-xs font-semibold uppercase tracking-wider">
                       Business / Cafe Name
                     </label>
                     <input
@@ -228,11 +228,11 @@ function MerchantAuthContent() {
                       placeholder="e.g. Blue Tokai Cafe"
                       value={businessName}
                       onChange={(e) => setBusinessName(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 text-sm focus:outline-none focus:border-red-500 transition-colors"
+                      className="w-full bg-slate-50 border border-border-standard rounded-xl py-3 px-4 text-text-primary text-sm focus:outline-none focus:border-red-500 transition-colors"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="block text-slate-500 text-xs font-semibold uppercase tracking-wider">
+                    <label className="block text-text-secondary text-xs font-semibold uppercase tracking-wider">
                       Owner Name
                     </label>
                     <input
@@ -241,13 +241,13 @@ function MerchantAuthContent() {
                       placeholder="e.g. John Doe"
                       value={ownerName}
                       onChange={(e) => setOwnerName(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 text-sm focus:outline-none focus:border-red-500 transition-colors"
+                      className="w-full bg-slate-50 border border-border-standard rounded-xl py-3 px-4 text-text-primary text-sm focus:outline-none focus:border-red-500 transition-colors"
                     />
                   </div>
                 </>
               )}
               <div className="space-y-2">
-                <label className="block text-slate-500 text-xs font-semibold uppercase tracking-wider">
+                <label className="block text-text-secondary text-xs font-semibold uppercase tracking-wider">
                   Business Email Address
                 </label>
                 <input
@@ -256,9 +256,9 @@ function MerchantAuthContent() {
                   placeholder="owner@business.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 text-sm focus:outline-none focus:border-red-500 transition-colors"
+                  className="w-full bg-slate-50 border border-border-standard rounded-xl py-3 px-4 text-text-primary text-sm focus:outline-none focus:border-red-500 transition-colors"
                 />
-                <h4 className="text-slate-400 text-xs mt-2">
+                <h4 className="text-text-muted text-xs mt-2">
                   OTP may arrive in your Inbox or Spam folder
                 </h4>
               </div>
@@ -273,7 +273,7 @@ function MerchantAuthContent() {
           ) : (
             <form onSubmit={handleVerifyOtp} className="space-y-5">
               <div className="space-y-3">
-                <label className="block text-slate-500 text-xs font-semibold uppercase tracking-wider text-center">
+                <label className="block text-text-secondary text-xs font-semibold uppercase tracking-wider text-center">
                   Enter Staff Verification Code
                 </label>
                 <input
@@ -283,13 +283,13 @@ function MerchantAuthContent() {
                   placeholder="000000"
                   value={otpCode}
                   onChange={(e) => setOtpCode(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3.5 px-4 text-slate-800 text-center tracking-[0.75em] text-xl font-black focus:outline-none focus:border-red-500 transition-colors"
+                  className="w-full bg-slate-50 border border-border-standard rounded-xl py-3.5 px-4 text-text-primary text-center tracking-[0.75em] text-xl font-black focus:outline-none focus:border-red-500 transition-colors"
                 />
-                <div className="flex justify-between items-center text-xs text-slate-500 px-1 pt-1">
+                <div className="flex justify-between items-center text-xs text-text-secondary px-1 pt-1">
                   <button
                     type="button"
                     onClick={() => setOtpSent(false)}
-                    className="text-slate-500 hover:text-red-600 transition-colors"
+                    className="text-text-secondary hover:text-red-600 transition-colors"
                   >
                     ← Change Email
                   </button>
@@ -320,7 +320,7 @@ function MerchantAuthContent() {
       </div>
 
       {/* Footer */}
-      <footer className="w-full max-w-md mx-auto text-center z-10 text-xs text-slate-400 pb-2">
+      <footer className="w-full max-w-md mx-auto text-center z-10 text-xs text-text-muted pb-2">
         &copy; {new Date().getFullYear()} Returno Merchant Solutions.
       </footer>
     </main>

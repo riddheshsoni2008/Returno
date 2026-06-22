@@ -35,7 +35,7 @@ export default function RedemptionApprovalHub({ initialClaims, verificationCode 
 
   if (claims.length === 0) {
     return (
-      <div className="text-center py-6 text-slate-500 text-sm">
+      <div className="text-center py-6 text-text-secondary text-sm">
         No pending rewards to approve. Active claims will appear here instantly.
       </div>
     );
@@ -60,10 +60,10 @@ export default function RedemptionApprovalHub({ initialClaims, verificationCode 
               <div className="font-bold text-slate-200 text-sm">
                 🎁 {claim.rewardTitle}
               </div>
-              <div className="text-xs text-slate-400 mt-1">
+              <div className="text-xs text-text-muted mt-1">
                 Claimed by <span className="text-slate-200 font-semibold">{claim.customerId.name}</span> (+{claim.customerId.phone})
               </div>
-              <div className="text-[10px] text-slate-500 mt-1">
+              <div className="text-[10px] text-text-secondary mt-1">
                 Requested on {new Date(claim.updatedAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
               </div>
             </div>

@@ -92,12 +92,12 @@ export default function SettingsHub({ initialBusiness }) {
         <form onSubmit={handleSaveSettings} className="bg-dark-900 border border-white/10 rounded-2xl p-6 space-y-6">
           <div className="border-b border-white/5 pb-4">
             <h3 className="font-bold text-slate-200 text-lg">Shop profile</h3>
-            <p className="text-xs text-slate-500 mt-1">Configure metadata shown to customers on QR scans.</p>
+            <p className="text-xs text-text-secondary mt-1">Configure metadata shown to customers on QR scans.</p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Shop Name</label>
+              <label className="block text-text-muted text-xs font-semibold uppercase tracking-wider mb-2">Shop Name</label>
               <input 
                 type="text"
                 required
@@ -107,7 +107,7 @@ export default function SettingsHub({ initialBusiness }) {
               />
             </div>
             <div>
-              <label className="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Category</label>
+              <label className="block text-text-muted text-xs font-semibold uppercase tracking-wider mb-2">Category</label>
               <select 
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
@@ -124,7 +124,7 @@ export default function SettingsHub({ initialBusiness }) {
           </div>
 
           <div>
-            <label className="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Physical Address</label>
+            <label className="block text-text-muted text-xs font-semibold uppercase tracking-wider mb-2">Physical Address</label>
             <input 
               type="text"
               required
@@ -136,12 +136,12 @@ export default function SettingsHub({ initialBusiness }) {
 
           <div className="border-t border-white/5 pt-6">
             <h3 className="font-bold text-slate-200 text-md">Geofencing & Anti-Fraud Coordinates</h3>
-            <p className="text-xs text-slate-500 mt-1">Stamps claims check distance to these coordinates to prevent fraud.</p>
+            <p className="text-xs text-text-secondary mt-1">Stamps claims check distance to these coordinates to prevent fraud.</p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label className="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Longitude</label>
+              <label className="block text-text-muted text-xs font-semibold uppercase tracking-wider mb-2">Longitude</label>
               <input 
                 type="number"
                 step="any"
@@ -152,7 +152,7 @@ export default function SettingsHub({ initialBusiness }) {
               />
             </div>
             <div>
-              <label className="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Latitude</label>
+              <label className="block text-text-muted text-xs font-semibold uppercase tracking-wider mb-2">Latitude</label>
               <input 
                 type="number"
                 step="any"
@@ -163,7 +163,7 @@ export default function SettingsHub({ initialBusiness }) {
               />
             </div>
             <div>
-              <label className="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Geofence Radius (meters)</label>
+              <label className="block text-text-muted text-xs font-semibold uppercase tracking-wider mb-2">Geofence Radius (meters)</label>
               <input 
                 type="number"
                 required
@@ -176,11 +176,11 @@ export default function SettingsHub({ initialBusiness }) {
 
           <div className="border-t border-white/5 pt-6">
             <h3 className="font-bold text-slate-200 text-md">Redemption Verification PIN</h3>
-            <p className="text-xs text-slate-500 mt-1">4-digit PIN verified on claims to unlock rewards.</p>
+            <p className="text-xs text-text-secondary mt-1">4-digit PIN verified on claims to unlock rewards.</p>
           </div>
 
           <div>
-            <label className="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Staff Verification PIN</label>
+            <label className="block text-text-muted text-xs font-semibold uppercase tracking-wider mb-2">Staff Verification PIN</label>
             <input 
               type="text"
               required
@@ -206,25 +206,25 @@ export default function SettingsHub({ initialBusiness }) {
       <div className="lg:col-span-1 bg-dark-900 border border-white/10 rounded-2xl p-6 h-fit space-y-6">
         <div>
           <h3 className="font-bold text-slate-200 text-lg">Billing & Subscriptions</h3>
-          <p className="text-xs text-slate-400 mt-1">Check active plans and payment statuses.</p>
+          <p className="text-xs text-text-muted mt-1">Check active plans and payment statuses.</p>
         </div>
 
         <div className="bg-white/5 border border-white/5 rounded-xl p-4 space-y-4">
           <div className="flex justify-between items-center text-xs">
-            <span className="text-slate-400">Current Plan</span>
+            <span className="text-text-muted">Current Plan</span>
             <span className="text-white font-bold">{billingPlan}</span>
           </div>
           <div className="flex justify-between items-center text-xs">
-            <span className="text-slate-400">Cycle Status</span>
+            <span className="text-text-muted">Cycle Status</span>
             <span className="text-emerald-400 font-bold uppercase">Sandbox Active</span>
           </div>
           <div className="flex justify-between items-center text-xs">
-            <span className="text-slate-400">Pricing Tier</span>
+            <span className="text-text-muted">Pricing Tier</span>
             <span className="text-white font-bold">₹0 (Sandbox)</span>
           </div>
         </div>
 
-        <p className="text-xs text-slate-500 leading-normal">
+        <p className="text-xs text-text-secondary leading-normal">
           During sandbox execution, Returno runs in developer evaluation mode. Paid integrations are mocked.
         </p>
 

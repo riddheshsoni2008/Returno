@@ -57,32 +57,32 @@ export default function RewardsHub({ initialClaims, verificationCode }) {
       )}
 
       {/* APPROVALS SECTION */}
-      <div className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
-        <div className="px-6 py-5 border-b border-outline-variant bg-surface-container-low">
-          <h3 className="text-lg font-bold text-on-surface">
+      <div className="bg-bg-card border border-border-standard rounded-xl overflow-hidden shadow-sm">
+        <div className="px-6 py-5 border-b border-border-standard bg-bg-page">
+          <h3 className="text-lg font-bold text-text-primary">
             Pending Customer Redemptions
           </h3>
-          <p className="text-xs text-on-surface-variant mt-1 font-medium">
+          <p className="text-xs text-text-secondary mt-1 font-medium">
             Verify customer device screen is in &quot;pending&quot; status and confirm.
           </p>
         </div>
 
         {claims.length === 0 ? (
-          <div className="text-center py-16 text-on-surface-variant text-sm bg-surface">
+          <div className="text-center py-16 text-text-secondary text-sm bg-bg-card">
             No reward redemptions currently pending. Customer claim requests will appear here dynamically.
           </div>
         ) : (
-          <div className="divide-y divide-outline-variant bg-surface">
+          <div className="divide-y divide-outline-variant bg-bg-card">
             {claims.map((claim) => (
               <div key={claim._id} className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6 hover:bg-surface-container-low/50 transition-colors">
                 <div className="space-y-1">
-                  <div className="font-bold text-on-surface text-base flex items-center gap-2">
+                  <div className="font-bold text-text-primary text-base flex items-center gap-2">
                     <span className="text-lg">🎁</span> {claim.rewardTitle}
                   </div>
-                  <div className="text-xs text-on-surface-variant">
-                    Customer: <span className="text-on-surface font-semibold">{claim.customerId?.name || 'Anonymous Customer'}</span> ({claim.customerId?.email})
+                  <div className="text-xs text-text-secondary">
+                    Customer: <span className="text-text-primary font-semibold">{claim.customerId?.name || 'Anonymous Customer'}</span> ({claim.customerId?.email})
                   </div>
-                  <div className="text-[10px] text-outline">
+                  <div className="text-[10px] text-text-muted">
                     Requested on {new Date(claim.updatedAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
                   </div>
                 </div>

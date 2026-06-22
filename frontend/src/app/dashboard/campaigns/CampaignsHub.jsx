@@ -88,7 +88,7 @@ export default function CampaignsHub({ initialCampaigns }) {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Campaign Title</label>
+              <label className="block text-text-muted text-xs font-semibold uppercase tracking-wider mb-2">Campaign Title</label>
               <input 
                 type="text"
                 required
@@ -99,7 +99,7 @@ export default function CampaignsHub({ initialCampaigns }) {
               />
             </div>
             <div>
-              <label className="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Reward Title</label>
+              <label className="block text-text-muted text-xs font-semibold uppercase tracking-wider mb-2">Reward Title</label>
               <input 
                 type="text"
                 required
@@ -113,7 +113,7 @@ export default function CampaignsHub({ initialCampaigns }) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Required Stamps</label>
+              <label className="block text-text-muted text-xs font-semibold uppercase tracking-wider mb-2">Required Stamps</label>
               <input 
                 type="number"
                 required
@@ -125,7 +125,7 @@ export default function CampaignsHub({ initialCampaigns }) {
               />
             </div>
             <div>
-              <label className="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Short Description</label>
+              <label className="block text-text-muted text-xs font-semibold uppercase tracking-wider mb-2">Short Description</label>
               <input 
                 type="text"
                 required
@@ -149,7 +149,7 @@ export default function CampaignsHub({ initialCampaigns }) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {campaigns.length === 0 ? (
-          <div className="col-span-2 text-center py-12 bg-dark-900 border border-white/10 rounded-2xl text-slate-500 text-sm">
+          <div className="col-span-2 text-center py-12 bg-dark-900 border border-white/10 rounded-2xl text-text-secondary text-sm">
             No active campaigns found. Launch your first stamp card using the button above.
           </div>
         ) : (
@@ -158,16 +158,16 @@ export default function CampaignsHub({ initialCampaigns }) {
               <div>
                 <div className="flex justify-between items-start mb-4">
                   <span className={`text-[10px] uppercase tracking-wider font-extrabold px-2.5 py-1 rounded-full ${
-                    camp.isActive ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400' : 'bg-slate-500/10 text-slate-400'
+                    camp.isActive ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400' : 'bg-slate-500/10 text-text-muted'
                   }`}>
                     {camp.isActive ? 'Active' : 'Draft'}
                   </span>
-                  <span className="text-xs text-slate-500">Stamps target: {camp.requiredStamps}</span>
+                  <span className="text-xs text-text-secondary">Stamps target: {camp.requiredStamps}</span>
                 </div>
                 <h3 className="text-xl font-bold text-slate-100 mb-2">{camp.title}</h3>
-                <p className="text-slate-400 text-sm mb-4 leading-relaxed">{camp.description}</p>
+                <p className="text-text-muted text-sm mb-4 leading-relaxed">{camp.description}</p>
                 <div className="bg-white/5 border border-white/5 p-4 rounded-xl mb-4">
-                  <div className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider mb-1">Unlocks Reward</div>
+                  <div className="text-[10px] text-text-secondary font-semibold uppercase tracking-wider mb-1">Unlocks Reward</div>
                   <div className="text-sm font-bold text-yellow-400">🎁 {camp.rewardTitle}</div>
                 </div>
               </div>

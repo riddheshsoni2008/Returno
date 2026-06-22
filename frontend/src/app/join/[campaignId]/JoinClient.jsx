@@ -69,7 +69,7 @@ export default function JoinClient({ campaign, business, initialUser }) {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 flex items-center justify-center py-12 px-4 relative overflow-hidden">
+    <div className="min-h-screen bg-slate-50 text-text-primary flex items-center justify-center py-12 px-4 relative overflow-hidden">
       <div className="absolute top-1/4 left-1/4 w-80 h-80 bg-red-500/5 rounded-full blur-[100px] pointer-events-none"></div>
       <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-amber-500/5 rounded-full blur-[80px] pointer-events-none"></div>
 
@@ -77,11 +77,11 @@ export default function JoinClient({ campaign, business, initialUser }) {
         
         {/* Business Header */}
         <div className="text-center">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-red-600 to-rose-600 flex items-center justify-center font-bold text-2xl mx-auto shadow-lg shadow-red-500/10 border border-slate-100 mb-4 text-white">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-red-600 to-rose-600 flex items-center justify-center font-bold text-2xl mx-auto shadow-lg shadow-red-500/10 border border-border-standard mb-4 text-white">
             {business.name?.[0] || '?'}
           </div>
-          <h1 className="text-xl font-black text-slate-900">{business.name}</h1>
-          <p className="text-xs text-slate-500 mt-1 capitalize">📍 {business.address || business.city || 'Local Business'}</p>
+          <h1 className="text-xl font-black text-text-primary">{business.name}</h1>
+          <p className="text-xs text-text-secondary mt-1 capitalize">📍 {business.address || business.city || 'Local Business'}</p>
         </div>
 
         {/* Campaign Info Card */}
@@ -90,31 +90,31 @@ export default function JoinClient({ campaign, business, initialUser }) {
             <span className="text-[9px] uppercase tracking-widest font-extrabold px-2.5 py-1 rounded-full bg-red-50 border border-red-100 text-red-600">
               Loyalty Campaign
             </span>
-            <span className="text-[10px] text-slate-500 font-semibold bg-white px-2 py-0.5 rounded border border-slate-100">
+            <span className="text-[10px] text-text-secondary font-semibold bg-white px-2 py-0.5 rounded border border-border-standard">
               {campaign.requiredStamps} stamps to reward
             </span>
           </div>
-          <h2 className="text-lg font-black text-slate-900">{campaign.title}</h2>
+          <h2 className="text-lg font-black text-text-primary">{campaign.title}</h2>
           <p className="text-xs text-slate-600 leading-relaxed">{campaign.description}</p>
-          <div className="flex items-center gap-2 bg-white border border-slate-100 rounded-xl p-3">
+          <div className="flex items-center gap-2 bg-white border border-border-standard rounded-xl p-3">
             <span className="text-lg">🎁</span>
             <div>
-              <div className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Reward</div>
+              <div className="text-[9px] text-text-muted font-bold uppercase tracking-wider">Reward</div>
               <div className="text-sm font-bold text-amber-700">{campaign.rewardTitle}</div>
             </div>
           </div>
           <div className="flex gap-4 text-center">
-            <div className="flex-1 bg-white rounded-xl p-2.5 border border-slate-100">
+            <div className="flex-1 bg-white rounded-xl p-2.5 border border-border-standard">
               <div className="text-lg font-black text-red-600">{campaign.pointsPerCheckin || 10}</div>
-              <div className="text-[9px] text-slate-400 font-bold uppercase">Pts/Check-in</div>
+              <div className="text-[9px] text-text-muted font-bold uppercase">Pts/Check-in</div>
             </div>
-            <div className="flex-1 bg-white rounded-xl p-2.5 border border-slate-100">
+            <div className="flex-1 bg-white rounded-xl p-2.5 border border-border-standard">
               <div className="text-lg font-black text-amber-600">🔥</div>
-              <div className="text-[9px] text-slate-400 font-bold uppercase">Streak Bonus</div>
+              <div className="text-[9px] text-text-muted font-bold uppercase">Streak Bonus</div>
             </div>
-            <div className="flex-1 bg-white rounded-xl p-2.5 border border-slate-100">
-              <div className="text-lg font-black text-slate-800">{campaign.requiredStamps}</div>
-              <div className="text-[9px] text-slate-400 font-bold uppercase">Goal</div>
+            <div className="flex-1 bg-white rounded-xl p-2.5 border border-border-standard">
+              <div className="text-lg font-black text-text-primary">{campaign.requiredStamps}</div>
+              <div className="text-[9px] text-text-muted font-bold uppercase">Goal</div>
             </div>
           </div>
         </div>
@@ -132,9 +132,9 @@ export default function JoinClient({ campaign, business, initialUser }) {
         {/* Not logged in — auth flow */}
         {!user && (
           <div className="space-y-5">
-            <div className="text-center border-t border-slate-100 pt-4">
-              <h3 className="font-bold text-sm text-slate-800">Sign in to join this campaign</h3>
-              <p className="text-xs text-slate-500 mt-1">Quick OTP verification — no password needed</p>
+            <div className="text-center border-t border-border-standard pt-4">
+              <h3 className="font-bold text-sm text-text-primary">Sign in to join this campaign</h3>
+              <p className="text-xs text-text-secondary mt-1">Quick OTP verification — no password needed</p>
             </div>
 
             {!otpSent ? (
@@ -144,7 +144,7 @@ export default function JoinClient({ campaign, business, initialUser }) {
                   placeholder="Your name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 text-sm focus:outline-none focus:border-red-500 transition-colors"
+                  className="w-full bg-slate-50 border border-border-standard rounded-xl py-3 px-4 text-text-primary text-sm focus:outline-none focus:border-red-500 transition-colors"
                 />
                 <input 
                   type="email"
@@ -152,7 +152,7 @@ export default function JoinClient({ campaign, business, initialUser }) {
                   placeholder="Email address"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 text-sm focus:outline-none focus:border-red-500 transition-colors"
+                  className="w-full bg-slate-50 border border-border-standard rounded-xl py-3 px-4 text-text-primary text-sm focus:outline-none focus:border-red-500 transition-colors"
                 />
                 <button 
                   type="submit"
@@ -170,7 +170,7 @@ export default function JoinClient({ campaign, business, initialUser }) {
                   placeholder="Enter 6-digit OTP"
                   value={otpCode}
                   onChange={(e) => setOtpCode(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-center tracking-[0.5em] text-lg font-bold focus:outline-none focus:border-red-500 transition-colors text-slate-800"
+                  className="w-full bg-slate-50 border border-border-standard rounded-xl py-3 px-4 text-center tracking-[0.5em] text-lg font-bold focus:outline-none focus:border-red-500 transition-colors text-text-primary"
                 />
                 <button 
                   type="submit"
@@ -185,9 +185,9 @@ export default function JoinClient({ campaign, business, initialUser }) {
 
         {/* Logged in, no result yet — show join button */}
         {user && !joinResult && (
-          <div className="space-y-4 border-t border-slate-100 pt-5">
+          <div className="space-y-4 border-t border-border-standard pt-5">
             <div className="text-center">
-              <p className="text-xs text-slate-500">Signed in as <span className="font-bold text-slate-700">{user.email || user.name}</span></p>
+              <p className="text-xs text-text-secondary">Signed in as <span className="font-bold text-slate-700">{user.email || user.name}</span></p>
             </div>
             <button
               onClick={handleJoin}
@@ -201,23 +201,23 @@ export default function JoinClient({ campaign, business, initialUser }) {
 
         {/* Join result */}
         {joinResult && (
-          <div className="space-y-5 text-center border-t border-slate-100 pt-5" style={{ animation: 'fade-in-up 0.4s ease-out' }}>
+          <div className="space-y-5 text-center border-t border-border-standard pt-5" style={{ animation: 'fade-in-up 0.4s ease-out' }}>
             {joinResult.alreadyJoined ? (
               <div className="space-y-2">
                 <div className="text-4xl">👋</div>
-                <h3 className="text-lg font-black text-slate-900">Already a Member!</h3>
-                <p className="text-xs text-slate-500">You&apos;re already enrolled in this loyalty campaign.</p>
+                <h3 className="text-lg font-black text-text-primary">Already a Member!</h3>
+                <p className="text-xs text-text-secondary">You&apos;re already enrolled in this loyalty campaign.</p>
               </div>
             ) : (
               <div className="space-y-2">
                 <div className="text-4xl">🎉</div>
                 <h3 className="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-rose-600">Welcome Aboard!</h3>
-                <p className="text-xs text-slate-500">You&apos;ve successfully joined <span className="font-bold text-slate-700">{campaign.title}</span></p>
+                <p className="text-xs text-text-secondary">You&apos;ve successfully joined <span className="font-bold text-slate-700">{campaign.title}</span></p>
               </div>
             )}
 
             <div className="bg-slate-50 border border-slate-200/60 rounded-xl p-4 text-left space-y-2">
-              <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">How it works</div>
+              <div className="text-[10px] text-text-muted font-bold uppercase tracking-wider">How it works</div>
               <ul className="text-xs text-slate-600 space-y-1.5">
                 <li className="flex items-start gap-2"><span>1️⃣</span> Visit {business.name} and make a purchase</li>
                 <li className="flex items-start gap-2"><span>2️⃣</span> Scan the check-in QR at the counter</li>
@@ -235,7 +235,7 @@ export default function JoinClient({ campaign, business, initialUser }) {
               </Link>
               <Link 
                 href="/" 
-                className="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs rounded-xl transition-all border border-slate-200 text-center"
+                className="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs rounded-xl transition-all border border-border-standard text-center"
               >
                 Back to Home
               </Link>

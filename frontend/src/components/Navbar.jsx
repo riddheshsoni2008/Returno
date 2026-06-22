@@ -59,14 +59,14 @@ export default function Navbar() {
     <nav
       className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-white/90 backdrop-blur-md border-b border-slate-200 py-4 shadow-sm"
+          ? "bg-white/90 backdrop-blur-md border-b border-border-standard py-4 shadow-sm"
           : "bg-transparent py-6"
       }`}
     >
       <div className="container mx-auto px-6 md:px-12 flex justify-between items-center">
         <Link
           href="/"
-          className="text-2xl font-black tracking-tight text-slate-900 flex items-center gap-2 hover:scale-[1.01] transition-transform"
+          className="text-2xl font-black tracking-tight text-text-primary flex items-center gap-2 hover:scale-[1.01] transition-transform"
         >
           <span className="w-8 h-8 rounded-xl bg-gradient-to-tr from-brand-600 to-rose-500 flex items-center justify-center text-sm shadow-md shadow-brand-500/20 text-white font-extrabold">
             ✨
