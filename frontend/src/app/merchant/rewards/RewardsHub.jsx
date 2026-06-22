@@ -45,7 +45,9 @@ export default function RewardsHub({ initialCampaigns, initialClaims, verificati
         console.error('Error generating QR code:', err);
       });
     } else {
-      setQrDataUrl(prev => prev !== '' ? '' : prev);
+      setTimeout(() => {
+        setQrDataUrl(prev => prev !== '' ? '' : prev);
+      }, 0);
     }
   }, [selectedCampaignForQr, appUrl]);
 

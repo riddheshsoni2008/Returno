@@ -6,13 +6,15 @@ import { useState, useEffect } from "react";
 
 export default function MerchantNav() {
   const pathname = usePathname();
-  const [currentHash, setCurrentHash] = useState("");
+  const [currentHash, setCurrentHash] = useState(() => {
+    if (typeof window !== "undefined") {
+      return window.location.hash;
+    }
+    return "";
+  });
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    
-    // Set initial hash
-    setCurrentHash(window.location.hash);
 
     const handleHashChange = () => {
       setCurrentHash(window.location.hash);
