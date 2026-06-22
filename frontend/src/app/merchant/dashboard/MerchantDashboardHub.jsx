@@ -977,7 +977,7 @@ export default function MerchantDashboardHub({
           <div className="w-full border-b border-slate-150 py-4 px-6 bg-white shrink-0">
             <div className="max-w-6xl mx-auto flex justify-between items-center">
               <div className="flex items-center gap-3">
-                <span className="px-2.5 py-1 bg-red-50 text-red-600 font-bold text-[9px] uppercase tracking-widest rounded-full border border-red-100/50">
+                <span className="px-2.5 py-1 bg-purple-50 text-purple-650 font-bold text-[9px] uppercase tracking-widest rounded-full border border-purple-100/50">
                   ⚡ Campaign Suite
                 </span>
                 <h3 className="text-lg md:text-xl font-black text-slate-900 tracking-tight">
@@ -1019,7 +1019,7 @@ export default function MerchantDashboardHub({
                   }}
                   className={`flex-1 md:flex-initial py-3 px-4 rounded-xl text-xs font-extrabold transition-all duration-200 flex items-center justify-center md:justify-start gap-2.5 ${
                     qrMode === "checkin"
-                      ? "bg-red-600 text-white shadow-md shadow-red-650/15 scale-[1.01]"
+                      ? "bg-purple-650 text-white shadow-md shadow-purple-650/15 scale-[1.01]"
                       : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/80"
                   }`}
                 >
@@ -1133,32 +1133,28 @@ export default function MerchantDashboardHub({
                     >
                       🖨️ Print Card
                     </button>
-                  </div>
-                </div>
-              )}
-
-              {/* DYNAMIC CHECK-IN TAB */}
+                                {/* DYNAMIC CHECK-IN TAB */}
               {qrMode === "checkin" && (
                 <div className="space-y-6 flex flex-col items-center py-2 animate-[fade-in_0.2s_ease-out]">
                   <div className="w-full max-w-sm bg-white border border-slate-200/60 rounded-3xl p-6 shadow-sm relative overflow-hidden group">
-                    <div className="flex justify-between items-center mb-5 border-b border-dashed border-rose-100 pb-4">
+                    <div className="flex justify-between items-center mb-5 border-b border-dashed border-purple-100 pb-4">
                       <div>
-                        <div className="text-[10px] font-bold text-rose-500 uppercase tracking-widest font-mono">
+                        <div className="text-[10px] font-bold text-purple-550 uppercase tracking-widest font-mono">
                           Security Key
                         </div>
                         <div className="text-xs font-black text-slate-800 mt-0.5">
                           Live Session Token
                         </div>
                       </div>
-                      <div className="flex items-center gap-1.5 bg-rose-50 border border-rose-100/50 px-2.5 py-0.5 rounded-full">
-                        <span className="w-1.5 h-1.5 rounded-full bg-rose-600 animate-ping"></span>
-                        <span className="text-[9px] font-extrabold text-rose-700 uppercase tracking-wider">
+                      <div className="flex items-center gap-1.5 bg-purple-50 border border-purple-100/50 px-2.5 py-0.5 rounded-full">
+                        <span className="w-1.5 h-1.5 rounded-full bg-purple-600 animate-ping"></span>
+                        <span className="text-[9px] font-extrabold text-purple-700 uppercase tracking-wider">
                           Live
                         </span>
                       </div>
                     </div>
 
-                    <div className="bg-white border border-rose-100 p-5 rounded-3xl w-fit mx-auto shadow-sm ring-8 ring-rose-50/50 transition-all hover:scale-[1.02] duration-300 mb-5 relative">
+                    <div className="bg-white border border-purple-100 p-5 rounded-3xl w-fit mx-auto shadow-sm ring-8 ring-purple-50/50 transition-all hover:scale-[1.02] duration-300 mb-5 relative">
                       {dynamicQrDataUrl ? (
                         <img
                           src={dynamicQrDataUrl}
@@ -1166,10 +1162,10 @@ export default function MerchantDashboardHub({
                           className="w-44 h-44 select-none pointer-events-none"
                         />
                       ) : (
-                        <div className="w-44 h-44 bg-rose-50/40 rounded-xl flex items-center justify-center">
+                        <div className="w-44 h-44 bg-purple-50/40 rounded-xl flex items-center justify-center">
                           <div className="text-center space-y-2">
-                            <div className="w-7 h-7 border-3 border-rose-200 border-t-rose-600 rounded-full animate-spin mx-auto"></div>
-                            <p className="text-[9px] font-extrabold text-rose-600 uppercase tracking-wider">
+                            <div className="w-7 h-7 border-3 border-purple-200 border-t-purple-600 rounded-full animate-spin mx-auto"></div>
+                            <p className="text-[9px] font-extrabold text-purple-600 uppercase tracking-wider">
                               Generating...
                             </p>
                           </div>
@@ -1185,7 +1181,7 @@ export default function MerchantDashboardHub({
 
                   <button
                     onClick={() => generateDynamicQr(selectedCampaign._id)}
-                    className="w-full max-w-sm py-3.5 bg-gradient-to-r from-red-600 to-rose-650 hover:from-red-500 hover:to-rose-600 text-white font-bold text-xs rounded-xl shadow-lg shadow-red-500/10 hover:scale-[1.01] active:scale-[0.99] transition-all uppercase tracking-wider flex items-center justify-center gap-2"
+                    className="w-full max-w-sm py-3.5 bg-gradient-to-r from-purple-600 to-indigo-650 hover:from-purple-500 hover:to-indigo-600 text-white font-bold text-xs rounded-xl shadow-lg shadow-purple-500/10 hover:scale-[1.01] active:scale-[0.99] transition-all uppercase tracking-wider flex items-center justify-center gap-2"
                   >
                     🔄 Force Refresh Code
                   </button>
@@ -1378,7 +1374,8 @@ export default function MerchantDashboardHub({
               )}
             </div>
           </div>
-        </div>
+        
+ 
       )}
 
       {/* CUSTOM CONFIRMATION MODAL */}
