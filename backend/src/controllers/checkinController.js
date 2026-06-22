@@ -144,8 +144,56 @@ export const validateCheckin = async (req, res) => {
       return res.status(401).json({ error: "Customer not found" });
     }
 
-    // 1 & 2 & 3. Atomically find and claim the active QR session
+    // 1. Find the QR session regardless of expiry to check for replay
     const now = new Date();
+    const existingSession = await QrSession.findOne({ token });
+
+    if (!existingSession) {
+      return res.status(400).json({
+        error: "This QR code is invalid. Please ask the shop for a fresh one.",
+      });
+    }
+
+    // Check if THIS specific customer already scanned THIS specific QR token
+    if (
+      existingSession.usedBy &&
+      existingSession.usedBy.includes(customer._id)
+    ) {
+      // Return "already check in" equivalent
+      const business = await Business.findOne({
+        "campaigns._id": existingSession.campaignId,
+      });
+      let currentStreak = 0,
+        longestStreak = 0,
+        totalPoints = 0,
+        totalCheckins = 0;
+
+      if (business) {
+        const enrollment = customer.joinedCampaigns.find(
+          (jc) =>
+            jc.campaignId &&
+            jc.campaignId.toString() === existingSession.campaignId.toString(),
+        );
+        if (enrollment) {
+          currentStreak = enrollment.currentStreak;
+          longestStreak = enrollment.longestStreak;
+          totalPoints = enrollment.totalPoints;
+          totalCheckins = enrollment.totalCheckins;
+        }
+      }
+
+      return res.json({
+        success: true,
+        alreadyClaimed: true,
+        message: "Already checked in with this QR code!",
+        currentStreak,
+        longestStreak,
+        totalPoints,
+        totalCheckins,
+      });
+    }
+
+    // Now attempt to claim it if it hasn't been expired/claimed by others
     const qrSession = await QrSession.findOneAndUpdate(
       {
         token,
@@ -163,28 +211,10 @@ export const validateCheckin = async (req, res) => {
       console.warn(
         `- Validation failed: QR Session was either already used, expired, or invalid.`,
       );
-      console.log(`- Current time: ${now.toISOString()}`);
-      // Let's do a debug check to print why it was invalid
-      const debugSession = await QrSession.findOne({ token });
-      if (debugSession) {
-        console.log(`- Debug QR session found in DB:`, {
-          id: debugSession._id,
-          isExpired: debugSession.isExpired,
-          expiresAt: debugSession.expiresAt.toISOString(),
-          usedCount: debugSession.usedBy.length,
-          type: debugSession.type,
-        });
-      } else {
-        console.log(`- Debug QR session: No document with token found in DB.`);
-      }
-
-      // It was either already used, expired, or invalid.
-      return res
-        .status(400)
-        .json({
-          error:
-            "This QR code is invalid, expired, or has already been scanned. Please ask the shop for a fresh one.",
-        });
+      return res.status(400).json({
+        error:
+          "This QR code is expired or has already been scanned. Please ask the shop for a fresh one.",
+      });
     }
 
     console.log(
@@ -232,26 +262,13 @@ export const validateCheckin = async (req, res) => {
         customer.joinedCampaigns[customer.joinedCampaigns.length - 1];
     }
 
-    // 6. Check if already checked in today
-    if (
-      enrollment.lastCheckinDate &&
-      isSameDay(enrollment.lastCheckinDate, now)
-    ) {
-      return res.json({
-        success: true,
-        alreadyClaimed: true,
-        message: "Today's streak already claimed! Come back tomorrow.",
-        currentStreak: enrollment.currentStreak,
-        longestStreak: enrollment.longestStreak,
-        totalPoints: enrollment.totalPoints,
-        totalCheckins: enrollment.totalCheckins,
-      });
-    }
-
     // 7. Calculate streak
     let newStreak = 1; // Default: first check-in or reset
     if (enrollment.lastCheckinDate) {
-      if (isYesterday(enrollment.lastCheckinDate, now)) {
+      if (isSameDay(enrollment.lastCheckinDate, now)) {
+        // Same day check-in with a different QR code: do not increment streak, just keep current
+        newStreak = enrollment.currentStreak || 1;
+      } else if (isYesterday(enrollment.lastCheckinDate, now)) {
         // Consecutive day — extend streak
         newStreak = Math.min(enrollment.currentStreak + 1, campaign.maxStreak);
       }

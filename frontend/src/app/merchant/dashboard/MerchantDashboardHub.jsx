@@ -282,7 +282,7 @@ export default function MerchantDashboardHub({
     setBulkLoading(true);
     try {
       const res = await apiFetch(`/qr/bulk/${selectedCampaign._id}`, {
-        method: "DELETE"
+        method: "DELETE",
       });
       const data = await res.json();
       if (data.success) {
@@ -292,7 +292,7 @@ export default function MerchantDashboardHub({
           isOpen: true,
           title: "Database Cleared",
           message: `${data.deletedCount} unused QR codes deleted successfully to reclaim database space.`,
-          type: "success"
+          type: "success",
         });
       } else {
         throw new Error(data.error);
@@ -302,7 +302,7 @@ export default function MerchantDashboardHub({
         isOpen: true,
         title: "Clear Failed",
         message: err.message || "Failed to clear unused QR codes",
-        type: "error"
+        type: "error",
       });
     } finally {
       setBulkLoading(false);
@@ -784,7 +784,6 @@ export default function MerchantDashboardHub({
 
       {selectedCampaign && (
         <div className="fixed inset-0 bg-white z-[100] flex flex-col animate-[fade-in_0.2s_ease-out]">
-          
           {/* TOP BAR / HEADER */}
           <div className="w-full border-b border-slate-150 py-4 px-6 bg-white shrink-0">
             <div className="max-w-6xl mx-auto flex justify-between items-center">
@@ -807,13 +806,12 @@ export default function MerchantDashboardHub({
 
           {/* MAIN CONTAINER */}
           <div className="flex-1 max-w-6xl w-full mx-auto p-4 md:p-6 flex flex-col md:flex-row gap-6 min-h-0 overflow-hidden">
-            
             {/* TABS SIDEBAR (Left on Desktop, Top on Mobile) */}
             <div className="w-full md:w-64 shrink-0 flex flex-col gap-4">
               <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest hidden md:block">
                 Navigation
               </div>
-              
+
               <div className="flex md:flex-col bg-slate-100 md:bg-transparent rounded-2xl md:rounded-none p-1 md:p-0 gap-1">
                 <button
                   onClick={() => setQrMode("join")}
@@ -859,26 +857,32 @@ export default function MerchantDashboardHub({
                   Workspace Guide
                 </h4>
                 <p className="text-[10.5px] text-slate-505 leading-relaxed font-medium">
-                  {qrMode === "join" && "Share this permanent QR link to enroll customers into your campaign."}
-                  {qrMode === "checkin" && "Place this live rotating QR on a counter tablet. Codes expire dynamically to prevent scan fraud."}
-                  {qrMode === "bulk" && "Generate, print, and save sheets of unique single-use stamp codes for offline customer cards."}
+                  {qrMode === "join" &&
+                    "Share this permanent QR link to enroll customers into your campaign."}
+                  {qrMode === "checkin" &&
+                    "Place this live rotating QR on a counter tablet. Codes expire dynamically to prevent scan fraud."}
+                  {qrMode === "bulk" &&
+                    "Generate, print, and save sheets of unique single-use stamp codes for offline customer cards."}
                 </p>
               </div>
             </div>
 
             {/* CONTENT AREA (Right on Desktop, Bottom on Mobile) */}
             <div className="flex-1 bg-slate-50 border border-slate-200/50 rounded-3xl p-6 overflow-y-auto min-h-0 scrollable-content">
-              
               {/* JOIN QR TAB */}
               {qrMode === "join" && (
                 <div className="space-y-6 flex flex-col items-center py-2 animate-[fade-in_0.2s_ease-out]">
                   <div className="w-full max-w-sm bg-white border border-slate-200/60 rounded-3xl p-6 shadow-sm relative overflow-hidden group">
                     <div className="absolute -top-12 -right-12 w-24 h-24 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 rounded-full blur-xl group-hover:scale-150 transition-all duration-500"></div>
-                    
+
                     <div className="flex justify-between items-center mb-5 border-b border-dashed border-slate-200 pb-4">
                       <div>
-                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">Permanent QR</div>
-                        <div className="text-xs font-black text-slate-800 mt-0.5">Campaign Invitation Card</div>
+                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">
+                          Permanent QR
+                        </div>
+                        <div className="text-xs font-black text-slate-800 mt-0.5">
+                          Campaign Invitation Card
+                        </div>
                       </div>
                       <span className="w-2.5 h-2.5 rounded-full bg-slate-900 animate-pulse"></span>
                     </div>
@@ -907,12 +911,15 @@ export default function MerchantDashboardHub({
                         </span>
                         <button
                           onClick={() => {
-                            navigator.clipboard.writeText(`${appUrl}/join/${selectedCampaign._id}`);
+                            navigator.clipboard.writeText(
+                              `${appUrl}/join/${selectedCampaign._id}`,
+                            );
                             setAlertModal({
                               isOpen: true,
                               title: "Copied!",
-                              message: "Invitation link successfully copied to clipboard.",
-                              type: "success"
+                              message:
+                                "Invitation link successfully copied to clipboard.",
+                              type: "success",
                             });
                           }}
                           className="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] rounded-lg transition-all active:scale-95 whitespace-nowrap"
@@ -947,12 +954,18 @@ export default function MerchantDashboardHub({
                   <div className="w-full max-w-sm bg-white border border-slate-200/60 rounded-3xl p-6 shadow-sm relative overflow-hidden group">
                     <div className="flex justify-between items-center mb-5 border-b border-dashed border-rose-100 pb-4">
                       <div>
-                        <div className="text-[10px] font-bold text-rose-500 uppercase tracking-widest font-mono">Security Key</div>
-                        <div className="text-xs font-black text-slate-800 mt-0.5">Rotating Session Token</div>
+                        <div className="text-[10px] font-bold text-rose-500 uppercase tracking-widest font-mono">
+                          Security Key
+                        </div>
+                        <div className="text-xs font-black text-slate-800 mt-0.5">
+                          Rotating Session Token
+                        </div>
                       </div>
                       <div className="flex items-center gap-1.5 bg-rose-50 border border-rose-100/50 px-2.5 py-0.5 rounded-full">
                         <span className="w-1.5 h-1.5 rounded-full bg-rose-600 animate-ping"></span>
-                        <span className="text-[9px] font-extrabold text-rose-700 uppercase tracking-wider">Live</span>
+                        <span className="text-[9px] font-extrabold text-rose-700 uppercase tracking-wider">
+                          Live
+                        </span>
                       </div>
                     </div>
 
@@ -967,14 +980,17 @@ export default function MerchantDashboardHub({
                         <div className="w-44 h-44 bg-rose-50/40 rounded-xl flex items-center justify-center">
                           <div className="text-center space-y-2">
                             <div className="w-7 h-7 border-3 border-rose-200 border-t-rose-600 rounded-full animate-spin mx-auto"></div>
-                            <p className="text-[9px] font-extrabold text-rose-600 uppercase tracking-wider">Generating...</p>
+                            <p className="text-[9px] font-extrabold text-rose-600 uppercase tracking-wider">
+                              Generating...
+                            </p>
                           </div>
                         </div>
                       )}
                     </div>
 
                     <p className="text-[10px] text-slate-400 font-bold text-center leading-relaxed px-4">
-                      This code rotates automatically every 60 seconds. Leave this screen open for customer stamp scanning.
+                      This code rotates automatically every 60 seconds. Leave
+                      this screen open for customer stamp scanning.
                     </p>
                   </div>
 
@@ -989,7 +1005,7 @@ export default function MerchantDashboardHub({
 
               {/* BULK QR CODE TAB */}
               {qrMode === "bulk" && (
-                <div className="space-y-5 py-2 animate-[fade-in_0.2s_ease-out] h-full flex flex-col">
+                <div className="space-y-5 py-2 animate-[fade-in_0.2s_ease-out]">
                   {!bulkGenerated ? (
                     <div className="w-full max-w-md mx-auto space-y-5 my-auto">
                       <div className="bg-white border border-slate-200 rounded-3xl p-6 space-y-5 shadow-sm">
@@ -1069,11 +1085,13 @@ export default function MerchantDashboardHub({
                       </button>
                     </div>
                   ) : (
-                    <div className="space-y-4 flex flex-col h-full">
+                    <div className="space-y-4">
                       {/* Summary toolbar */}
                       <div className="bg-white border border-slate-200 rounded-2xl p-4 flex flex-col sm:flex-row gap-3.5 justify-between items-center shadow-sm shrink-0">
                         <div className="flex items-center gap-2.5">
-                          <span className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center text-white text-[10px] font-black shadow-sm">✓</span>
+                          <span className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center text-white text-[10px] font-black shadow-sm">
+                            ✓
+                          </span>
                           <div className="text-left">
                             <div className="text-xs font-black text-slate-900">
                               Active QR Sheets
@@ -1103,11 +1121,17 @@ export default function MerchantDashboardHub({
                               setConfirmModal({
                                 isOpen: true,
                                 title: "Clear Unused QRs?",
-                                message: "This will permanently delete all unused bulk QR codes from the database and reclaim storage space. Proceed?",
+                                message:
+                                  "This will permanently delete all unused bulk QR codes from the database and reclaim storage space. Proceed?",
                                 onConfirm: () => {
-                                  setConfirmModal({ isOpen: false, title: "", message: "", onConfirm: null });
+                                  setConfirmModal({
+                                    isOpen: false,
+                                    title: "",
+                                    message: "",
+                                    onConfirm: null,
+                                  });
                                   clearUnusedBulkSessions();
-                                }
+                                },
                               });
                             }}
                             className="py-2 px-3 bg-red-50 hover:bg-red-100 border border-red-100 text-red-655 font-bold text-[10px] rounded-xl transition-all uppercase tracking-wider flex items-center justify-center gap-1 hover:scale-[1.02] active:scale-[0.98]"
@@ -1119,7 +1143,7 @@ export default function MerchantDashboardHub({
                       </div>
 
                       {/* Grid */}
-                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 overflow-y-auto pr-1 py-1 scrollable-content flex-1 min-h-0">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                         {bulkQrCodes.map((qr) => (
                           <div
                             key={qr.index}
