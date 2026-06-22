@@ -16,24 +16,24 @@ export default function Hero() {
           Revolutionizing Customer Retention
         </div>
         
-        <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 leading-tight text-slate-900 scroll-reveal">
+        <h1 className="text-5xl md:text-7xl font-black tracking-tight mb-8 leading-[1.15] text-slate-900 scroll-reveal">
           Turn Every Visit Into <br className="hidden md:block" />
-          <span className="text-brand-600">
+          <span className="bg-gradient-to-r from-brand-600 to-rose-500 bg-clip-text text-transparent">
             Customer Loyalty
           </span>
         </h1>
         
-        <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto mb-10 scroll-reveal" style={{ animationDelay: "0.1s" }}>
+        <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto mb-10 font-medium scroll-reveal" style={{ animationDelay: "0.1s" }}>
           Digital loyalty programs that help local businesses increase repeat customers and reward loyal visitors.
-          <strong className="text-slate-900 font-semibold block mt-2">Simple, secure, and cardless.</strong>
+          <strong className="text-slate-900 font-extrabold block mt-2">Simple, secure, and cardless.</strong>
         </p>
 
         <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4 mb-20 scroll-reveal" style={{ animationDelay: "0.2s" }}>
-          <Link href="/auth?tab=register" className="px-8 py-4 rounded-xl bg-brand-600 text-white font-semibold text-lg hover:bg-brand-700 transition-colors shadow-sm hover:shadow-md w-full sm:w-auto flex items-center justify-center group">
+          <Link href="/auth?tab=register" className="px-8 py-4 rounded-2xl bg-gradient-to-r from-brand-600 to-rose-600 text-white font-extrabold text-lg hover:from-brand-500 hover:to-rose-500 transition-all duration-300 shadow-lg shadow-brand-550/20 hover:shadow-xl hover:shadow-brand-500/30 hover:scale-[1.02] w-full sm:w-auto flex items-center justify-center group">
             Start Free Trial
             <ChevronRight className="w-5 h-5 ml-1 group-hover:translate-x-1 transition-transform" />
           </Link>
-          <a href="#how-it-works" className="px-8 py-4 rounded-xl bg-white border-2 border-slate-200 text-slate-700 font-semibold text-lg hover:border-slate-300 hover:bg-slate-50 transition-colors w-full sm:w-auto flex items-center justify-center">
+          <a href="#how-it-works" className="px-8 py-4 rounded-2xl bg-white border border-slate-200 text-slate-700 font-extrabold text-lg hover:border-slate-350 hover:bg-slate-50/80 transition-all duration-300 shadow-sm w-full sm:w-auto flex items-center justify-center">
             Watch Demo
           </a>
         </div>

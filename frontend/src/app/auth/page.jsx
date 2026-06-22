@@ -179,7 +179,7 @@ function CustomerAuthContent() {
                   setError("");
                   setSuccess("");
                 }}
-                className={`py-2.5 rounded-lg text-xs font-bold tracking-wide uppercase transition-all ${mode === "login" ? "bg-red-600 text-white shadow shadow-red-500/10" : "text-slate-400 hover:text-slate-700"}`}
+                className={`py-2.5 rounded-lg text-xs font-bold tracking-wide uppercase transition-all ${mode === "login" ? "bg-gradient-to-r from-brand-600 to-rose-600 text-white shadow shadow-brand-500/10" : "text-slate-400 hover:text-slate-700"}`}
               >
                 Log In
               </button>
@@ -190,7 +190,7 @@ function CustomerAuthContent() {
                   setError("");
                   setSuccess("");
                 }}
-                className={`py-2.5 rounded-lg text-xs font-bold tracking-wide uppercase transition-all ${mode === "signup" ? "bg-red-600 text-white shadow shadow-red-500/10" : "text-slate-400 hover:text-slate-700"}`}
+                className={`py-2.5 rounded-lg text-xs font-bold tracking-wide uppercase transition-all ${mode === "signup" ? "bg-gradient-to-r from-brand-600 to-rose-600 text-white shadow shadow-brand-500/10" : "text-slate-400 hover:text-slate-700"}`}
               >
                 Sign Up
               </button>
@@ -225,7 +225,7 @@ function CustomerAuthContent() {
                     placeholder="Enter your name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 text-sm focus:outline-none focus:border-red-500 transition-colors"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 text-sm focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/5 transition-all"
                   />
                 </div>
               )}
@@ -239,16 +239,16 @@ function CustomerAuthContent() {
                   placeholder="name@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 text-sm focus:outline-none focus:border-red-500 transition-colors"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 text-sm focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/5 transition-all"
                 />
-                <h3 className="text-slate-400 text-xs mt-2">
+                <h3 className="text-slate-450 text-xs mt-2">
                   OTP may arrive in your Inbox or Spam folder
                 </h3>
               </div>
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-red-500/10 transition-all text-xs uppercase tracking-wider"
+                className="w-full bg-gradient-to-r from-brand-600 to-rose-600 hover:from-brand-500 hover:to-rose-500 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-brand-500/10 transition-all text-xs uppercase tracking-wider"
               >
                 {loading ? "Sending Code..." : "Send Verification OTP"}
               </button>
@@ -266,13 +266,13 @@ function CustomerAuthContent() {
                   placeholder="000000"
                   value={otpCode}
                   onChange={(e) => setOtpCode(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3.5 px-4 text-slate-800 text-center tracking-[0.75em] text-xl font-black focus:outline-none focus:border-red-500 transition-colors"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3.5 px-4 text-slate-800 text-center tracking-[0.75em] text-xl font-black focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/5 transition-all"
                 />
                 <div className="flex justify-between items-center text-xs text-slate-500 px-1 pt-1">
                   <button
                     type="button"
                     onClick={() => setOtpSent(false)}
-                    className="text-slate-550 hover:text-red-600 transition-colors"
+                    className="text-slate-550 hover:text-brand-600 transition-colors"
                   >
                     ← Change Email
                   </button>
@@ -283,7 +283,7 @@ function CustomerAuthContent() {
                       type="button"
                       onClick={() => handleSendOtp(null)}
                       disabled={loading}
-                      className="text-red-600 hover:text-red-500 font-semibold transition-colors disabled:opacity-50"
+                      className="text-brand-600 hover:text-brand-500 font-semibold transition-colors disabled:opacity-50"
                     >
                       Resend Code
                     </button>
@@ -293,7 +293,7 @@ function CustomerAuthContent() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-red-500/10 transition-all text-xs uppercase tracking-wider"
+                className="w-full bg-gradient-to-r from-brand-600 to-rose-600 hover:from-brand-500 hover:to-rose-500 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-brand-500/10 transition-all text-xs uppercase tracking-wider"
               >
                 {loading ? "Verifying..." : "Verify & Log In"}
               </button>

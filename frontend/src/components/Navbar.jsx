@@ -66,9 +66,14 @@ export default function Navbar() {
       <div className="container mx-auto px-6 md:px-12 flex justify-between items-center">
         <Link
           href="/"
-          className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-1.5"
+          className="text-2xl font-black tracking-tight text-slate-900 flex items-center gap-2 hover:scale-[1.01] transition-transform"
         >
-          <span className="text-brand-600">Returno</span>
+          <span className="w-8 h-8 rounded-xl bg-gradient-to-tr from-brand-600 to-rose-500 flex items-center justify-center text-sm shadow-md shadow-brand-500/20 text-white font-extrabold">
+            ✨
+          </span>
+          <span className="bg-gradient-to-r from-slate-900 to-slate-800 bg-clip-text text-transparent">
+            Returno
+          </span>
         </Link>
         <div className="hidden md:flex space-x-8 text-sm font-medium text-slate-600">
           <Link
@@ -119,7 +124,7 @@ export default function Navbar() {
                   )}
                   <button
                     onClick={handleSignOut}
-                    className="px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-full border border-red-500/20 bg-red-500/10 text-red-600 text-sm font-semibold hover:bg-red-500/25 hover:text-red-700 transition-all shadow-sm flex items-center gap-2"
+                    className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-2xl border border-rose-250 bg-rose-50 text-rose-600 text-xs font-bold tracking-wide uppercase hover:bg-rose-100/80 transition-all flex items-center gap-2"
                     title="Sign Out"
                   >
                     <i className="fas fa-sign-out-alt"></i>
@@ -137,7 +142,7 @@ export default function Navbar() {
                   </Link>
                   <Link
                     href="/merchant/auth"
-                    className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-full bg-brand-600 text-white text-sm font-semibold hover:bg-brand-700 transition-all shadow-sm flex items-center gap-2"
+                    className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-brand-600 to-rose-600 text-white text-xs font-bold tracking-wide uppercase hover:from-brand-500 hover:to-rose-500 transition-all shadow-md shadow-brand-500/10 hover:shadow-lg hover:shadow-brand-500/20 flex items-center gap-2"
                     title="Merchant Portal"
                   >
                     <i className="fas fa-building text-sm"></i>
