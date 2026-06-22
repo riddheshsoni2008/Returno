@@ -165,12 +165,20 @@ export const validateCheckin = async (req, res) => {
       return res.status(404).json({ error: "Campaign is inactive or does not exist" });
     }
 
-    // Check if customer needs to restart
+    // Check if customer is enrolled
     const enrollmentCheck = customer.joinedCampaigns.find(
       (jc) => jc.campaignId && jc.campaignId.toString() === campaign._id.toString()
     );
 
-    if (enrollmentCheck && enrollmentCheck.totalCheckins > 0 && enrollmentCheck.totalCheckins % campaign.requiredStamps === 0) {
+    if (!enrollmentCheck) {
+      return res.status(400).json({
+        notEnrolled: true,
+        campaignId: campaign._id,
+        error: "Tum abhi is campaign mein join nahi ho. Please join first.",
+      });
+    }
+
+    if (enrollmentCheck.totalCheckins > 0 && enrollmentCheck.totalCheckins % campaign.requiredStamps === 0) {
       const completedCycles = Math.floor(enrollmentCheck.totalCheckins / campaign.requiredStamps);
       const refreshedCycles = enrollmentCheck.cyclesRefreshed || 0;
       if (completedCycles > refreshedCycles) {
@@ -250,46 +258,8 @@ export const validateCheckin = async (req, res) => {
       `- QR session successfully claimed: Session ID=${qrSession._id}, Campaign ID=${qrSession.campaignId}, Type=${qrSession.type}`,
     );
 
-    // 4. Find the business and campaign
-    const business = await Business.findOne({
-      "campaigns._id": qrSession.campaignId,
-    });
-    if (!business) {
-      return res.status(404).json({ error: "Campaign business not found" });
-    }
-
-    const campaign = business.campaigns.id(qrSession.campaignId);
-    if (!campaign || !campaign.isActive) {
-      return res
-        .status(404)
-        .json({ error: "Campaign is inactive or does not exist" });
-    }
-
-    // 5. Check customer is enrolled, if not, AUTO-JOIN them!
-    let enrollment = customer.joinedCampaigns.find(
-      (jc) =>
-        jc.campaignId && jc.campaignId.toString() === campaign._id.toString(),
-    );
-
-    if (!enrollment) {
-      console.log(
-        `- Customer not enrolled. Auto-enrolling Customer ${customer._id} to Campaign ${campaign._id} under Business ${business._id}`,
-      );
-      // Automatically enroll the user into the campaign
-      customer.joinedCampaigns.push({
-        campaignId: campaign._id,
-        businessId: business._id,
-        campaignName: campaign.title,
-        currentStreak: 0,
-        longestStreak: 0,
-        totalPoints: 0,
-        totalCheckins: 0,
-        lastCheckinDate: null,
-      });
-      // Get reference to the newly created enrollment subdocument
-      enrollment =
-        customer.joinedCampaigns[customer.joinedCampaigns.length - 1];
-    }
+    // 4. Business, campaign, and enrollment already verified above
+    let enrollment = enrollmentCheck;
 
     // 7. Calculate streak
     let newStreak = 1; // Default: first check-in or reset
