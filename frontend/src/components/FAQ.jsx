@@ -36,36 +36,40 @@ export default function FAQ() {
  }
  ];
 
- return (
- <section id="faq" className="py-24 bg-slate-50 border-t border-border-standard">
- <div className="container mx-auto px-6 max-w-3xl">
- <div className="text-center mb-16 scroll-reveal">
- <h2 className="text-3xl md:text-5xl font-bold mb-4 text-text-primary">Frequently Asked Questions</h2>
- </div>
+  return (
+    <section id="faq" className="py-24 bg-slate-50/50 border-t border-slate-100">
+      <div className="container mx-auto px-6 max-w-3xl">
+        <div className="text-center mb-16 scroll-reveal">
+          <h2 className="text-3xl md:text-5xl font-black mb-4 text-slate-900 tracking-tight">Frequently Asked Questions</h2>
+        </div>
 
- <div className="space-y-4 scroll-reveal">
- {faqs.map((faq, i) => (
- <div 
- key={i} 
- className={`border border-border-standard rounded-2xl overflow-hidden transition-all duration-300 ${open === i ? 'bg-white shadow-sm' : 'bg-transparent hover:bg-white/50'}`}
- >
- <button 
- onClick={() => setOpen(open === i ? -1 : i)}
- className="w-full px-6 py-5 text-left flex justify-between items-center focus:outline-none"
- >
- <span className="font-semibold text-lg text-text-primary">{faq.q}</span>
- <span className={`text-brand-600 font-bold text-2xl transition-transform duration-300 ${open === i ? 'rotate-45' : ''}`}>+</span>
- </button>
- 
- <div 
- className={`px-6 overflow-hidden transition-all duration-300 ease-in-out ${open === i ? 'max-h-48 pb-5 opacity-100' : 'max-h-0 opacity-0'}`}
- >
- <p className="text-slate-600 text-sm leading-relaxed">{faq.a}</p>
- </div>
- </div>
- ))}
- </div>
- </div>
- </section>
- );
+        <div className="space-y-4 scroll-reveal">
+          {faqs.map((faq, i) => (
+            <div 
+              key={i} 
+              className={`border rounded-2xl overflow-hidden transition-all duration-300 ${
+                open === i 
+                  ? 'bg-white border-blue-250/70 shadow-[0_10px_30px_-15px_rgba(37,99,235,0.08)]' 
+                  : 'bg-transparent border-slate-200 hover:bg-white hover:border-slate-300'
+              }`}
+            >
+              <button 
+                onClick={() => setOpen(open === i ? -1 : i)}
+                className="w-full px-6 py-5 text-left flex justify-between items-center focus:outline-none cursor-pointer"
+              >
+                <span className="font-bold text-lg text-slate-900">{faq.q}</span>
+                <span className={`text-blue-600 font-bold text-2xl transition-transform duration-300 ${open === i ? 'rotate-45' : ''}`}>+</span>
+              </button>
+              
+              <div 
+                className={`px-6 overflow-hidden transition-all duration-300 ease-in-out ${open === i ? 'max-h-48 pb-5 opacity-100' : 'max-h-0 opacity-0'}`}
+              >
+                <p className="text-slate-500 text-sm leading-relaxed font-medium">{faq.a}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
 }

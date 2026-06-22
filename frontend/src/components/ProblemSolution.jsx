@@ -45,76 +45,83 @@ export default function ProblemSolution() {
  }
  ];
 
- return (
- <section className="py-24 relative overflow-hidden border-t border-border-standard bg-slate-50">
- <div className="container mx-auto px-6 relative z-10">
+  return (
+    <section className="py-24 relative overflow-hidden border-t border-slate-100 bg-slate-50/50">
+      <div className="container mx-auto px-6 relative z-10">
+     
+        {/* Problems Grid */}
+        <div className="mb-24">
+          <div className="text-center mb-16 scroll-reveal">
+            <span className="px-4 py-1.5 rounded-full bg-red-50 border border-red-100 text-red-650 text-xs font-semibold uppercase tracking-wider">
+              The Problem
+            </span>
+            <h2 className="text-3xl md:text-5xl font-black mt-4 mb-6 text-slate-900 tracking-tight">Why Traditional Loyalty Fails</h2>
+            <p className="text-slate-600 max-w-2xl mx-auto font-medium">
+              Paper loyalty programs and generic marketing campaigns are draining local business budgets while yielding zero insights.
+            </p>
+          </div>
 
- {/* Problems Grid */}
- <div className="mb-24">
- <div className="text-center mb-16 scroll-reveal">
- <span className="px-4 py-1.5 rounded-full bg-red-50 border border-red-100 text-red-600 text-xs font-semibold uppercase tracking-wider">
- The Problem
- </span>
- <h2 className="text-3xl md:text-5xl font-bold mt-4 mb-6 text-text-primary">Why Traditional Loyalty Fails</h2>
- <p className="text-slate-600 max-w-2xl mx-auto">
- Paper loyalty programs and generic marketing campaigns are draining local business budgets while yielding zero insights.
- </p>
- </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {problems.map((prob, idx) => (
+              <div
+                key={idx}
+                className="bg-white border border-slate-200 border-l-4 border-l-rose-500/80 rounded-2xl p-6 hover:shadow-md hover:border-slate-300 transition-all duration-300 relative group flex flex-col justify-between min-h-[180px]"
+              >
+                <div>
+                  <div className="flex justify-between items-start mb-4">
+                    <span className="text-[10px] font-bold text-rose-650 bg-rose-50/80 px-2.5 py-1 rounded-full border border-rose-100/60 tracking-wide uppercase">
+                      {prob.badge}
+                    </span>
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900 group-hover:text-rose-600 transition-colors">
+                    {prob.title}
+                  </h3>
+                  <p className="text-slate-500 text-sm leading-relaxed mt-2 font-medium">
+                    {prob.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
 
- <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
- {problems.map((prob, idx) => (
- <div
- key={idx}
- className="bg-white border border-border-standard rounded-2xl p-6 hover:border-red-200 hover:shadow-md transition-all duration-300 relative group"
- >
- <div className="absolute top-4 right-4 text-[10px] font-semibold text-red-600 bg-red-50 px-2 py-0.5 rounded-full border border-red-100">
- {prob.badge}
- </div>
- <h3 className="text-lg font-bold text-text-primary mt-4 mb-3 group-hover:text-red-600 transition-colors">
- {prob.title}
- </h3>
- <p className="text-text-secondary text-sm leading-relaxed">
- {prob.desc}
- </p>
- </div>
- ))}
- </div>
- </div>
+        {/* Solutions Grid */}
+        <div>
+          <div className="text-center mb-16 scroll-reveal">
+            <span className="px-4 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-650 text-xs font-semibold uppercase tracking-wider">
+              The Solution
+            </span>
+            <h2 className="text-3xl md:text-5xl font-black mt-4 mb-6 text-slate-900 tracking-tight">Introducing Returno</h2>
+            <p className="text-slate-600 max-w-2xl mx-auto font-medium">
+              A premium, frictionless digital loyalty system designed to double repeat customer visits with zero integration friction.
+            </p>
+          </div>
 
- {/* Solutions Grid */}
- <div>
- <div className="text-center mb-16 scroll-reveal">
- <span className="px-4 py-1.5 rounded-full bg-brand-50 border border-brand-100 text-brand-600 text-xs font-semibold uppercase tracking-wider">
- The Solution
- </span>
- <h2 className="text-3xl md:text-5xl font-bold mt-4 mb-6 text-text-primary">Introducing Returno</h2>
- <p className="text-slate-600 max-w-2xl mx-auto">
- A premium, frictionless digital loyalty system designed to double repeat customer visits with zero integration friction.
- </p>
- </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {solutions.map((sol, idx) => (
+              <div
+                key={idx}
+                className="bg-white border border-slate-200 border-t-4 border-t-blue-500 rounded-2xl p-6 hover:border-blue-350 hover:shadow-[0_15px_40px_-15px_rgba(37,99,235,0.12)] transition-all duration-300 relative group flex flex-col justify-between min-h-[180px]"
+              >
+                <div>
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="text-xs font-bold text-blue-650 bg-blue-50/80 px-2.5 py-1 rounded-full border border-blue-100/60 tracking-wider">
+                      Step {sol.step}
+                    </span>
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900 group-hover:text-blue-650 transition-colors relative z-10">
+                    {sol.title}
+                  </h3>
+                  <p className="text-slate-500 text-sm leading-relaxed mt-2 font-medium relative z-10">
+                    {sol.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
 
- <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
- {solutions.map((sol, idx) => (
- <div
- key={idx}
- className="bg-white border border-border-standard rounded-2xl p-6 hover:border-brand-300 hover:shadow-lg transition-all duration-300 relative group"
- >
-
- <div className="absolute top-6 right-6 text-2xl font-black text-text-secondary group-hover:text-brand-100 transition-colors">
- {sol.step}
- </div>
- <h3 className="text-lg font-bold text-text-primary mb-2 group-hover:text-brand-600 transition-colors relative z-10">
- {sol.title}
- </h3>
- <p className="text-text-secondary text-sm leading-relaxed relative z-10">
- {sol.desc}
- </p>
- </div>
- ))}
- </div>
- </div>
-
- </div>
- </section>
- );
+      </div>
+    </section>
+  );
 }
