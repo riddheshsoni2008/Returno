@@ -14,6 +14,7 @@ export default async function MerchantDashboardPage() {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://returno-eight.vercel.app';
   let business = null;
   let metrics = null;
+  let campaigns = [];
   let redirectPath = null;
 
   try {
@@ -41,6 +42,16 @@ export default async function MerchantDashboardPage() {
             metrics = metData.metrics;
           }
         }
+
+        // Fetch Campaigns
+        const campRes = await fetch(`${backendUrl}/campaigns`, {
+          headers: { 'Cookie': `token=${token}` },
+          cache: 'no-store'
+        });
+        if (campRes.ok) {
+          const campData = await campRes.json();
+          campaigns = campData.campaigns || [];
+        }
       }
     }
   } catch (error) {
@@ -54,9 +65,9 @@ export default async function MerchantDashboardPage() {
 
   if (!business) {
     return (
-      <div className="text-center py-20 bg-dark-900 border border-white/10 rounded-3xl">
-        <h2 className="text-2xl font-bold mb-4">No Business Profile Found</h2>
-        <p className="text-slate-400">Please contact support or register again.</p>
+      <div className="text-center py-20 bg-surface border border-outline-variant rounded-xl">
+        <h2 className="text-2xl font-bold mb-4 text-on-surface">No Business Profile Found</h2>
+        <p className="text-on-surface-variant">Please contact support or register again.</p>
       </div>
     );
   }
@@ -74,6 +85,8 @@ export default async function MerchantDashboardPage() {
     <MerchantDashboardHub
       business={business}
       metrics={metrics}
+      initialCampaigns={campaigns}
+      appUrl={appUrl}
     />
   );
 }
