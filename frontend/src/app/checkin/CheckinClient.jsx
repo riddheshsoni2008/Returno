@@ -154,7 +154,7 @@ export default function CheckinClient() {
           type: "success",
           text: "Campaign restarted! Processing your new stamp...",
         });
-        setResult(null); 
+        setResult(null);
         handleValidate(); // Automatically re-validate the same QR token!
       } else {
         setError(data.error || "Failed to restart campaign.");
@@ -188,7 +188,7 @@ export default function CheckinClient() {
       </div>
     );
   }
-
+  
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">

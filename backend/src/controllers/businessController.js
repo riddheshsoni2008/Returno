@@ -93,20 +93,36 @@ export const getMetrics = async (req, res) => {
     ]);
     const openRewardsCount = openRewardsAgg[0]?.count || 0;
 
-    // 4. Pending redemptions
-    const pendingCustomers = await Customer.find({
-      "joinedCampaigns": {
-        $elemMatch: {
-          campaignId: { $in: campaignIds },
-          "rewards.status": "pending"
-        }
-      }
+    // 4. Pending redemptions & Joined customers list
+    const customers = await Customer.find({
+      "joinedCampaigns.campaignId": { $in: campaignIds }
     }).select('name email joinedCampaigns');
 
     const pendingRedemptions = [];
-    for (const cust of pendingCustomers) {
+    const joinedCustomers = [];
+    for (const cust of customers) {
       for (const jc of cust.joinedCampaigns) {
         if (campaignIds.some(id => id.toString() === jc.campaignId.toString())) {
+          joinedCustomers.push({
+            customerId: cust._id,
+            name: cust.name,
+            email: cust.email,
+            campaignId: jc.campaignId,
+            campaignName: jc.campaignName,
+            currentStreak: jc.currentStreak,
+            longestStreak: jc.longestStreak,
+            totalPoints: jc.totalPoints,
+            totalCheckins: jc.totalCheckins,
+            cyclesRefreshed: jc.cyclesRefreshed || 0,
+            rewards: jc.rewards.map(r => ({
+              _id: r._id,
+              rewardTitle: r.rewardTitle,
+              status: r.status,
+              unlockedAt: r.unlockedAt,
+              redeemedAt: r.redeemedAt
+            }))
+          });
+
           for (const r of jc.rewards) {
             if (r.status === 'pending') {
               pendingRedemptions.push({
@@ -142,6 +158,7 @@ export const getMetrics = async (req, res) => {
         uniqueCustomers: uniqueCustomers.length,
         openRewardsCount,
         pendingRedemptions,
+        joinedCustomers,
         recentStamps
       }
     });

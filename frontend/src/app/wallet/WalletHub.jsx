@@ -510,7 +510,52 @@ export default function WalletHub({
 
         {/* TAB 2: MY WALLET VIEW */}
         {activeTab === "home" && (
-          <div className="space-y-6 animate-fade-in-up">
+          <div className="space-y-8 animate-fade-in-up">
+            {/* ACTIVE REWARDS SECTION */}
+            {activeRewards.length > 0 && (
+              <div className="space-y-4">
+                <h2 className="text-xl font-black text-slate-900 flex items-center gap-2">
+                  <span>🎁</span> Unlocked Rewards
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {activeRewards.map((reward) => (
+                    <div
+                      key={reward._id}
+                      className="bg-white border border-slate-200/80 rounded-2xl p-5 flex flex-col justify-between gap-4 hover:shadow-md transition-all shadow-sm"
+                    >
+                      <div>
+                        <div className="text-[9px] font-bold text-amber-700 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-full inline-block uppercase tracking-wider">
+                          Milestone Unlocked
+                        </div>
+                        <h3 className="text-md font-bold text-slate-900 mt-2">
+                          {reward.rewardTitle}
+                        </h3>
+                        <p className="text-[10px] text-slate-505 mt-0.5">
+                          Unlocked on{" "}
+                          {new Date(reward.unlockedAt).toLocaleDateString()}
+                        </p>
+                      </div>
+
+                      {reward.status === "unredeemed" ? (
+                        <button
+                          onClick={() => handleRequestRedeem(reward._id)}
+                          disabled={loadingId !== null}
+                          className="w-full py-2.5 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-bold text-xs rounded-xl shadow-md shadow-red-500/10 transition-all uppercase tracking-wider"
+                        >
+                          Redeem Reward
+                        </button>
+                      ) : (
+                        <div className="flex items-center gap-2.5 bg-amber-50 border border-amber-200 text-amber-700 px-3 py-2 rounded-xl text-xs font-bold justify-center animate-pulse">
+                          <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+                          Waiting for Shop Verification...
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <h2 className="text-xl font-black text-slate-900 flex items-center gap-2">
               <span>⭐</span> Stamped Loyalty Cards
             </h2>
