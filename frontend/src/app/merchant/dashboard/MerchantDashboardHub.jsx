@@ -768,19 +768,19 @@ export default function MerchantDashboardHub({
                     onClick={() => openQrModal(camp, "join")}
                     className="flex-1 text-center py-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-[10px] transition-colors border border-slate-200/50 uppercase tracking-wider"
                   >
-                     Join QR
+                    Join QR
                   </button>
                   <button
                     onClick={() => openQrModal(camp, "checkin")}
                     className="flex-1 text-center py-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-600 font-bold text-[10px] transition-colors border border-purple-100/50 uppercase tracking-wider"
                   >
-                     Live QR
+                    Live QR
                   </button>
                   <button
                     onClick={() => openQrModal(camp, "bulk")}
                     className="flex-1 text-center py-2.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-750 font-bold text-[10px] transition-colors border border-indigo-200/50 uppercase tracking-wider"
                   >
-                     Bulk QRs
+                    Bulk QRs
                   </button>
                 </div>
               </div>
@@ -792,8 +792,18 @@ export default function MerchantDashboardHub({
       {/* Recent Visits Logs */}
       <div className="bg-white border border-slate-150 p-5 md:p-6 rounded-3xl shadow-sm">
         <h3 className="text-lg font-black text-slate-900 mb-4 flex items-center gap-2">
-          <svg className="w-5 h-5 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <svg
+            className="w-5 h-5 text-purple-500"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
           Recent Stamp Scan History
         </h3>
@@ -1133,7 +1143,10 @@ export default function MerchantDashboardHub({
                     >
                       🖨️ Print Card
                     </button>
-                                {/* DYNAMIC CHECK-IN TAB */}
+                  </div>
+                </div>
+              )}
+              {/* DYNAMIC CHECK-IN TAB */}
               {qrMode === "checkin" && (
                 <div className="space-y-6 flex flex-col items-center py-2 animate-[fade-in_0.2s_ease-out]">
                   <div className="w-full max-w-sm bg-white border border-slate-200/60 rounded-3xl p-6 shadow-sm relative overflow-hidden group">
@@ -1374,8 +1387,7 @@ export default function MerchantDashboardHub({
               )}
             </div>
           </div>
-        
- 
+        </div>
       )}
 
       {/* CUSTOM CONFIRMATION MODAL */}
