@@ -14,7 +14,6 @@ export default async function MerchantDashboardPage() {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://returno-eight.vercel.app';
   let business = null;
   let metrics = null;
-  let campaigns = [];
   let redirectPath = null;
 
   try {
@@ -41,16 +40,6 @@ export default async function MerchantDashboardPage() {
           if (metData.success) {
             metrics = metData.metrics;
           }
-        }
-
-        // Fetch Campaigns
-        const campRes = await fetch(`${backendUrl}/campaigns`, {
-          headers: { 'Cookie': `token=${token}` },
-          cache: 'no-store'
-        });
-        if (campRes.ok) {
-          const campData = await campRes.json();
-          campaigns = campData.campaigns || [];
         }
       }
     }
@@ -85,8 +74,6 @@ export default async function MerchantDashboardPage() {
     <MerchantDashboardHub
       business={business}
       metrics={metrics}
-      initialCampaigns={campaigns}
-      appUrl={appUrl}
     />
   );
 }

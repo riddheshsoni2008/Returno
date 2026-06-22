@@ -13,7 +13,6 @@ export default async function MerchantRewardsPage() {
   const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:5000/api';
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://returno-eight.vercel.app';
 
-  let campaigns = [];
   let pendingClaims = [];
   let business = null;
 
@@ -29,16 +28,6 @@ export default async function MerchantRewardsPage() {
       business = busData.business;
 
       if (business) {
-        // Fetch campaigns
-        const campRes = await fetch(`${backendUrl}/campaigns`, {
-          headers: { 'Cookie': `token=${token}` },
-          cache: 'no-store'
-        });
-        if (campRes.ok) {
-          const campData = await campRes.json();
-          campaigns = campData.campaigns || [];
-        }
-
         // Fetch metrics to extract pending approvals
         const metRes = await fetch(`${backendUrl}/business/metrics`, {
           headers: { 'Cookie': `token=${token}` },
@@ -64,14 +53,12 @@ export default async function MerchantRewardsPage() {
     <div className="space-y-8 text-slate-800 animate-fade-in-up">
       <div>
         <h1 className="text-2xl md:text-3xl font-black tracking-tight text-slate-900">Loyalty & Rewards</h1>
-        <p className="text-sm text-slate-550 mt-1">Configure customer milestone milestones, review claims, and generate check-in codes.</p>
+        <p className="text-sm text-slate-550 mt-1">Review pending customer reward redemptions and claims.</p>
       </div>
 
       <RewardsHub 
-        initialCampaigns={campaigns} 
         initialClaims={pendingClaims} 
         verificationCode={business.verificationCode} 
-        appUrl={appUrl} 
       />
     </div>
   );

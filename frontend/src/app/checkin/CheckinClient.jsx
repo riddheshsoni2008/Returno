@@ -130,7 +130,10 @@ export default function CheckinClient() {
   // Auto-validate when user is available and token exists
   useEffect(() => {
     if (user && token && !result && !processing && !error) {
-      handleValidate();
+      const timer = setTimeout(() => {
+        handleValidate();
+      }, 0);
+      return () => clearTimeout(timer);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
