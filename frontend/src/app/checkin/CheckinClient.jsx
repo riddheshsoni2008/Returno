@@ -66,14 +66,6 @@ export default function CheckinClient() {
     }
   }, [loading, user, token, router]);
 
-  // Auto-validate when user is available and token exists
-  useEffect(() => {
-    if (user && token && !result && !processing && !error) {
-      handleValidate();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
-
   const handleValidate = async () => {
     if (!token) {
       console.error("[Check-in Flow] Aborted validation: No token in URL.");
@@ -134,6 +126,14 @@ export default function CheckinClient() {
       setProcessing(false);
     }
   };
+
+  // Auto-validate when user is available and token exists
+  useEffect(() => {
+    if (user && token && !result && !processing && !error) {
+      handleValidate();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   const handleRestartCampaign = async (campaignId) => {
     setProcessing(true);

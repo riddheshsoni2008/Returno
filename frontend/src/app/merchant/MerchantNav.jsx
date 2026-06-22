@@ -2,14 +2,36 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
 
 export default function MerchantNav() {
   const pathname = usePathname();
+  const [currentHash, setCurrentHash] = useState("");
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    
+    // Set initial hash
+    setCurrentHash(window.location.hash);
+
+    const handleHashChange = () => {
+      setCurrentHash(window.location.hash);
+    };
+
+    window.addEventListener("hashchange", handleHashChange);
+    window.addEventListener("popstate", handleHashChange);
+
+    return () => {
+      window.removeEventListener("hashchange", handleHashChange);
+      window.removeEventListener("popstate", handleHashChange);
+    };
+  }, [pathname]);
 
   const links = [
     {
       name: "Dashboard",
       path: "/merchant/dashboard",
+      customActive: () => pathname === "/merchant/dashboard" && !currentHash,
       icon: (
         <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z" />
@@ -29,7 +51,7 @@ export default function MerchantNav() {
     {
       name: "QR Codes",
       path: "/merchant/dashboard#qrcodes",
-      customActive: () => typeof window !== "undefined" && window.location.hash === "#qrcodes",
+      customActive: () => currentHash === "#qrcodes",
       icon: (
         <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
@@ -58,7 +80,7 @@ export default function MerchantNav() {
     {
       name: "Analytics",
       path: "/merchant/dashboard#analytics",
-      customActive: () => typeof window !== "undefined" && window.location.hash === "#analytics",
+      customActive: () => currentHash === "#analytics",
       icon: (
         <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -95,6 +117,14 @@ export default function MerchantNav() {
           <Link
             key={link.name}
             href={link.path}
+            onClick={() => {
+              if (link.path.includes("#")) {
+                const hash = link.path.split("#")[1];
+                setCurrentHash("#" + hash);
+              } else {
+                setCurrentHash("");
+              }
+            }}
             className={`flex items-center gap-2.5 px-4 py-2.5 rounded-xl transition-all duration-200 text-xs md:text-sm font-semibold tracking-tight whitespace-nowrap ${
               active
                 ? "bg-purple-50/80 text-purple-700 shadow-sm border border-purple-100/50 font-bold"

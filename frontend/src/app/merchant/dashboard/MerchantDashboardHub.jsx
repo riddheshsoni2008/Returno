@@ -12,6 +12,44 @@ export default function MerchantDashboardHub({
   appUrl,
 }) {
   const router = useRouter();
+
+  // Handle smooth scrolling to target element on hash change or mount
+  useEffect(() => {
+    const handleHashScroll = () => {
+      if (typeof window === "undefined") return;
+      const hash = window.location.hash;
+      if (hash) {
+        const id = hash.replace("#", "");
+        const element = document.getElementById(id);
+        if (element) {
+          // Find the scrollable main container
+          const mainContainer = document.querySelector("main");
+          if (mainContainer) {
+            const containerRect = mainContainer.getBoundingClientRect();
+            const elementRect = element.getBoundingClientRect();
+            const relativeTop = elementRect.top - containerRect.top + mainContainer.scrollTop;
+            mainContainer.scrollTo({
+              top: relativeTop - 24, // 24px offset
+              behavior: "smooth",
+            });
+          } else {
+            element.scrollIntoView({ behavior: "smooth" });
+          }
+        }
+      }
+    };
+
+    // Scroll on mount/load after DOM is ready
+    const timer = setTimeout(handleHashScroll, 150);
+
+    // Listen for hashchange events
+    window.addEventListener("hashchange", handleHashScroll);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("hashchange", handleHashScroll);
+    };
+  }, []);
+
   const [campaigns, setCampaigns] = useState(initialCampaigns);
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -671,7 +709,8 @@ export default function MerchantDashboardHub({
         </div>
       </div>
       {/* Campaigns Section */}
-      <div id="campaigns" className="space-y-4">
+      <div id="qrcodes" className="scroll-mt-6"></div>
+      <div id="campaigns" className="space-y-4 scroll-mt-6">
         <h3 className="text-lg font-black text-slate-900">
           Active Loyalty Programs
         </h3>

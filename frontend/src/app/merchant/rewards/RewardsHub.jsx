@@ -45,7 +45,7 @@ export default function RewardsHub({ initialCampaigns, initialClaims, verificati
         console.error('Error generating QR code:', err);
       });
     } else {
-      setQrDataUrl('');
+      setQrDataUrl(prev => prev !== '' ? '' : prev);
     }
   }, [selectedCampaignForQr, appUrl]);
 
@@ -282,7 +282,7 @@ export default function RewardsHub({ initialCampaigns, initialClaims, verificati
             <h3 className="text-lg font-black text-slate-900">
               Pending Customer Redemptions
             </h3>
-            <p className="text-xs text-slate-500 mt-0.5">Verify customer device screen is in "pending" status and confirm.</p>
+            <p className="text-xs text-slate-500 mt-0.5">Verify customer device screen is in &quot;pending&quot; status and confirm.</p>
           </div>
 
           {claims.length === 0 ? (
