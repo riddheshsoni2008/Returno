@@ -101,43 +101,43 @@ export default function SettingsHub({ initialBusiness }) {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 text-slate-900 animate-fade-in-up pb-10">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 text-on-surface pb-10">
       {/* Settings Form */}
       <div className="lg:col-span-2 space-y-6">
         {error && (
-          <div className="bg-red-50 border border-red-100 text-red-600 text-xs p-3.5 rounded-xl font-medium">
+          <div className="bg-red-50 border border-red-150 text-error text-xs p-3.5 rounded-lg font-medium shadow-sm animate-fade-in-up">
             ⚠️ {error}
           </div>
         )}
         {success && (
-          <div className="bg-emerald-50 border border-emerald-100 text-emerald-600 text-xs p-3.5 rounded-xl font-medium">
+          <div className="bg-emerald-50 border border-emerald-150 text-secondary text-xs p-3.5 rounded-lg font-medium shadow-sm animate-fade-in-up">
             ✓ {success}
           </div>
         )}
 
-        <form onSubmit={handleSaveSettings} className="bg-white border border-slate-150 rounded-3xl p-6 md:p-8 space-y-6 shadow-sm">
-          <div className="border-b border-slate-100 pb-4">
-            <h3 className="font-black text-slate-900 text-lg">Shop Profile</h3>
-            <p className="text-xs text-slate-500 mt-1 font-medium">Configure metadata shown to customers on QR scans.</p>
+        <form onSubmit={handleSaveSettings} className="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 md:p-8 space-y-6 shadow-sm">
+          <div className="border-b border-outline-variant pb-4">
+            <h3 className="font-bold text-on-surface text-lg">Shop Profile</h3>
+            <p className="text-xs text-on-surface-variant mt-1.5 font-medium">Configure metadata shown to customers on QR scans.</p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="block text-slate-500 text-[10px] font-bold uppercase tracking-wider">Shop Name</label>
+              <label className="block text-outline text-[10px] font-bold uppercase tracking-wider">Shop Name</label>
               <input
                 type="text"
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-950 text-sm focus:outline-none focus:border-purple-500 focus:bg-white transition-all"
+                className="w-full bg-surface border border-outline-variant rounded-lg py-3 px-4 text-on-surface text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
               />
             </div>
             <div className="space-y-2">
-              <label className="block text-slate-500 text-[10px] font-bold uppercase tracking-wider">Category</label>
+              <label className="block text-outline text-[10px] font-bold uppercase tracking-wider">Category</label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3.5 px-4 text-slate-950 text-sm focus:outline-none focus:border-purple-500 focus:bg-white transition-all"
+                className="w-full bg-surface border border-outline-variant rounded-lg py-3 px-4 text-on-surface text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
               >
                 <option value="Cafe">☕ Cafe</option>
                 <option value="Restaurant">🍔 Restaurant</option>
@@ -150,26 +150,26 @@ export default function SettingsHub({ initialBusiness }) {
           </div>
 
           <div className="space-y-2">
-            <label className="block text-slate-500 text-[10px] font-bold uppercase tracking-wider">Physical Address</label>
+            <label className="block text-outline text-[10px] font-bold uppercase tracking-wider">Physical Address</label>
             <input
               type="text"
               required
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-950 text-sm focus:outline-none focus:border-purple-500 focus:bg-white transition-all"
+              className="w-full bg-surface border border-outline-variant rounded-lg py-3 px-4 text-on-surface text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
             />
           </div>
 
-          <div className="border-t border-slate-100 pt-6">
+          <div className="border-t border-outline-variant pt-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
               <div>
-                <h3 className="font-black text-slate-900 text-md">Geofencing & Regional Location</h3>
-                <p className="text-xs text-slate-500 mt-1 font-medium">Stamps claims check location coordinates to prevent fraud.</p>
+                <h3 className="font-bold text-on-surface text-base">Geofencing & Regional Location</h3>
+                <p className="text-xs text-on-surface-variant mt-1 font-medium">Stamps claims check location coordinates to prevent fraud.</p>
               </div>
               <button
                 type="button"
                 onClick={handleDetectCoordinates}
-                className="text-xs font-bold text-purple-700 hover:text-purple-800 transition-all bg-purple-50 border border-purple-100/50 py-2 px-3 rounded-lg flex items-center gap-1.5 shrink-0"
+                className="text-xs font-bold text-primary hover:text-opacity-95 transition-all bg-primary/10 border border-primary/20 py-2 px-3 rounded-lg flex items-center gap-1.5 shrink-0"
               >
                 📍 Detect GPS Coordinates
               </button>
@@ -178,58 +178,58 @@ export default function SettingsHub({ initialBusiness }) {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="block text-slate-500 text-[10px] font-bold uppercase tracking-wider">City</label>
+              <label className="block text-outline text-[10px] font-bold uppercase tracking-wider">City</label>
               <input
                 type="text"
                 required
                 placeholder="e.g. Mumbai"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-950 text-sm focus:outline-none focus:border-purple-500 focus:bg-white transition-all"
+                className="w-full bg-surface border border-outline-variant rounded-lg py-3 px-4 text-on-surface text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
               />
             </div>
             <div className="space-y-2">
-              <label className="block text-slate-500 text-[10px] font-bold uppercase tracking-wider">State / Region</label>
+              <label className="block text-outline text-[10px] font-bold uppercase tracking-wider">State / Region</label>
               <input
                 type="text"
                 required
                 placeholder="e.g. Maharashtra"
                 value={state}
                 onChange={(e) => setState(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-955 text-sm focus:outline-none focus:border-purple-500 focus:bg-white transition-all"
+                className="w-full bg-surface border border-outline-variant rounded-lg py-3 px-4 text-on-surface text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="space-y-2">
-              <label className="block text-slate-500 text-[10px] font-bold uppercase tracking-wider">Longitude</label>
+              <label className="block text-outline text-[10px] font-bold uppercase tracking-wider">Longitude</label>
               <input
                 type="number"
                 step="any"
                 required
                 value={longitude}
                 onChange={(e) => setLongitude(parseFloat(e.target.value) || 0)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-955 text-sm focus:outline-none focus:border-purple-500 focus:bg-white transition-all"
+                className="w-full bg-surface border border-outline-variant rounded-lg py-3 px-4 text-on-surface text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
               />
             </div>
             <div className="space-y-2">
-              <label className="block text-slate-500 text-[10px] font-bold uppercase tracking-wider">Latitude</label>
+              <label className="block text-outline text-[10px] font-bold uppercase tracking-wider">Latitude</label>
               <input
                 type="number"
                 step="any"
                 required
                 value={latitude}
                 onChange={(e) => setLatitude(parseFloat(e.target.value) || 0)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-955 text-sm focus:outline-none focus:border-purple-500 focus:bg-white transition-all"
+                className="w-full bg-surface border border-outline-variant rounded-lg py-3 px-4 text-on-surface text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
               />
             </div>
             <div className="space-y-2">
-              <label className="block text-slate-500 text-[10px] font-bold uppercase tracking-wider">Geofence Radius</label>
+              <label className="block text-outline text-[10px] font-bold uppercase tracking-wider">Geofence Radius</label>
               <select
                 value={geofenceRadius}
                 onChange={(e) => setGeofenceRadius(parseInt(e.target.value) || 100)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3.5 px-4 text-slate-955 text-sm focus:outline-none focus:border-purple-500 focus:bg-white transition-all"
+                className="w-full bg-surface border border-outline-variant rounded-lg py-3.5 px-4 text-on-surface text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
               >
                 <option value="50">50 Meters (Tight)</option>
                 <option value="100">100 Meters (Standard)</option>
@@ -242,7 +242,7 @@ export default function SettingsHub({ initialBusiness }) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-purple-650 hover:bg-purple-550 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl transition-all text-xs uppercase tracking-wider shadow-md shadow-purple-500/10"
+            className="w-full bg-primary hover:bg-opacity-95 disabled:opacity-50 text-on-primary font-bold py-3.5 rounded-lg transition-all text-xs uppercase tracking-wider shadow-sm"
           >
             {loading ? 'Saving Settings...' : 'Save Settings Details'}
           </button>
@@ -250,33 +250,33 @@ export default function SettingsHub({ initialBusiness }) {
       </div>
 
       {/* Subscription Column */}
-      <div className="lg:col-span-1 bg-white border border-slate-150 rounded-3xl p-6 h-fit space-y-6 shadow-sm">
+      <div className="lg:col-span-1 bg-surface-container-lowest border border-outline-variant rounded-xl p-6 h-fit space-y-6 shadow-sm">
         <div>
-          <h3 className="font-black text-slate-900 text-lg">Billing & Subscriptions</h3>
-          <p className="text-xs text-slate-500 mt-1 font-medium">Select plan, subscribe, and get your free QR Stand.</p>
+          <h3 className="font-bold text-on-surface text-lg">Billing & Subscriptions</h3>
+          <p className="text-xs text-on-surface-variant mt-1.5 font-medium">Select plan, subscribe, and get your free QR Stand.</p>
         </div>
 
-        <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 space-y-3">
+        <div className="bg-surface border border-outline-variant rounded-lg p-4 space-y-3">
           <div className="flex justify-between items-center text-xs">
-            <span className="text-slate-500 font-medium">Current Plan</span>
-            <span className="text-slate-900 font-extrabold">{billingPlan}</span>
+            <span className="text-on-surface-variant font-medium">Current Plan</span>
+            <span className="text-on-surface font-bold">{billingPlan}</span>
           </div>
           <div className="flex justify-between items-center text-xs">
-            <span className="text-slate-500 font-medium">Cycle Status</span>
-            <span className={`font-bold uppercase ${isSandboxUpgrade ? 'text-emerald-600' : 'text-amber-600'}`}>
+            <span className="text-on-surface-variant font-medium">Cycle Status</span>
+            <span className={`font-bold uppercase ${isSandboxUpgrade ? 'text-secondary' : 'text-amber-600'}`}>
               {isSandboxUpgrade ? 'Paid Active' : 'Trial Period'}
             </span>
           </div>
           <div className="flex justify-between items-center text-xs">
-            <span className="text-slate-500 font-medium">Free QR Stand</span>
-            <span className={`font-bold ${isSandboxUpgrade ? 'text-emerald-600' : 'text-slate-400'}`}>
+            <span className="text-on-surface-variant font-medium">Free QR Stand</span>
+            <span className={`font-bold ${isSandboxUpgrade ? 'text-secondary' : 'text-outline'}`}>
               {isSandboxUpgrade ? 'Dispatched 📦' : 'Upgrade to Claim'}
             </span>
           </div>
         </div>
 
-        <div className="border-t border-slate-150 pt-4 space-y-3">
-          <label className="block text-slate-500 text-[10px] font-bold uppercase tracking-wider">Choose a Plan to Upgrade</label>
+        <div className="border-t border-outline-variant pt-4 space-y-3">
+          <label className="block text-outline text-[10px] font-bold uppercase tracking-wider">Choose a Plan to Upgrade</label>
           <div className="space-y-2.5">
             {[
               { code: 'basic', label: 'Basic Plan', desc: '1 Location, Free QR Stand', price: '₹999/year' },
@@ -285,9 +285,9 @@ export default function SettingsHub({ initialBusiness }) {
             ].map(p => (
               <label
                 key={p.code}
-                className={`flex justify-between items-center p-3 rounded-xl border-2 cursor-pointer transition-all ${selectedPlan === p.code
-                  ? 'border-purple-550 bg-purple-50/40 ring-1 ring-purple-550/20'
-                  : 'border-slate-200 hover:border-slate-350'
+                className={`flex justify-between items-center p-3 rounded-lg border-2 cursor-pointer transition-all ${selectedPlan === p.code
+                  ? 'border-primary bg-primary/5 ring-1 ring-primary/20'
+                  : 'border-outline-variant hover:border-outline'
                   }`}
               >
                 <div className="flex items-start gap-2.5">
@@ -296,14 +296,14 @@ export default function SettingsHub({ initialBusiness }) {
                     name="planSelector"
                     checked={selectedPlan === p.code}
                     onChange={() => setSelectedPlan(p.code)}
-                    className="mt-1 accent-purple-650"
+                    className="mt-1 accent-primary"
                   />
                   <div>
-                    <span className="text-xs font-bold text-slate-900 block">{p.label}</span>
-                    <span className="text-[10px] text-slate-500 font-medium block">{p.desc}</span>
+                    <span className="text-xs font-bold text-on-surface block">{p.label}</span>
+                    <span className="text-[10px] text-on-surface-variant font-medium block">{p.desc}</span>
                   </div>
                 </div>
-                <span className="text-xs font-black text-slate-950 whitespace-nowrap">{p.price}</span>
+                <span className="text-xs font-bold text-on-surface whitespace-nowrap">{p.price}</span>
               </label>
             ))}
           </div>
@@ -312,7 +312,7 @@ export default function SettingsHub({ initialBusiness }) {
         <button
           onClick={() => handleUpgradePlan(selectedPlan)}
           disabled={loading}
-          className="w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-650 hover:from-purple-500 hover:to-indigo-550 text-white font-bold text-xs uppercase tracking-wider shadow-md shadow-purple-550/15 hover:-translate-y-0.5 transition-all"
+          className="w-full py-3.5 rounded-lg bg-primary hover:bg-opacity-95 text-on-primary font-bold text-xs uppercase tracking-wider shadow-sm transition-all"
         >
           {isSandboxUpgrade ? 'Upgrade Plan Sandbox' : 'Upgrade and Pay'}
         </button>

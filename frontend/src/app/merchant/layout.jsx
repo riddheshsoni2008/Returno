@@ -49,29 +49,37 @@ export default async function MerchantLayout({ children }) {
     redirect(redirectPath);
   }
 
-  const business = data.user; // Under new architecture, data.user IS the Business document
+  const business = data.user;
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col md:flex-row font-sans">
-      {/* Sidebar - Desktop / Top Navigation - Mobile */}
-      <aside className="w-full md:w-64 bg-white border-b md:border-b-0 md:border-r border-slate-150 flex flex-col justify-between p-5 md:p-6 flex-shrink-0">
+    <div className="min-h-screen bg-surface-container-low text-on-background flex flex-col md:flex-row font-sans">
+      {/* Sidebar - Desktop */}
+      <aside className="w-full md:w-64 bg-surface border-b md:border-b-0 md:border-r border-outline-variant flex flex-col justify-between p-5 md:p-6 flex-shrink-0">
         <div>
-          <div className="flex items-center justify-between md:justify-start gap-2.5 mb-6 md:mb-8">
-            <Link href="/" className="flex items-center gap-2 text-xl font-black tracking-tight text-slate-900 hover:scale-[1.01] transition-transform">
-              <span className="w-8 h-8 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center text-sm text-white shadow-md shadow-purple-550/20">✨</span>
-              Returno
+          {/* Logo Brand Header */}
+          <div className="flex items-center gap-3 px-2 mb-8 md:mb-10">
+            <Link href="/" className="flex items-center gap-3 group">
+              <div className="w-8 h-8 bg-primary rounded flex items-center justify-center text-on-primary font-bold shadow-sm transition-transform group-hover:scale-105">
+                R
+              </div>
+              <div>
+                <h1 className="text-base font-bold text-primary leading-none">Returno</h1>
+                <p className="text-[9px] text-outline uppercase tracking-wider mt-0.5">Enterprise Retention</p>
+              </div>
             </Link>
-            <span className="inline-block text-[9px] font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-purple-555/10 border border-purple-200/50 text-purple-650">Merchant</span>
           </div>
 
+          {/* Profile Card */}
           {business && (
-            <div className="bg-slate-50/70 border border-slate-150 p-3 rounded-xl mb-6 flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center font-extrabold text-sm text-white flex-shrink-0 shadow-sm">
+            <div className="bg-surface-container-low border border-outline-variant p-3.5 rounded-xl mb-6 flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-primary text-on-primary flex items-center justify-center font-bold text-sm flex-shrink-0">
                 {business.businessName ? business.businessName[0].toUpperCase() : 'B'}
               </div>
               <div className="overflow-hidden">
-                <div className="font-extrabold text-xs truncate text-slate-900">{business.businessName}</div>
-                <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider truncate">{business.loyaltyConfiguration?.category || 'Cafe'}</div>
+                <div className="font-bold text-xs truncate text-on-surface">{business.businessName}</div>
+                <div className="text-[9px] text-outline font-bold uppercase tracking-wider truncate">
+                  {business.loyaltyConfiguration?.category || 'Cafe'}
+                </div>
               </div>
             </div>
           )}
@@ -80,17 +88,17 @@ export default async function MerchantLayout({ children }) {
           <MerchantNav />
         </div>
 
-        <div className="hidden md:block mt-8 border-t border-slate-100 pt-6">
+        <div className="hidden md:block mt-8 border-t border-outline-variant pt-6">
           <SignOutButton />
         </div>
       </aside>
 
       {/* Main Panel Content */}
-      <main className="flex-1 p-6 md:p-10 overflow-y-auto w-full">
+      <main className="flex-grow w-full max-w-6xl mx-auto px-4 md:px-8 py-6 md:py-8 pb-28 md:pb-12 overflow-y-auto">
         <div className="block md:hidden mb-6 flex justify-end">
           <SignOutButton />
         </div>
-        <div className="max-w-6xl mx-auto">
+        <div className="animate-fade-in-up">
           {children}
         </div>
       </main>

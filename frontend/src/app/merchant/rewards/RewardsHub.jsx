@@ -37,46 +37,52 @@ export default function RewardsHub({ initialClaims, verificationCode }) {
   };
 
   return (
-    <div className="space-y-6 text-slate-800">
+    <div className="space-y-6">
       {/* Global Alerts */}
       {error && (
-        <div className="bg-red-50 border border-red-100 text-red-600 text-xs p-4 rounded-xl font-medium flex items-start gap-2.5">
-          <span>⚠️</span>
+        <div className="bg-red-50 border border-red-150 text-error text-xs p-4 rounded-xl font-medium flex items-start gap-2.5 shadow-sm animate-fade-in-up">
+          <svg className="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
           <span className="leading-normal">{error}</span>
         </div>
       )}
       {success && (
-        <div className="bg-emerald-50 border border-emerald-100 text-emerald-600 text-xs p-4 rounded-xl font-medium flex items-start gap-2.5">
-          <span>✓</span>
+        <div className="bg-emerald-50 border border-emerald-150 text-secondary text-xs p-4 rounded-xl font-medium flex items-start gap-2.5 shadow-sm animate-fade-in-up">
+          <svg className="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
           <span className="leading-normal">{success}</span>
         </div>
       )}
 
       {/* APPROVALS SECTION */}
-      <div className="bg-white border border-slate-200/80 p-5 md:p-6 rounded-2xl shadow-sm">
-        <div className="border-b border-slate-100 pb-4 mb-4">
-          <h3 className="text-lg font-black text-slate-900">
+      <div className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+        <div className="px-6 py-5 border-b border-outline-variant bg-surface-container-low">
+          <h3 className="text-lg font-bold text-on-surface">
             Pending Customer Redemptions
           </h3>
-          <p className="text-xs text-slate-500 mt-0.5">Verify customer device screen is in &quot;pending&quot; status and confirm.</p>
+          <p className="text-xs text-on-surface-variant mt-1 font-medium">
+            Verify customer device screen is in &quot;pending&quot; status and confirm.
+          </p>
         </div>
 
         {claims.length === 0 ? (
-          <div className="text-center py-12 text-slate-400 text-sm">
+          <div className="text-center py-16 text-on-surface-variant text-sm bg-surface">
             No reward redemptions currently pending. Customer claim requests will appear here dynamically.
           </div>
         ) : (
-          <div className="divide-y divide-slate-100">
+          <div className="divide-y divide-outline-variant bg-surface">
             {claims.map((claim) => (
-              <div key={claim._id} className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 first:pt-0 last:pb-0">
-                <div>
-                  <div className="font-bold text-slate-900 text-sm">
-                    🎁 {claim.rewardTitle}
+              <div key={claim._id} className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6 hover:bg-surface-container-low/50 transition-colors">
+                <div className="space-y-1">
+                  <div className="font-bold text-on-surface text-base flex items-center gap-2">
+                    <span className="text-lg">🎁</span> {claim.rewardTitle}
                   </div>
-                  <div className="text-xs text-slate-650 mt-1">
-                    Customer: <span className="text-slate-900 font-bold">{claim.customerId?.name || 'Anonymous Customer'}</span> ({claim.customerId?.email})
+                  <div className="text-xs text-on-surface-variant">
+                    Customer: <span className="text-on-surface font-semibold">{claim.customerId?.name || 'Anonymous Customer'}</span> ({claim.customerId?.email})
                   </div>
-                  <div className="text-[10px] text-slate-400 mt-1">
+                  <div className="text-[10px] text-outline">
                     Requested on {new Date(claim.updatedAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
                   </div>
                 </div>
@@ -84,7 +90,7 @@ export default function RewardsHub({ initialClaims, verificationCode }) {
                 <button
                   onClick={() => handleApproveClaim(claim._id)}
                   disabled={loadingApprovalId !== null}
-                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 disabled:opacity-50 text-white text-xs font-bold shadow-md shadow-red-500/10 hover:-translate-y-0.5 transition-all w-full sm:w-auto"
+                  className="px-5 py-3 rounded-lg bg-primary text-on-primary hover:bg-opacity-95 disabled:opacity-50 text-xs font-semibold shadow-sm hover:scale-[1.01] transition-all w-full sm:w-auto text-center"
                 >
                   {loadingApprovalId === claim._id ? 'Approving...' : 'Confirm Redemption'}
                 </button>
