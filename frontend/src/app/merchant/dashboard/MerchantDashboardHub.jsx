@@ -813,8 +813,8 @@ export default function MerchantDashboardHub({
 
       {/* CREATE CAMPAIGN FORM MODAL */}
       {showForm && (
-        <div className="fixed inset-0 bg-slate-900/80 z-50 flex items-center justify-center p-4 animate-[fade-in_0.2s_ease-out]">
-          <div className="bg-bg-card border border-border-standard rounded-xl max-w-lg w-full p-6 space-y-6 relative max-h-[90vh] overflow-y-auto shadow-2xl">
+        <div className="fixed inset-0 bg-slate-50/95 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-[fade-in_0.2s_ease-out]">
+          <div className="bg-white border border-slate-200 rounded-xl max-w-lg w-full p-6 space-y-6 relative max-h-[90vh] overflow-y-auto shadow-xl">
             <button
               onClick={() => setShowForm(false)}
               className="absolute top-4 right-4 text-text-muted hover:text-on-surface text-xl font-bold bg-bg-card border border-border-standard hover:border-outline w-8 h-8 rounded-full flex items-center justify-center transition-colors"
@@ -938,9 +938,9 @@ export default function MerchantDashboardHub({
 
       {/* QR MODAL WORKSPACE */}
       {selectedCampaign && (
-        <div className="fixed inset-0 bg-bg-card z-[100] flex flex-col animate-[fade-in_0.2s_ease-out]">
+        <div className="fixed inset-0 bg-slate-50 z-[100] flex flex-col animate-[fade-in_0.2s_ease-out]">
           {/* Top Header Row */}
-          <div className="w-full border-b border-border-standard py-4 px-6 bg-bg-card shrink-0">
+          <div className="w-full border-b border-slate-200 py-4 px-6 bg-white shrink-0">
             <div className="max-w-6xl mx-auto flex justify-between items-center gap-4">
               <div className="flex items-center gap-3">
                 <span className="px-2.5 py-1 bg-primary/10 text-primary font-bold text-[9px] uppercase tracking-widest rounded-md border border-primary/25">
@@ -1342,8 +1342,8 @@ export default function MerchantDashboardHub({
 
       {/* CONFIRMATION DIALOG MODAL */}
       {confirmModal.isOpen && (
-        <div className="fixed inset-0 bg-slate-900/80 z-[110] flex items-center justify-center p-4 animate-[fade-in_0.2s_ease-out]">
-          <div className="bg-bg-card border border-border-standard rounded-xl max-w-sm w-full p-6 text-center space-y-5 relative shadow-2xl">
+        <div className="fixed inset-0 bg-slate-50/95 backdrop-blur-sm z-[110] flex items-center justify-center p-4 animate-[fade-in_0.2s_ease-out]">
+          <div className="bg-white border border-slate-200 rounded-xl max-w-sm w-full p-6 text-center space-y-5 relative shadow-xl">
             <div className="w-12 h-12 rounded-full bg-red-50 border border-red-100 flex items-center justify-center mx-auto text-error text-xl font-bold">
               ⚠️
             </div>
@@ -1382,8 +1382,8 @@ export default function MerchantDashboardHub({
 
       {/* ALERT DIALOG MODAL */}
       {alertModal.isOpen && (
-        <div className="fixed inset-0 bg-slate-900/80 z-[110] flex items-center justify-center p-4 animate-[fade-in_0.2s_ease-out]">
-          <div className="bg-bg-card border border-border-standard rounded-xl max-w-sm w-full p-6 text-center space-y-5 relative shadow-2xl">
+        <div className="fixed inset-0 bg-slate-50/95 backdrop-blur-sm z-[110] flex items-center justify-center p-4 animate-[fade-in_0.2s_ease-out]">
+          <div className="bg-white border border-slate-200 rounded-xl max-w-sm w-full p-6 text-center space-y-5 relative shadow-xl">
             <div
               className={`w-12 h-12 rounded-full flex items-center justify-center mx-auto text-xl font-bold border ${
                 alertModal.type === "success"
@@ -1425,11 +1425,11 @@ export default function MerchantDashboardHub({
       {/* ZOOM SINGLE QR MODAL */}
       {selectedZoomQr && (
         <div
-          className="fixed inset-0 bg-slate-900/80 z-[110] flex items-center justify-center p-4 animate-[fade-in_0.2s_ease-out]"
+          className="fixed inset-0 bg-slate-50/95 backdrop-blur-sm z-[110] flex items-center justify-center p-4 animate-[fade-in_0.2s_ease-out]"
           onClick={() => setSelectedZoomQr(null)}
         >
           <div
-            className="w-full max-w-sm bg-bg-card border border-border-standard rounded-xl p-6 shadow-sm relative overflow-hidden group"
+            className="w-full max-w-sm bg-white border border-slate-200 rounded-xl p-6 shadow-sm relative overflow-hidden group"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center mb-5 border-b border-dashed border-border-standard pb-4">

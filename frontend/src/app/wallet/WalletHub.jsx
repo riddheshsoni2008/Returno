@@ -912,7 +912,7 @@ export default function WalletHub({
 
       {/* DETAIL MODAL popup (gorgeous Airbnb style) */}
       {selectedCampaign && (
-        <div className="fixed inset-0 bg-[#111827]/80 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-slate-50/95 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white w-full max-w-sm rounded-[2rem] p-6 shadow-2xl relative overflow-hidden border border-[#E5E7EB] animate-scale-in space-y-4">
             <div className="flex justify-between items-start">
               <span className="text-[9px] uppercase tracking-widest font-extrabold px-2.5 py-1 rounded-full bg-blue-50 border border-blue-100 text-[#2563EB]">
