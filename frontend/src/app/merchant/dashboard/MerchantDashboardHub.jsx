@@ -1304,7 +1304,7 @@ export default function MerchantDashboardHub({
                             className="bg-bg-card border border-border-standard rounded-lg p-4 text-center hover:shadow-sm hover:border-primary/40 transition-all cursor-pointer flex flex-col items-center relative overflow-hidden shadow-sm"
                           >
                             {/* QR code image */}
-                            <div className="bg-bg-card border border-border-standard p-2 rounded-lg w-24 h-24 flex items-center justify-center transition-all shadow-inner mb-3">
+                            <div className="bg-bg-card border border-border-standard p-2 rounded-lg w-24 h-24 flex items-center justify-center transition-all mb-3">
                               <img
                                 src={qr.dataUrl}
                                 alt={`QR #${qr.index}`}
@@ -1429,51 +1429,47 @@ export default function MerchantDashboardHub({
           onClick={() => setSelectedZoomQr(null)}
         >
           <div
-            className="bg-bg-card border border-border-standard rounded-xl max-w-sm w-full p-6 text-center space-y-4 relative shadow-2xl"
+            className="w-full max-w-sm bg-bg-card border border-border-standard rounded-xl p-6 shadow-sm relative overflow-hidden group"
             onClick={(e) => e.stopPropagation()}
           >
-            <button
-              onClick={() => setSelectedZoomQr(null)}
-              className="absolute top-4 right-4 text-text-muted hover:text-on-surface text-xl font-bold bg-bg-card border border-border-standard hover:border-outline w-8 h-8 rounded-full flex items-center justify-center transition-colors"
-            >
-              ✕
-            </button>
-            <div className="space-y-1">
-              <h3 className="text-base font-bold text-text-primary">
-                Scan QR #{selectedZoomQr.index}
-              </h3>
-              <p className="text-xs text-text-secondary font-medium">
-                Single-use check-in code
-              </p>
+            <div className="flex justify-between items-center mb-5 border-b border-dashed border-border-standard pb-4">
+              <div>
+                <div className="text-[10px] font-bold text-primary uppercase tracking-wider font-mono">
+                  Bulk Token #{selectedZoomQr.index}
+                </div>
+                <div className="text-xs font-bold text-text-primary mt-0.5">
+                  Single-Use Check-in
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedZoomQr(null)}
+                className="text-text-muted hover:text-on-surface bg-bg-card border border-border-standard hover:border-outline w-8 h-8 rounded-full flex items-center justify-center transition-colors shadow-sm"
+              >
+                ✕
+              </button>
             </div>
 
-            <div className="bg-bg-card border border-border-standard p-5 rounded-lg w-fit mx-auto shadow-sm mb-2">
+            <div className="bg-bg-card border border-border-standard p-4 sm:p-5 rounded-lg w-fit mx-auto shadow-sm mb-5">
               <img
                 src={selectedZoomQr.dataUrl}
                 alt={`QR #${selectedZoomQr.index}`}
-                className="w-52 h-52 select-none pointer-events-none"
+                className="w-48 h-48 sm:w-56 sm:h-56 object-contain select-none pointer-events-none"
               />
             </div>
 
-            <p className="text-[10px] text-text-secondary font-medium leading-relaxed">
+            <p className="text-[10px] text-text-secondary font-medium text-center leading-relaxed px-2 sm:px-4 mb-6">
               Scan directly from your screen with a customer device. Once
               check-in finishes, this code expires.
             </p>
 
-            <div className="flex gap-2 pt-2">
+            <div className="flex w-full">
               <a
                 href={selectedZoomQr.dataUrl}
                 download={`checkin-qr-${selectedCampaign?.title?.replace(/\s+/g, "-").toLowerCase() || "code"}-${selectedZoomQr.index}.png`}
-                className="flex-grow text-center py-2.5 bg-primary text-on-primary font-bold text-[10px] rounded-lg shadow-sm transition-all uppercase tracking-wider"
+                className="w-full text-center py-3.5 bg-primary text-on-primary font-bold text-xs rounded-lg shadow-sm hover:bg-opacity-95 transition-all uppercase tracking-wider"
               >
-                Download PNG
+                💾 Download PNG
               </a>
-              <button
-                onClick={() => setSelectedZoomQr(null)}
-                className="flex-grow py-2.5 bg-bg-card border border-border-standard hover:border-outline text-text-secondary font-bold text-[10px] rounded-lg transition-all uppercase tracking-wider"
-              >
-                Close
-              </button>
             </div>
           </div>
         </div>
