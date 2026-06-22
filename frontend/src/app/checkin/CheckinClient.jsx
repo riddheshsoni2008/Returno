@@ -152,15 +152,16 @@ export default function CheckinClient() {
       if (data.success) {
         setFeedbackMsg({
           type: "success",
-          text: "Campaign restarted! Please re-scan the QR code to claim your new stamp.",
+          text: "Campaign restarted! Processing your new stamp...",
         });
-        setResult(null); // Clear result to allow re-scan
+        setResult(null); 
+        handleValidate(); // Automatically re-validate the same QR token!
       } else {
         setError(data.error || "Failed to restart campaign.");
+        setProcessing(false);
       }
     } catch (err) {
       setError("Network error restarting campaign.");
-    } finally {
       setProcessing(false);
     }
   };
