@@ -1353,5 +1353,5 @@ export default function MerchantDashboardHub({
  </div>
  )}
  </div>
- );
+ ); 
 }

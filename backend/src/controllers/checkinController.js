@@ -170,27 +170,37 @@ export const validateCheckin = async (req, res) => {
     }
 
     // Check if customer is enrolled
-    const enrollmentCheck = customer.joinedCampaigns.find(
+    let enrollment = customer.joinedCampaigns.find(
       (jc) =>
         jc.campaignId && jc.campaignId.toString() === campaign._id.toString(),
     );
 
-    if (!enrollmentCheck) {
-      return res.status(400).json({
-        notEnrolled: true,
+    if (!enrollment) {
+      // Auto-enroll the customer on the fly
+      enrollment = {
         campaignId: campaign._id,
-        error: "Tum abhi is campaign mein join nahi ho. Please join first.",
-      });
+        businessId: business._id,
+        campaignName: campaign.title,
+        rewards: [],
+        totalCheckins: 0,
+        totalPoints: 0,
+        currentStreak: 0,
+        longestStreak: 0,
+      };
+      customer.joinedCampaigns.push(enrollment);
+      // Retrieve the pushed document reference
+      enrollment = customer.joinedCampaigns[customer.joinedCampaigns.length - 1];
+      console.log(`[Check-in Controller] Auto-enrolled customer ${customer._id} in campaign ${campaign._id} on check-in`);
     }
 
     if (
-      enrollmentCheck.totalCheckins > 0 &&
-      enrollmentCheck.totalCheckins % campaign.requiredStamps === 0
+      enrollment.totalCheckins > 0 &&
+      enrollment.totalCheckins % campaign.requiredStamps === 0
     ) {
       const completedCycles = Math.floor(
-        enrollmentCheck.totalCheckins / campaign.requiredStamps,
+        enrollment.totalCheckins / campaign.requiredStamps,
       );
-      const refreshedCycles = enrollmentCheck.cyclesRefreshed || 0;
+      const refreshedCycles = enrollment.cyclesRefreshed || 0;
       if (completedCycles > refreshedCycles) {
         return res.json({
           success: false,
@@ -270,7 +280,6 @@ export const validateCheckin = async (req, res) => {
     );
 
     // 4. Business, campaign, and enrollment already verified above
-    let enrollment = enrollmentCheck;
 
     // 7. Calculate streak
     let newStreak = 1; // Default: first check-in or reset
