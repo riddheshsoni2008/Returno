@@ -975,7 +975,6 @@ export default function MerchantDashboardHub({
                 </div>
               )}
 
-              {/* BULK QR CODE TAB */}
               {qrMode === "bulk" && (
                 <div className="space-y-5 py-2 animate-[fade-in_0.2s_ease-out]">
                   {!bulkGenerated ? (

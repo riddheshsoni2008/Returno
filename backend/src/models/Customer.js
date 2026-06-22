@@ -17,6 +17,7 @@ const JoinedCampaignSchema = new mongoose.Schema({
   totalCheckins: { type: Number, default: 0 },
   lastCheckinDate: { type: Date, default: null },
   joinedAt: { type: Date, default: Date.now },
+  cyclesRefreshed: { type: Number, default: 0 },
   rewards: [CustomerRewardSchema]
 });
 

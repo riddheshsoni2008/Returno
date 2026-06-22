@@ -135,6 +135,36 @@ export default function CheckinClient() {
     }
   };
 
+  const handleRestartCampaign = async (campaignId) => {
+    setProcessing(true);
+    try {
+      const fetchOptions = { method: "POST" };
+      if (authTokenRef.current) {
+        fetchOptions.headers = {
+          Authorization: `Bearer ${authTokenRef.current}`,
+        };
+      }
+      const res = await apiFetch(
+        `/checkin/restart/${campaignId}`,
+        fetchOptions,
+      );
+      const data = await res.json();
+      if (data.success) {
+        setFeedbackMsg({
+          type: "success",
+          text: "Campaign restarted! Please re-scan the QR code to claim your new stamp.",
+        });
+        setResult(null); // Clear result to allow re-scan
+      } else {
+        setError(data.error || "Failed to restart campaign.");
+      }
+    } catch (err) {
+      setError("Network error restarting campaign.");
+    } finally {
+      setProcessing(false);
+    }
+  };
+
   if (!token) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
@@ -265,6 +295,41 @@ export default function CheckinClient() {
           </div>
         )}
 
+        {/* Needs Restart */}
+        {result && result.needsRestart && (
+          <div
+            className="space-y-6 text-center"
+            style={{ animation: "fade-in-up 0.4s ease-out" }}
+          >
+            <div
+              className="text-5xl"
+              style={{ animation: "bounce 0.6s ease-out" }}
+            >
+              🏆
+            </div>
+            <h3 className="text-2xl font-black text-slate-900">
+              Campaign Completed!
+            </h3>
+            <p className="text-sm text-slate-600 bg-emerald-50 border border-emerald-100 rounded-xl p-4 font-bold">
+              {result.message}
+            </p>
+            <div className="space-y-3">
+              <button
+                onClick={() => handleRestartCampaign(result.campaignId)}
+                className="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-500/20 transition-all uppercase tracking-wider"
+              >
+                🔄 Refresh Campaign
+              </button>
+              <Link
+                href="/wallet"
+                className="inline-block w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-colors uppercase tracking-wider"
+              >
+                Go to Wallet
+              </Link>
+            </div>
+          </div>
+        )}
+
         {/* Success — already claimed today */}
         {result && result.alreadyClaimed && (
           <div
@@ -309,7 +374,7 @@ export default function CheckinClient() {
         )}
 
         {/* Success — new check-in */}
-        {result && !result.alreadyClaimed && (
+        {result && !result.alreadyClaimed && !result.needsRestart && (
           <div
             className="space-y-6 text-center"
             style={{ animation: "fade-in-up 0.4s ease-out" }}

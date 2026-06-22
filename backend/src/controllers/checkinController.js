@@ -154,6 +154,35 @@ export const validateCheckin = async (req, res) => {
       });
     }
 
+    // Find the business and campaign using existingSession
+    const business = await Business.findOne({ "campaigns._id": existingSession.campaignId });
+    if (!business) {
+      return res.status(404).json({ error: "Campaign business not found" });
+    }
+
+    const campaign = business.campaigns.id(existingSession.campaignId);
+    if (!campaign || !campaign.isActive) {
+      return res.status(404).json({ error: "Campaign is inactive or does not exist" });
+    }
+
+    // Check if customer needs to restart
+    const enrollmentCheck = customer.joinedCampaigns.find(
+      (jc) => jc.campaignId && jc.campaignId.toString() === campaign._id.toString()
+    );
+
+    if (enrollmentCheck && enrollmentCheck.totalCheckins > 0 && enrollmentCheck.totalCheckins % campaign.requiredStamps === 0) {
+      const completedCycles = Math.floor(enrollmentCheck.totalCheckins / campaign.requiredStamps);
+      const refreshedCycles = enrollmentCheck.cyclesRefreshed || 0;
+      if (completedCycles > refreshedCycles) {
+        return res.json({
+          success: false,
+          needsRestart: true,
+          message: "You have completed this campaign! Please restart to begin a new stamp card.",
+          campaignId: campaign._id
+        });
+      }
+    }
+
     // Check if THIS specific customer already scanned THIS specific QR token
     if (
       existingSession.usedBy &&
@@ -420,6 +449,37 @@ export const getStreakInfo = async (req, res) => {
     });
   } catch (error) {
     console.error("Streak Info API Error:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+// =============================================
+// POST /api/checkin/restart/:campaignId
+// Restart a completed campaign to continue collecting stamps
+// =============================================
+export const restartCampaign = async (req, res) => {
+  try {
+    const { campaignId } = req.params;
+    const customer = await Customer.findById(req.user.id);
+    
+    if (!customer) {
+      return res.status(401).json({ error: "Customer not found" });
+    }
+
+    const enrollment = customer.joinedCampaigns.find(
+      (jc) => jc.campaignId && jc.campaignId.toString() === campaignId.toString()
+    );
+
+    if (!enrollment) {
+      return res.status(404).json({ error: "Not enrolled in this campaign" });
+    }
+
+    enrollment.cyclesRefreshed = (enrollment.cyclesRefreshed || 0) + 1;
+    await customer.save();
+
+    return res.json({ success: true, message: "Campaign restarted successfully!" });
+  } catch (error) {
+    console.error("Restart Campaign API Error:", error);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
