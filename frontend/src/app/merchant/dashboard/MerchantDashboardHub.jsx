@@ -102,35 +102,7 @@ export default function MerchantDashboardHub({
     }
   }, []);
 
-  // Poll to automatically refresh QR code once scanned or expired
-  useEffect(() => {
-    let intervalId = null;
-    if (selectedCampaign && qrMode === "checkin" && dynamicToken) {
-      intervalId = setInterval(async () => {
-        try {
-          const res = await apiFetch(`/qr/active/${selectedCampaign._id}`);
-          if (res.ok) {
-            const data = await res.json();
-            if (data.success) {
-              // If current token is expired (session === null), or different, or already checked in
-              if (
-                !data.session ||
-                data.session.token !== dynamicToken ||
-                data.session.checkinCount > 0
-              ) {
-                generateDynamicQr(selectedCampaign._id);
-              }
-            }
-          }
-        } catch (err) {
-          console.error("Polling active session error:", err);
-        }
-      }, 2000);
-    }
-    return () => {
-      if (intervalId) clearInterval(intervalId);
-    };
-  }, [selectedCampaign, qrMode, dynamicToken, generateDynamicQr]);
+  // Automatic polling removed: UI is now manual-refresh only
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -860,7 +832,7 @@ export default function MerchantDashboardHub({
                   {qrMode === "join" &&
                     "Share this permanent QR link to enroll customers into your campaign."}
                   {qrMode === "checkin" &&
-                    "Place this live rotating QR on a counter tablet. Codes expire dynamically to prevent scan fraud."}
+                    "Place this live QR on a counter tablet. Refresh the code manually for each customer."}
                   {qrMode === "bulk" &&
                     "Generate, print, and save sheets of unique single-use stamp codes for offline customer cards."}
                 </p>
@@ -958,7 +930,7 @@ export default function MerchantDashboardHub({
                           Security Key
                         </div>
                         <div className="text-xs font-black text-slate-800 mt-0.5">
-                          Rotating Session Token
+                          Live Session Token
                         </div>
                       </div>
                       <div className="flex items-center gap-1.5 bg-rose-50 border border-rose-100/50 px-2.5 py-0.5 rounded-full">
@@ -989,8 +961,8 @@ export default function MerchantDashboardHub({
                     </div>
 
                     <p className="text-[10px] text-slate-400 font-bold text-center leading-relaxed px-4">
-                      This code rotates automatically every 60 seconds. Leave
-                      this screen open for customer stamp scanning.
+                      Refresh this code manually after each use to prevent scan
+                      fraud. Leave this screen open for customer stamp scanning.
                     </p>
                   </div>
 
