@@ -1,41 +1,41 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 export const apiFetch = async (endpoint, options = {}) => {
-  const url = `${API_URL}${endpoint}`;
-  
-  // Get token from document.cookie or localStorage if available in the browser
-  let token = null;
-  if (typeof document !== 'undefined') {
-    const match = document.cookie.match(new RegExp('(^| )token=([^;]+)'));
-    if (match) {
-      token = match[2];
-    } else {
-      try {
-        token = localStorage.getItem('token');
-      } catch (err) {
-        // Ignores security/sandbox restrictions in some iframes
-      }
-    }
-  }
+ const url = `${API_URL}${endpoint}`;
+ 
+ // Get token from document.cookie or localStorage if available in the browser
+ let token = null;
+ if (typeof document !== 'undefined') {
+ const match = document.cookie.match(new RegExp('(^| )token=([^;]+)'));
+ if (match) {
+ token = match[2];
+ } else {
+ try {
+ token = localStorage.getItem('token');
+ } catch (err) {
+ // Ignores security/sandbox restrictions in some iframes
+ }
+ }
+ }
 
-  const defaultOptions = {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-    },
-    credentials: 'include',
-  };
+ const defaultOptions = {
+ headers: {
+ 'Content-Type': 'application/json',
+ ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+ },
+ credentials: 'include',
+ };
 
-  // Merge headers, preserve credentials for cookies if needed
-  const finalOptions = {
-    ...defaultOptions,
-    ...options,
-    headers: {
-      ...defaultOptions.headers,
-      ...options.headers,
-    },
-  };
+ // Merge headers, preserve credentials for cookies if needed
+ const finalOptions = {
+ ...defaultOptions,
+ ...options,
+ headers: {
+ ...defaultOptions.headers,
+ ...options.headers,
+ },
+ };
 
-  const response = await fetch(url, finalOptions);
-  return response;
+ const response = await fetch(url, finalOptions);
+ return response;
 };

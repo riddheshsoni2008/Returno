@@ -6,306 +6,306 @@ import Link from "next/link";
 import { apiFetch } from "@/lib/api";
 
 export default function CustomerAuthPage() {
-  return (
-    <Suspense
-      fallback={
-        <main className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-850">
-          <div className="text-sm font-semibold tracking-wider text-text-muted animate-pulse">
-            Initializing Customer Session...
-          </div>
-        </main>
-      }
-    >
-      <CustomerAuthContent />
-    </Suspense>
-  );
+ return (
+ <Suspense
+ fallback={
+ <main className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-850">
+ <div className="text-sm font-semibold tracking-wider text-text-muted animate-pulse">
+ Initializing Customer Session...
+ </div>
+ </main>
+ }
+ >
+ <CustomerAuthContent />
+ </Suspense>
+ );
 }
 
 function CustomerAuthContent() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
+ const router = useRouter();
+ const searchParams = useSearchParams();
 
-  // Mode: 'login' or 'signup'
-  const [mode, setMode] = useState("login");
+ // Mode: 'login' or 'signup'
+ const [mode, setMode] = useState("login");
 
-  // Form inputs
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [otpCode, setOtpCode] = useState("");
+ // Form inputs
+ const [name, setName] = useState("");
+ const [email, setEmail] = useState("");
+ const [otpCode, setOtpCode] = useState("");
 
-  // Status states
-  const [otpSent, setOtpSent] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const [cooldown, setCooldown] = useState(0);
+ // Status states
+ const [otpSent, setOtpSent] = useState(false);
+ const [loading, setLoading] = useState(false);
+ const [error, setError] = useState("");
+ const [success, setSuccess] = useState("");
+ const [cooldown, setCooldown] = useState(0);
 
-  useEffect(() => {
-    let timer;
-    if (otpSent && cooldown > 0) {
-      timer = setInterval(() => {
-        setCooldown((prev) => prev - 1);
-      }, 1000);
-    }
-    return () => clearInterval(timer);
-  }, [otpSent, cooldown]);
+ useEffect(() => {
+ let timer;
+ if (otpSent && cooldown > 0) {
+ timer = setInterval(() => {
+ setCooldown((prev) => prev - 1);
+ }, 1000);
+ }
+ return () => clearInterval(timer);
+ }, [otpSent, cooldown]);
 
-  const handleSendOtp = async (e) => {
-    if (e) e.preventDefault();
-    if (loading) return;
-    setLoading(true);
-    setError("");
-    setSuccess("");
+ const handleSendOtp = async (e) => {
+ if (e) e.preventDefault();
+ if (loading) return;
+ setLoading(true);
+ setError("");
+ setSuccess("");
 
-    try {
-      const payload = { email: email.toLowerCase().trim() };
-      if (mode === "signup") {
-        payload.name = name.trim();
-      }
+ try {
+ const payload = { email: email.toLowerCase().trim() };
+ if (mode === "signup") {
+ payload.name = name.trim();
+ }
 
-      const res = await apiFetch("/auth/otp/send", {
-        method: "POST",
-        body: JSON.stringify(payload),
-      });
-      const data = await res.json();
+ const res = await apiFetch("/auth/otp/send", {
+ method: "POST",
+ body: JSON.stringify(payload),
+ });
+ const data = await res.json();
 
-      if (!res.ok) {
-        throw new Error(data.error || "Failed to send verification code");
-      }
+ if (!res.ok) {
+ throw new Error(data.error || "Failed to send verification code");
+ }
 
-      setOtpSent(true);
-      setCooldown(60);
-      setSuccess(data.message || "OTP verification code sent to your email!");
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+ setOtpSent(true);
+ setCooldown(60);
+ setSuccess(data.message || "OTP verification code sent to your email!");
+ } catch (err) {
+ setError(err.message);
+ } finally {
+ setLoading(false);
+ }
+ };
 
-  const handleVerifyOtp = async (e) => {
-    e.preventDefault();
-    if (loading) return;
-    setLoading(true);
-    setError("");
-    setSuccess("");
+ const handleVerifyOtp = async (e) => {
+ e.preventDefault();
+ if (loading) return;
+ setLoading(true);
+ setError("");
+ setSuccess("");
 
-    try {
-      const res = await apiFetch("/auth/otp/verify", {
-        method: "POST",
-        body: JSON.stringify({
-          email: email.toLowerCase().trim(),
-          code: otpCode.trim(),
-        }),
-      });
-      const data = await res.json();
+ try {
+ const res = await apiFetch("/auth/otp/verify", {
+ method: "POST",
+ body: JSON.stringify({
+ email: email.toLowerCase().trim(),
+ code: otpCode.trim(),
+ }),
+ });
+ const data = await res.json();
 
-      if (!res.ok) {
-        throw new Error(data.error || "Verification failed");
-      }
+ if (!res.ok) {
+ throw new Error(data.error || "Verification failed");
+ }
 
-      if (data.token) {
-        document.cookie = `token=${data.token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
-        try {
-          localStorage.setItem("token", data.token);
-        } catch (err) {
-          console.error("Error writing token to localStorage:", err);
-        }
-      }
+ if (data.token) {
+ document.cookie = `token=${data.token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
+ try {
+ localStorage.setItem("token", data.token);
+ } catch (err) {
+ console.error("Error writing token to localStorage:", err);
+ }
+ }
 
-      const redirectUrl = searchParams.get("redirect") || "/wallet";
+ const redirectUrl = searchParams.get("redirect") || "/wallet";
 
-      setSuccess("Logged in successfully! Redirecting...");
-      setTimeout(() => {
-        router.push(redirectUrl);
-        router.refresh();
-      }, 1000);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+ setSuccess("Logged in successfully! Redirecting...");
+ setTimeout(() => {
+ router.push(redirectUrl);
+ router.refresh();
+ }, 1000);
+ } catch (err) {
+ setError(err.message);
+ } finally {
+ setLoading(false);
+ }
+ };
 
-  return (
-    <main className="min-h-screen flex flex-col justify-between bg-slate-50 text-text-primary font-sans relative overflow-hidden px-6 py-8">
-      {/* Background radial glow */}
-      <div className="absolute top-[-10%] left-[-10%] w-[120%] h-[50%] bg-gradient-to-b from-red-500/5 via-transparent to-transparent blur-[120px] pointer-events-none"></div>
+ return (
+ <main className="min-h-screen flex flex-col justify-between bg-slate-50 text-text-primary font-sans relative overflow-hidden px-6 py-8">
+ {/* Background radial glow */}
+ <div className="absolute top-[-10%] left-[-10%] w-[120%] h-[50%] bg-gradient-to-b from-red-500/5 via-transparent to-transparent blur-[120px] pointer-events-none"></div>
 
-      {/* Header */}
-      <header className="w-full max-w-md mx-auto flex justify-between items-center z-10 pt-4">
-        <Link
-          href="/"
-          className="text-2xl font-black tracking-tight text-text-primary flex items-center gap-2"
-        >
-          <span className="w-8 h-8 rounded-xl bg-gradient-to-tr from-red-600 to-rose-600 flex items-center justify-center text-sm shadow-lg shadow-red-500/20 text-white">
-            ✨
-          </span>
-          Returno
-        </Link>
-        <Link
-          href="/merchant/auth"
-          className="text-xs font-semibold text-red-600 hover:text-red-500 transition-colors bg-white border border-slate-200/80 rounded-full px-4 py-2 shadow-sm"
-        >
-          Merchant Portal
-        </Link>
-      </header>
+ {/* Header */}
+ <header className="w-full max-w-md mx-auto flex justify-between items-center z-10 pt-4">
+ <Link
+ href="/"
+ className="text-2xl font-black tracking-tight text-text-primary flex items-center gap-2"
+ >
+ <span className="w-8 h-8 rounded-xl bg-gradient-to-tr from-red-600 to-rose-600 flex items-center justify-center text-sm shadow-lg shadow-red-500/20 text-white">
+ ✨
+ </span>
+ Returno
+ </Link>
+ <Link
+ href="/merchant/auth"
+ className="text-xs font-semibold text-red-600 hover:text-red-500 transition-colors bg-white border border-slate-200/80 rounded-full px-4 py-2 shadow-sm"
+ >
+ Merchant Portal
+ </Link>
+ </header>
 
-      {/* Main Form container */}
-      <div className="w-full max-w-md mx-auto my-auto z-10 pt-8 pb-12">
-        <div className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-xl space-y-6 animate-fade-in-up">
-          <div className="space-y-2">
-            <h2 className="text-2xl font-black tracking-tight text-text-primary sm:text-3xl">
-              {otpSent
-                ? "Verify your email"
-                : mode === "login"
-                  ? "Welcome back"
-                  : "Create your account"}
-            </h2>
-            <p className="text-sm text-slate-550 font-medium">
-              {otpSent
-                ? `Enter the 6-digit code sent to ${email}`
-                : "Sign in or register using email verification code"}
-            </p>
-          </div>
+ {/* Main Form container */}
+ <div className="w-full max-w-md mx-auto my-auto z-10 pt-8 pb-12">
+ <div className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-xl space-y-6 animate-fade-in-up">
+ <div className="space-y-2">
+ <h2 className="text-2xl font-black tracking-tight text-text-primary sm:text-3xl">
+ {otpSent
+ ? "Verify your email"
+ : mode === "login"
+ ? "Welcome back"
+ : "Create your account"}
+ </h2>
+ <p className="text-sm text-slate-550 font-medium">
+ {otpSent
+ ? `Enter the 6-digit code sent to ${email}`
+ : "Sign in or register using email verification code"}
+ </p>
+ </div>
 
-          {/* Toggle login/signup - only show if OTP not sent */}
-          {!otpSent && (
-            <div className="grid grid-cols-2 p-1 bg-slate-50 rounded-xl border border-slate-200/50">
-              <button
-                type="button"
-                onClick={() => {
-                  setMode("login");
-                  setError("");
-                  setSuccess("");
-                }}
-                className={`py-2.5 rounded-lg text-xs font-bold tracking-wide uppercase transition-all ${mode === "login" ? "bg-gradient-to-r from-brand-600 to-rose-600 text-white shadow shadow-brand-500/10" : "text-text-muted hover:text-slate-700"}`}
-              >
-                Log In
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setMode("signup");
-                  setError("");
-                  setSuccess("");
-                }}
-                className={`py-2.5 rounded-lg text-xs font-bold tracking-wide uppercase transition-all ${mode === "signup" ? "bg-gradient-to-r from-brand-600 to-rose-600 text-white shadow shadow-brand-500/10" : "text-text-muted hover:text-slate-700"}`}
-              >
-                Sign Up
-              </button>
-            </div>
-          )}
+ {/* Toggle login/signup - only show if OTP not sent */}
+ {!otpSent && (
+ <div className="grid grid-cols-2 p-1 bg-slate-50 rounded-xl border border-slate-200/50">
+ <button
+ type="button"
+ onClick={() => {
+ setMode("login");
+ setError("");
+ setSuccess("");
+ }}
+ className={`py-2.5 rounded-lg text-xs font-bold tracking-wide uppercase transition-all ${mode === "login" ? "bg-gradient-to-r from-brand-600 to-rose-600 text-white shadow shadow-brand-500/10" : "text-text-muted hover:text-slate-700"}`}
+ >
+ Log In
+ </button>
+ <button
+ type="button"
+ onClick={() => {
+ setMode("signup");
+ setError("");
+ setSuccess("");
+ }}
+ className={`py-2.5 rounded-lg text-xs font-bold tracking-wide uppercase transition-all ${mode === "signup" ? "bg-gradient-to-r from-brand-600 to-rose-600 text-white shadow shadow-brand-500/10" : "text-text-muted hover:text-slate-700"}`}
+ >
+ Sign Up
+ </button>
+ </div>
+ )}
 
-          {/* Alerts */}
-          {error && (
-            <div className="bg-red-50 border border-red-100 text-red-600 text-xs p-4 rounded-xl font-medium flex items-start gap-2.5">
-              <span>⚠️</span>
-              <span className="leading-normal">{error}</span>
-            </div>
-          )}
-          {success && (
-            <div className="bg-emerald-50 border border-emerald-100 text-emerald-600 text-xs p-4 rounded-xl font-medium flex items-start gap-2.5">
-              <span>✓</span>
-              <span className="leading-normal">{success}</span>
-            </div>
-          )}
+ {/* Alerts */}
+ {error && (
+ <div className="bg-red-50 border border-red-100 text-red-600 text-xs p-4 rounded-xl font-medium flex items-start gap-2.5">
+ <span>⚠️</span>
+ <span className="leading-normal">{error}</span>
+ </div>
+ )}
+ {success && (
+ <div className="bg-emerald-50 border border-emerald-100 text-emerald-600 text-xs p-4 rounded-xl font-medium flex items-start gap-2.5">
+ <span>✓</span>
+ <span className="leading-normal">{success}</span>
+ </div>
+ )}
 
-          {/* Forms */}
-          {!otpSent ? (
-            <form onSubmit={handleSendOtp} className="space-y-5">
-              {mode === "signup" && (
-                <div className="space-y-2">
-                  <label className="block text-text-secondary text-xs font-semibold uppercase tracking-wider">
-                    Your Name
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Enter your name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="w-full bg-slate-50 border border-border-standard rounded-xl py-3 px-4 text-text-primary text-sm focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/5 transition-all"
-                  />
-                </div>
-              )}
-              <div className="space-y-2">
-                <label className="block text-text-secondary text-xs font-semibold uppercase tracking-wider">
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  required
-                  placeholder="name@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-slate-50 border border-border-standard rounded-xl py-3 px-4 text-text-primary text-sm focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/5 transition-all"
-                />
-                <h3 className="text-text-secondary text-xs mt-2">
-                  OTP may arrive in your Inbox or Spam folder
-                </h3>
-              </div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-gradient-to-r from-brand-600 to-rose-600 hover:from-brand-500 hover:to-rose-500 disabled:opacity-80 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-brand-500/10 transition-all text-xs uppercase tracking-wider"
-              >
-                {loading ? "Sending Code..." : "Send Verification OTP"}
-              </button>
-            </form>
-          ) : (
-            <form onSubmit={handleVerifyOtp} className="space-y-5">
-              <div className="space-y-3">
-                <label className="block text-text-secondary text-xs font-semibold uppercase tracking-wider text-center">
-                  Enter 6-Digit Code
-                </label>
-                <input
-                  type="text"
-                  required
-                  maxLength={6}
-                  placeholder="000000"
-                  value={otpCode}
-                  onChange={(e) => setOtpCode(e.target.value)}
-                  className="w-full bg-slate-50 border border-border-standard rounded-xl py-3.5 px-4 text-text-primary text-center tracking-[0.75em] text-xl font-black focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/5 transition-all"
-                />
-                <div className="flex justify-between items-center text-xs text-text-secondary px-1 pt-1">
-                  <button
-                    type="button"
-                    onClick={() => setOtpSent(false)}
-                    className="text-slate-550 hover:text-brand-600 transition-colors"
-                  >
-                    ← Change Email
-                  </button>
-                  {cooldown > 0 ? (
-                    <span>Resend in {cooldown}s</span>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => handleSendOtp(null)}
-                      disabled={loading}
-                      className="text-brand-600 hover:text-brand-500 font-semibold transition-colors disabled:opacity-80"
-                    >
-                      Resend Code
-                    </button>
-                  )}
-                </div>
-              </div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-gradient-to-r from-brand-600 to-rose-600 hover:from-brand-500 hover:to-rose-500 disabled:opacity-80 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-brand-500/10 transition-all text-xs uppercase tracking-wider"
-              >
-                {loading ? "Verifying..." : "Verify & Log In"}
-              </button>
-            </form>
-          )}
-        </div>
-      </div>
+ {/* Forms */}
+ {!otpSent ? (
+ <form onSubmit={handleSendOtp} className="space-y-5">
+ {mode === "signup" && (
+ <div className="space-y-2">
+ <label className="block text-text-secondary text-xs font-semibold uppercase tracking-wider">
+ Your Name
+ </label>
+ <input
+ type="text"
+ required
+ placeholder="Enter your name"
+ value={name}
+ onChange={(e) => setName(e.target.value)}
+ className="w-full bg-slate-50 border border-border-standard rounded-xl py-3 px-4 text-text-primary text-sm focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/5 transition-all"
+ />
+ </div>
+ )}
+ <div className="space-y-2">
+ <label className="block text-text-secondary text-xs font-semibold uppercase tracking-wider">
+ Email Address
+ </label>
+ <input
+ type="email"
+ required
+ placeholder="name@example.com"
+ value={email}
+ onChange={(e) => setEmail(e.target.value)}
+ className="w-full bg-slate-50 border border-border-standard rounded-xl py-3 px-4 text-text-primary text-sm focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/5 transition-all"
+ />
+ <h3 className="text-text-secondary text-xs mt-2">
+ OTP may arrive in your Inbox or Spam folder
+ </h3>
+ </div>
+ <button
+ type="submit"
+ disabled={loading}
+ className="w-full bg-gradient-to-r from-brand-600 to-rose-600 hover:from-brand-500 hover:to-rose-500 disabled:opacity-80 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-brand-500/10 transition-all text-xs uppercase tracking-wider"
+ >
+ {loading ? "Sending Code..." : "Send Verification OTP"}
+ </button>
+ </form>
+ ) : (
+ <form onSubmit={handleVerifyOtp} className="space-y-5">
+ <div className="space-y-3">
+ <label className="block text-text-secondary text-xs font-semibold uppercase tracking-wider text-center">
+ Enter 6-Digit Code
+ </label>
+ <input
+ type="text"
+ required
+ maxLength={6}
+ placeholder="000000"
+ value={otpCode}
+ onChange={(e) => setOtpCode(e.target.value)}
+ className="w-full bg-slate-50 border border-border-standard rounded-xl py-3.5 px-4 text-text-primary text-center tracking-[0.75em] text-xl font-black focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/5 transition-all"
+ />
+ <div className="flex justify-between items-center text-xs text-text-secondary px-1 pt-1">
+ <button
+ type="button"
+ onClick={() => setOtpSent(false)}
+ className="text-slate-550 hover:text-brand-600 transition-colors"
+ >
+ ← Change Email
+ </button>
+ {cooldown > 0 ? (
+ <span>Resend in {cooldown}s</span>
+ ) : (
+ <button
+ type="button"
+ onClick={() => handleSendOtp(null)}
+ disabled={loading}
+ className="text-brand-600 hover:text-brand-500 font-semibold transition-colors disabled:opacity-80"
+ >
+ Resend Code
+ </button>
+ )}
+ </div>
+ </div>
+ <button
+ type="submit"
+ disabled={loading}
+ className="w-full bg-gradient-to-r from-brand-600 to-rose-600 hover:from-brand-500 hover:to-rose-500 disabled:opacity-80 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-brand-500/10 transition-all text-xs uppercase tracking-wider"
+ >
+ {loading ? "Verifying..." : "Verify & Log In"}
+ </button>
+ </form>
+ )}
+ </div>
+ </div>
 
-      {/* Footer */}
-      <footer className="w-full max-w-md mx-auto text-center z-10 text-xs text-text-muted pb-2">
-        &copy; {new Date().getFullYear()} Returno. All rights reserved.
-      </footer>
-    </main>
-  );
+ {/* Footer */}
+ <footer className="w-full max-w-md mx-auto text-center z-10 text-xs text-text-muted pb-2">
+ &copy; {new Date().getFullYear()} Returno. All rights reserved.
+ </footer>
+ </main>
+ );
 }
